@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Familles', '', ~{::section})}">
+
+<section th:fragment="section">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Famille introuvable.</span>
+            <span th:case="'resident'">Résident introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Familles
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarFamilles"
+                    title="Rechercher une famille">
+                <img th:src="@{/images/rechercher.png}" class="icon-22">
+            </button>
+        </h2>
+
+        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')"
+           th:href="@{/familles/new}"
+           class="btn-circle"
+           title="Ajouter une famille">
+            <img th:src="@{/images/ajouter.png}" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarFamilles" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher une famille..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit">
+                    <img th:src="@{/images/rechercher.png}" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU -->
+    <div class="card mt-3">
+        <div class="table-responsive">
+
+            <table class="table-modern">
+
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Lien</th>
+                    <th>Téléphone</th>
+                    <th>Résidents associés</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="f : ${familles}">
+                    <td th:text="|${f.nom} ${f.prenom}|"></td>
+                    <td th:text="${f.lienParente}"></td>
+                    <td th:text="${f.telephone}"></td>
+
+                    <td>
+                        <span th:each="r : ${f.residents}"
+                              class="badge badge-light mr-1"
+                              th:text="|${r.nom} ${r.prenom}|">
+                        </span>
+                    </td>
+
+                    <td class="text-right">
+
+                        <!-- Voir -->
+                        <a th:href="@{/familles/{id}(id=${f.idFamille}, resident=${residentId})}"
+                        class="btn-circle mr-2" title="Voir">
+                            <img th:src="@{/images/voir.png}" class="icon-24">
+                        </a>
+
+
+                        <!-- Modifier -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')"
+                           th:href="@{/familles/{id}/edit(id=${f.idFamille})}"
+                           class="btn-circle mr-2"
+                           title="Modifier">
+                            <img th:src="@{/images/modifier.png}" class="icon-24">
+                        </a>
+
+                        <!-- Supprimer -->
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{/familles/{id}/delete(id=${f.idFamille})}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cette famille ?');">
+                            <button class="btn-circle" title="Supprimer">
+                                <img th:src="@{/images/supprimer.png}" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(familles)}">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Aucune famille trouvée.
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</section>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Employés', '', ~{::section})}">
+
+<section th:fragment="content">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'planning'">Impossible de supprimer cet employé : il est responsable d’un planning.</span>
+            <span th:case="'introuvable'">Employé introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Employés
+
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarEmployes"
+                    title="Rechercher un employé">
+                <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+            </button>
+        </h2>
+
+        <!-- Ajouter -->
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+           th:href="@{/employes/new}"
+           class="btn-circle"
+           title="Ajouter un employé">
+            <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarEmployes" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher un employé..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit" title="Lancer la recherche">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU -->
+    <div class="card mt-3">
+        <div class="table-responsive"> 
+
+        <table class="table-modern">
+
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Matricule</th>
+                    <th>Poste</th>
+                    <th>Téléphone</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="e : ${employes}">
+                    <td th:text="${e.nom + ' ' + e.prenom}"></td>
+                    <td th:text="${e.matricule}"></td>
+                    <td th:text="${e.poste}"></td>
+                    <td th:text="${e.telephone}"></td>
+
+                    <td class="text-right">
+
+                        <!-- Voir -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                           th:href="@{|/employes/${e.idPersonne}|}"
+                           class="btn-circle mr-2"
+                           title="Voir le profil">
+                            <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
+                        </a>
+
+                        <!-- Modifier -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                           th:href="@{|/employes/${e.idPersonne}/edit|}"
+                           class="btn-circle mr-2"
+                           title="Modifier cet employé">
+                            <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
+                        </a>
+
+                        <!-- Supprimer -->
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{|/employes/${e.idPersonne}/delete|}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cet employé ?');">
+                            <button class="btn-circle"
+                                    title="Supprimer cet employé">
+                                <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(employes)}">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Aucun employé trouvé.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+    <!-- PAGINATION -->
+<div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
+    <nav>
+        <ul class="pagination">
+
+            <li class="page-item" th:classappend="${currentPage == 0 ? ' disabled' : ''}">
+                <a class="page-link" th:href="@{/employes(page=${currentPage - 1}, q=${q})}">&laquo;</a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:if="${i >= currentPage - 2 and i <= currentPage + 2}"
+                th:classappend="${i == currentPage ? ' active' : ''}">
+                <a class="page-link"
+                   th:href="@{/employes(page=${i}, q=${q})}"
+                   th:text="${i + 1}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? ' disabled' : ''}">
+                <a class="page-link" th:href="@{/employes(page=${currentPage + 1}, q=${q})}">&raquo;</a>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+
+</section>
+</html>

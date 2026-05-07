@@ -1,0 +1,418 @@
+/* ── Dashboard ───────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;600;700&display=swap');
+
+.kpi-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-item {
+  flex: 1;
+  min-width: 120px;
+  background: #fff;
+  border-left: 3px solid #C9973A;
+  border-radius: 4px;
+  padding: .65rem 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.kpi-item.kpi-warning { border-color: #f59e0b; }
+.kpi-item.kpi-success  { border-color: #060606fd; }
+
+.kpi-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.kpi-label {
+  font-size: .75rem;
+  color: #6b7280;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.25rem;
+}
+.dash-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.chart-wrap    { position: relative; height: 240px; }
+.chart-wrap-sm { position: relative; height: 110px; }
+
+.chart-legend {
+  display: flex;
+  gap: .75rem;
+  font-size: .75rem;
+  color: #6b7280;
+}
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 3px;
+}
+.chart-big-num {
+  font-size: 1.4rem;
+  color: #1a1a1a;
+}
+
+.equip-body {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: .5rem;
+}
+.equip-gauge { width: 80px; flex-shrink: 0; }
+.equip-gauge svg { width: 80px; height: 80px; }
+
+.gauge-track {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 3.5;
+}
+.gauge-fill {
+  fill: none;
+  stroke: #C9973A;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.gauge-text {
+  font-size: 5.5px;
+  font-weight: 700;
+  fill: #1a1a1a;
+  text-anchor: middle;
+}
+
+.equip-info { display: flex; flex-direction: column; gap: .3rem; }
+.equip-main { font-weight: 600; color: #1a1a1a; font-size: .9rem; }
+.equip-sub  { font-size: .8rem; color: #6b7280; }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  font-family: 'Garamond', serif;
+}
+
+@media (max-width: 860px) {
+  .dash-grid { grid-template-columns: 1fr; }
+}
+
+.kpi-bar, .dash-grid {
+    font-family: 'EB Garamond', Georgia, serif;
+    }
+
+/* ============================
+   TABLES
+   ============================ */
+
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-modern th {
+    text-align: left;
+    padding: 12px 16px;
+    background: #F7F7F7;
+    font-size: 14px;
+}
+
+.table-modern td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #EEE;
+    font-size: 14px;
+}
+
+/* ============================
+   BADGES
+   ============================ */
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.badge-success { background: #28a745; color: white; }
+.badge-warning { background: #ffc107; color: black; }
+.badge-danger  { background: #dc3545; color: white; }
+
+/* ============================
+   EQUIPEMENTS GRID
+   ============================ */
+
+.equipements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.equipement-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    text-align: center;
+    height: 340px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.equipement-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+.equipement-photo img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+    .equipements-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================
+   LOGIN PAGE
+   ============================ */
+
+body.login-page {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding-right: 80px;
+}
+
+.login-container {
+    width: 380px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 45px 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.login-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 8px;
+}
+
+.login-brand {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+}
+
+.login-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 4px;
+    margin-top: 20px;
+}
+
+.login-subtitle {
+    color: #777;
+    font-size: 0.88rem;
+    margin-bottom: 24px;
+}
+
+/* ALERTES */
+.login-alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+}
+
+.login-alert-error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.login-alert-success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+/* CHAMPS */
+.login-field {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.login-field-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 14px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    background: white;
+}
+
+.login-input:focus {
+    border-color: #C9A227;
+    box-shadow: 0 0 0 3px rgba(201,162,39,0.15);
+}
+
+/* BOUTON */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: #C9A227;
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: 0.25s ease;
+    margin-top: 8px;
+}
+
+.login-btn:hover {
+    background: #b8921f;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(201,162,39,0.4);
+}
+
+/* FOOTER */
+.login-footer {
+    text-align: center;
+    color: #999;
+    font-size: 0.78rem;
+    margin-top: 24px;
+    font-style: italic;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    body.login-page {
+        justify-content: center;
+        padding-right: 0;
+        padding: 20px;
+    }
+
+    .login-container {
+        width: 100%;
+    }
+}
+
+/* BOUTON */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: #C9A227;
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: 0.25s ease;
+    margin-top: 8px;
+}
+
+.login-btn:hover {
+    background: #b8921f;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(201,162,39,0.4);
+}
+
+/* FOOTER */
+.login-footer {
+    text-align: center;
+    color: #aaa;
+    font-size: 0.78rem;
+    margin-top: 30px;
+    font-style: italic;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .login-image {
+        display: none;
+    }
+    .login-container {
+        width: 100%;
+        padding: 40px 30px;
+    }
+}
+
+/* ============================
+   FORM GRID
+   ============================ */
+
+.form-card {
+    background: white;
+    border-radius: 08px;
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    margin-top: 12px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.brand-text {
+    color: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline !important;
+}

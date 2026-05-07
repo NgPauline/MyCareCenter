@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Traitement', 'Formulaire traitement', ~{::section})}">
+
+<section th:fragment="content" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Traitement introuvable.</span>
+            <span th:case="'resident'">Résident introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+    <div th:if="${dateError}" class="alert alert-danger mb-3">
+        <span th:text="${dateError}"></span>
+    </div>
+
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier le traitement' : 'Ajouter un traitement'"></h2>
+        <div></div>
+    </div>
+
+    <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
+          th:action="@{${submitUrl}}" th:object="${traitement}"
+          method="post" class="form-card">
+
+        <div class="form-grid">
+
+            <div>
+                <label>Médicament</label>
+                <input type="text" th:field="*{medicament}" class="form-control">
+                <div class="error" th:errors="*{medicament}"></div>
+            </div>
+
+            <div>
+                <label>Dosage</label>
+                <input type="text" th:field="*{dosage}" class="form-control">
+                <div class="error" th:errors="*{dosage}"></div>
+            </div>
+
+            <div>
+                <label>Fréquence</label>
+                <input type="text" th:field="*{frequence}" class="form-control">
+                <div class="error" th:errors="*{frequence}"></div>
+            </div>
+
+            <div>
+                <label>Date début</label>
+                <input type="date" th:field="*{dateDebut}" class="form-control">
+                <div class="error" th:errors="*{dateDebut}"></div>
+            </div>
+
+            <div>
+                <label>Date fin</label>
+                <input type="date" th:field="*{dateFin}" class="form-control">
+
+                <!-- Erreur logique -->
+                <div th:if="${traitement.dateDebut != null 
+                            and traitement.dateFin != null 
+                            and traitement.dateFin.isBefore(traitement.dateDebut)}"
+                     class="alert alert-danger mt-2">
+                    ⚠ La date de fin doit être postérieure à la date de début.
+                </div>
+
+                <div class="error" th:errors="*{dateFin}"></div>
+                <div class="error" th:errors="*{datesValides}"></div>
+
+            </div>
+
+            <div>
+                <label>Résident</label>
+                <select name="residentId" class="form-control">
+                    <option th:each="r : ${residents}"
+                            th:value="${r.idPersonne}"
+                            th:text="${r.nom + ' ' + r.prenom}">
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/traitements}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

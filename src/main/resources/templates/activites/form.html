@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Activité', 'Formulaire activité', ~{::section})}">
+
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE D’ERREUR GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'passee'">Impossible de modifier une activité déjà passée.</span>
+            <span th:case="'acces'">Accès refusé.</span>
+            <span th:case="'inscription'">Impossible d’inscrire ce résident.</span>
+            <span th:case="'desinscription'">Impossible de désinscrire ce résident.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier l\'activité' : 'Ajouter une activité'"></h2>
+        <div></div>
+    </div>
+
+    <!-- FORMULAIRE -->
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+          th:action="@{${submitUrl}}"
+          th:object="${activite}"
+          method="post"
+          class="form-card">
+
+        <div class="form-grid">
+
+            <!-- NOM -->
+            <div>
+                <label>Nom</label>
+                <input type="text" th:field="*{nom}" class="form-control">
+                <div class="error" th:errors="*{nom}"></div>
+            </div>
+
+            <!-- TYPE -->
+            <div>
+                <label>Type</label>
+                <input type="text" th:field="*{type}" class="form-control">
+                <div class="error" th:errors="*{type}"></div>
+            </div>
+
+            <!-- DATE -->
+            <div>
+                <label>Date</label>
+                <input type="date" th:field="*{date}" class="form-control">
+                <div class="error" th:errors="*{date}"></div>
+
+                <!-- Erreur métier -->
+                <div class="error"
+                     th:if="${#fields.hasErrors('planifieeAssezTot')}"
+                     th:errors="*{planifieeAssezTot}">
+                </div>
+            </div>
+
+            <!-- HEURE DEBUT -->
+            <div>
+                <label>Heure de début</label>
+                <input type="time" th:field="*{heureDebut}" class="form-control">
+                <div class="error" th:errors="*{heureDebut}"></div>
+            </div>
+
+            <!-- DUREE -->
+            <div>
+                <label>Durée (minutes)</label>
+                <input type="number" th:field="*{duree}" class="form-control">
+                <div class="error" th:errors="*{duree}"></div>
+            </div>
+
+            <!-- LIEU -->
+            <div>
+                <label>Lieu</label>
+                <input type="text" th:field="*{lieu}" class="form-control">
+                <div class="error" th:errors="*{lieu}"></div>
+            </div>
+
+            <!-- CATEGORIE -->
+            <div>
+                <label>Catégorie</label>
+                <select th:field="*{categorie}" class="form-control">
+                    <option value="">-- Choisir --</option>
+                    <option value="MEDICAL">Médicale</option>
+                    <option value="EDUCATIF">Éducative</option>
+                    <option value="SPORTIF">Sportive</option>
+                    <option value="SOCIAL">Sociale</option>
+                </select>
+                <div class="error" th:errors="*{categorie}"></div>
+            </div>
+
+            <!-- RESPONSABLE -->
+            <div>
+                <label>Responsable</label>
+                <select name="responsableId" class="form-control">
+                    <option value="">-- Choisir --</option>
+                    <option th:each="s : ${soignants}"
+                            th:value="${s.idPersonne}"
+                            th:selected="${activite.responsable != null ? activite.responsable.idPersonne == s.idPersonne : false}"
+                            th:text="|${s.nom} ${s.prenom}|">
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/activites}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

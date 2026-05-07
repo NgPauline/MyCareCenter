@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Dossiers médicaux', '', ~{::section})}">
+
+<section th:fragment="content">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Résident introuvable.</span>
+            <span th:case="'sansDossier'">Le résident n’a pas de dossier médical.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Dossiers médicaux
+
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarDossiers"
+                    title="Rechercher un dossier médical">
+                <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+            </button>
+        </h2>
+
+        <div></div>
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarDossiers" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher un dossier médical..."
+                   th:value="${param.q}">
+
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit" title="Lancer la recherche">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
+                </button>
+            </div>
+
+        </div>
+    </form>
+
+    <!-- TABLEAU -->
+    <div class="card mt-3">
+        <div class="table-responsive"> 
+
+        <table class="table-modern">
+
+            <thead>
+                <tr>
+                    <th>Résident</th>
+                    <th>Groupe sanguin</th>
+                    <th>Allergies</th>
+                    <th>Date création</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="d : ${dossiers}">
+                    <td th:text="${d.resident.nom + ' ' + d.resident.prenom}"></td>
+                    <td th:text="${d.groupeSanguin != null ? d.groupeSanguin : '—'}"></td>
+                    <td th:text="${d.allergies != null ? d.allergies : '—'}"></td>
+                    <td th:text="${#dates.format(d.dateCreation,'dd/MM/yyyy')}"></td>
+
+                    <td class="text-right">
+
+                        <!-- Voir -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
+                           th:href="@{|/dossiers/${d.resident.idPersonne}|}"
+                           class="btn-circle mr-2"
+                           title="Voir le dossier médical">
+                            <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
+                        </a>
+
+                        <!-- Modifier -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
+                           th:href="@{|/dossiers/${d.resident.idPersonne}/edit|}"
+                           class="btn-circle"
+                           title="Modifier le dossier médical">
+                            <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
+                        </a>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(dossiers)}">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Aucun dossier trouvé.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+
+</section>
+</html>

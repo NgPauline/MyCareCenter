@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<footer class="main-footer text-center py-2" th:fragment="footer"
+        style="background:#FFF; border-top:1px solid var(--color-border);">
+
+    <div class="small text-muted">
+        <strong>&copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span> CareCenter</strong>
+        — Gestion des résidents, du personnel et de la facturation.
+    </div>
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Détails chambre', 'Détails de la chambre', ~{::section})}">
+
+<th:block th:fragment="section"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'occupee'">Impossible d’effectuer cette action : la chambre est occupée.</span>
+            <span th:case="'dejaLibre'">Impossible de libérer cette chambre : elle est déjà libre.</span>
+            <span th:case="'acces'">Accès refusé.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- TOP BAR : RETOUR + ACTIONS -->
+    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+
+        <!-- ACTIONS -->
+        <div class="detail-actions d-flex gap-3">
+
+            <!-- Modifier -->
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+               th:href="@{|/chambres/${chambre.idChambre}/edit|}"
+               class="btn-circle">
+                <img src="/images/modifier.png" class="icon-26">
+            </a>
+
+            <!-- Supprimer -->
+            <form sec:authorize="hasRole('DIRECTEUR')"
+                  th:action="@{|/chambres/${chambre.idChambre}/delete|}"
+                  method="post"
+                  onsubmit="return confirm('Supprimer cette chambre ?');">
+                <button class="btn-circle">
+                    <img src="/images/supprimer.png" class="icon-26">
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- HEADER CENTRÉ -->
+    <div class="resident-header text-center">
+
+        <h2 class="resident-name" th:text="|Chambre ${chambre.numero}|"></h2>
+
+        <div class="resident-links">
+
+            <a th:href="@{|/equipements?chambre=${chambre.idChambre}|}" class="btn-link-gold">
+                Équipements
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- CONTENU EN DEUX COLONNES -->
+    <div class="row mt-4">
+
+        <!-- COLONNE GAUCHE -->
+        <div class="col-12 col-md-6">
+            <div class="card detail-card p-3">
+                <div class="table-responsive">
+
+                    <table class="detail-table">
+                        <tbody>
+
+                        <tr><th>Numéro</th><td th:text="${chambre.numero}"></td></tr>
+                        <tr><th>Type</th><td th:text="${chambre.type}"></td></tr>
+                        <tr><th>Étage</th><td th:text="${chambre.etage}"></td></tr>
+
+                        <!-- Disponibilité -->
+                        <tr>
+                            <th>Disponibilité</th>
+                            <td>
+                                <span th:if="${chambre.occupant == null}" class="badge badge-success">
+                                    Disponible
+                                </span>
+                                <span th:if="${chambre.occupant != null}" class="badge badge-danger">
+                                    Occupée
+                                </span>
+                            </td>
+                        </tr>
+
+                        <!-- Occupant -->
+                        <tr>
+                            <th>Occupant</th>
+                            <td>
+
+                                <a th:if="${chambre.occupant != null}"
+                                   th:href="@{|/residents/${chambre.occupant.idPersonne}|}"
+                                   class="btn-small gold d-inline-flex align-items-center">
+                                    <span th:text="|${chambre.occupant.nom} ${chambre.occupant.prenom}|"></span>
+                                </a>
+
+                                <span th:if="${chambre.occupant == null}" class="text-muted">Aucun</span>
+
+                                <div class="mt-2">
+
+                                    <!-- Attribuer -->
+                                    <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                                       th:if="${chambre.occupant == null}"
+                                       th:href="@{|/chambres/${chambre.idChambre}/attribuer|}"
+                                       class="btn-small gold d-inline-flex align-items-center">
+                                        <img src="/images/ajouter.png" class="icon-18 mr-1">
+                                        Attribuer un résident
+                                    </a>
+
+                                    <!-- Libérer -->
+                                    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                                          th:if="${chambre.occupant != null}"
+                                          th:action="@{|/chambres/${chambre.idChambre}/liberer|}"
+                                          method="post"
+                                          class="inline-form">
+                                        <button class="btn-small danger d-inline-flex align-items-center">
+                                            <img src="/images/supprimer.png" class="icon-18 mr-1">
+                                            Libérer la chambre
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE (optionnelle) -->
+        <div class="col-12 col-md-6">
+            <!-- Ajouter contenu si besoin -->
+        </div>
+
+    </div>
+
+</th:block>
+</html>

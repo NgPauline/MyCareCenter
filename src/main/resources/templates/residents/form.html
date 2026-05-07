@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Résident', 'Formulaire résident', ~{::section})}">
+
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Résident introuvable.</span>
+            <span th:case="'chambreId'">Chambre introuvable.</span>
+            <span th:case="'familleId'">Famille introuvable.</span>
+        </span>
+    </div>
+
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier le résident' : 'Ajouter un résident'"></h2>
+        <div></div>
+    </div>
+
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+          th:action="@{${submitUrl}}"
+          th:object="${resident}"
+          method="post"
+          class="form-card">
+
+          <input type="hidden" th:if="${isEdit}" th:field="*{idPersonne}">
+
+
+        <div class="form-grid">
+
+            <div>
+                <label>Nom</label>
+                <input type="text" th:field="*{nom}" class="form-control">
+                <div class="error" th:errors="*{nom}"></div>
+            </div>
+
+            <div>
+                <label>Prénom</label>
+                <input type="text" th:field="*{prenom}" class="form-control">
+                <div class="error" th:errors="*{prenom}"></div>
+            </div>
+
+            <div>
+                <label>Date de naissance</label>
+                <input type="date" th:field="*{dateNaissance}" class="form-control">
+                <div class="error" th:errors="*{dateNaissance}"></div>
+
+                <div class="text-danger"
+                     th:if="${#fields.hasErrors('trancheAgeValide')}"
+                     th:errors="*{trancheAgeValide}">
+                </div>
+            </div>
+
+            <div>
+                <label>Type handicap</label>
+                <input type="text" th:field="*{typeHandicap}" class="form-control">
+                <div class="error" th:errors="*{typeHandicap}"></div>
+            </div>
+
+            <div>
+                <label>Niveau autonomie</label>
+                <select th:field="*{niveauAutonomie}" class="form-control">
+                    <option value="Élevé">Élevé</option>
+                    <option value="Moyen">Moyen</option>
+                    <option value="Faible">Faible</option>
+                </select>
+                <div class="error" th:errors="*{niveauAutonomie}"></div>
+            </div>
+
+            <div>
+                <label>Date admission</label>
+                <input type="date" th:field="*{dateAdmission}" class="form-control">
+                <div class="error" th:errors="*{dateAdmission}"></div>
+            </div>
+
+            <div>
+                <label>Statut</label>
+                <select th:field="*{statut}" class="form-control">
+                    <option value="Actif">Actif</option>
+                    <option value="Inactif">Inactif</option>
+                </select>
+                <div class="error" th:errors="*{statut}"></div>
+            </div>
+
+            <div>
+                <label>Chambre</label>
+                <select name="chambreId" class="form-control">
+                    <option th:each="c : ${chambres}"
+                            th:value="${c.idChambre}"
+                            th:text="${c.numero}"
+                            th:selected="${resident.chambre != null and resident.chambre.idChambre == c.idChambre}">
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/residents}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

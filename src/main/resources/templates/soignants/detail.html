@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Détails soignant', 'Détails du soignant', ~{::section})}">
+
+<th:block th:fragment="section"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'consultations'">Impossible de supprimer ce soignant : des consultations sont associées.</span>
+            <span th:case="'activites'">Impossible de supprimer ce soignant : des activités sont associées.</span>
+            <span th:case="'introuvable'">Soignant introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+
+        <h2 class="m-0" th:text="|${soignant.nom} ${soignant.prenom}|"></h2>
+
+        <div class="detail-actions d-flex gap-2">
+
+            <!-- Modifier -->
+            <a sec:authorize="hasRole('DIRECTEUR')"
+               th:href="@{|/soignants/${soignant.idPersonne}/edit|}"
+               class="btn-circle">
+                <img src="/images/modifier.png" class="icon-26">
+            </a>
+
+            <!-- Supprimer -->
+            <form sec:authorize="hasRole('DIRECTEUR')"
+                  th:action="@{|/soignants/${soignant.idPersonne}/delete|}"
+                  method="post"
+                  onsubmit="return confirm('Supprimer ce soignant ?');">
+                <button class="btn-circle">
+                    <img src="/images/supprimer.png" class="icon-26">
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="card detail-card mt-3">
+    
+        <div class="table-responsive">
+        <table class="detail-table">
+            <tbody>
+
+                <tr><th>Nom</th><td th:text="${soignant.nom}"></td></tr>
+                <tr><th>Prénom</th><td th:text="${soignant.prenom}"></td></tr>
+
+                <tr>
+                    <th>Date de naissance</th>
+                    <td th:text="${#temporals.format(soignant.dateNaissance,'dd/MM/yyyy')}"></td>
+                </tr>
+
+                <tr><th>Matricule</th><td th:text="${soignant.matricule}"></td></tr>
+                <tr><th>Téléphone</th><td th:text="${soignant.telephone}"></td></tr>
+                <tr><th>Adresse</th><td th:text="${soignant.adresse}"></td></tr>
+                <tr><th>Poste</th><td th:text="${soignant.poste}"></td></tr>
+
+                <tr>
+                    <th>Salaire</th>
+                    <td th:text="|${soignant.salaire} €|"></td>
+                </tr>
+
+                <tr><th>Diplôme</th><td th:text="${soignant.diplome}"></td></tr>
+                <tr><th>Spécialité</th><td th:text="${soignant.specialite}"></td></tr>
+
+            </tbody>
+        </table>
+        </div>
+
+    </div>
+
+</th:block>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Famille', 'Formulaire famille', ~{::section})}">
+
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Famille introuvable.</span>
+            <span th:case="'resident'">Résident introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier la famille' : 'Ajouter une famille'"></h2>
+        <div></div>
+    </div>
+
+    <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')"
+          th:action="@{${submitUrl}}" th:object="${famille}"
+          method="post" class="form-card">
+
+          <input type="hidden" name="residentId" th:value="${residentId}">
+
+        <div class="form-grid">
+
+            <div>
+                <label>Nom</label>
+                <input type="text" th:field="*{nom}" class="form-control">
+                <div class="error" th:errors="*{nom}"></div>
+            </div>
+
+            <div>
+                <label>Prénom</label>
+                <input type="text" th:field="*{prenom}" class="form-control">
+                <div class="error" th:errors="*{prenom}"></div>
+            </div>
+
+            <div>
+                <label>Lien de parenté</label>
+                <input type="text" th:field="*{lienParente}" class="form-control">
+                <div class="error" th:errors="*{lienParente}"></div>
+            </div>
+
+            <div>
+                <label>Téléphone</label>
+                <input type="text" th:field="*{telephone}" class="form-control">
+                <div class="error" th:errors="*{telephone}"></div>
+            </div>
+
+            <div>
+                <label>Email</label>
+                <input type="email" th:field="*{email}" class="form-control">
+                <div class="error" th:errors="*{email}"></div>
+            </div>
+
+            <div>
+                <label>Adresse</label>
+                <input type="text" th:field="*{adresse}" class="form-control">
+                <div class="error" th:errors="*{adresse}"></div>
+            </div>
+
+            <div>
+                <label>Associer un résident</label>
+                <select name="residentId" class="form-control">
+                    <option value="">-- Aucun --</option>
+                    <option th:each="r : ${residents}"
+                            th:value="${r.idPersonne}"
+                            th:text="|${r.nom} ${r.prenom}|">
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/familles}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

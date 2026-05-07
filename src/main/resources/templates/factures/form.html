@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Facture', 'Formulaire facture', ~{::section})}">
+
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'payee'">Impossible de modifier cette facture : elle est déjà payée.</span>
+            <span th:case="'introuvable'">Facture introuvable.</span>
+            <span th:case="'resident'">Résident introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier la facture' : 'Ajouter une facture'"></h2>
+        <div></div>
+    </div>
+
+    <!-- FORMULAIRE -->
+    <form sec:authorize="hasRole('FINANCE')"
+          th:action="@{${submitUrl}}"
+          th:object="${facture}"
+          method="post"
+          class="form-card">
+
+        <!-- from (si jamais utilisé) -->
+        <input type="hidden" name="from" th:value="${from}">
+
+        <div class="form-grid">
+
+            <!-- Résident -->
+            <div>
+                <label>Résident</label>
+
+                <!-- Mode création -->
+                <select name="residentId" class="form-select" th:if="${!isEdit}">
+                    <option th:each="r : ${residents}"
+                            th:value="${r.idPersonne}"
+                            th:selected="${facture.resident != null and facture.resident.idPersonne == r.idPersonne}"
+                            th:text="|${r.nom} ${r.prenom}|">
+                    </option>
+                </select>
+
+                <!-- Mode édition -->
+                <div th:if="${isEdit}">
+                    <input type="text"
+                           class="form-control"
+                           th:value="|${facture.resident.nom} ${facture.resident.prenom}|"
+                           readonly>
+
+                    <input type="hidden" name="residentId"
+                           th:value="${facture.resident.idPersonne}">
+                </div>
+
+                <div class="error" th:errors="*{resident}"></div>
+            </div>
+
+            <!-- Montant -->
+            <div>
+                <label>Montant (€)</label>
+                <input type="number" step="0.01" th:field="*{montant}" class="form-control">
+                <div class="error" th:errors="*{montant}"></div>
+            </div>
+
+            <!-- Date émission -->
+            <div>
+                <label>Date émission</label>
+                <input type="date" th:field="*{dateEmission}" class="form-control">
+                <div class="error" th:errors="*{dateEmission}"></div>
+            </div>
+
+            <!-- Statut -->
+            <div>
+                <label>Statut</label>
+                <select th:field="*{statut}" class="form-control">
+                    <option value="EN_ATTENTE">En attente</option>
+                    <option value="PARTIELLE">Partielle</option>
+                    <option value="PAYEE">Payée</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/factures}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

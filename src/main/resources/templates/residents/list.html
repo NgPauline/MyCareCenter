@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+            th:replace="~{layout/base :: layout('Résidents', '', ~{::section})}">
+
+<section th:fragment="section">
+
+    <!-- MESSAGE GLOBAL -->
+<div th:if="${param.error}" class="alert alert-danger mb-3">
+    <span th:switch="${param.error}">
+        <span th:case="'introuvable'">Résident introuvable.</span>
+        <span th:case="'chambre'">Impossible de supprimer ce résident : il occupe une chambre.</span>
+        <span th:case="'impaye'">Impossible de supprimer ce résident : des factures impayées existent.</span>
+        <span th:case="'consultations'">Impossible de supprimer ce résident : des consultations sont associées.</span>
+        <span th:case="'traitements'">Impossible de supprimer ce résident : des traitements sont associés.</span>
+        <span th:case="'activites'">Impossible de supprimer ce résident : des activités sont associées.</span>
+        <span th:case="'chambreId'">Chambre introuvable.</span>
+        <span th:case="'familleId'">Famille introuvable.</span>
+    </span>
+</div>
+
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Résidents
+
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarResidents"
+                    title="Rechercher un résident">
+                <img th:src="@{/images/rechercher.png}" class="icon-22">
+            </button>
+        </h2>
+
+        <!-- Ajouter -->
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+           th:href="@{/residents/new}"
+           class="btn-circle"
+           title="Ajouter un résident">
+            <img th:src="@{/images/ajouter.png}" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarResidents" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher un résident..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU PREMIUM -->
+     
+    <div class="card mt-3">
+
+        <div class="table-responsive"> 
+
+        <table class="table-modern">
+
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Chambre</th>
+                    <th>Statut</th>
+                    <th>Date admission</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="r : ${residents}">
+                    <td th:text="${r.nom + ' ' + r.prenom}"></td>
+
+                    <td>
+                        <span th:text="${r.chambre != null ? r.chambre.numero : 'Aucune'}"></span>
+                    </td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${r.statut == 'Actif' ? ' badge-success' :
+                                              r.statut == 'Inactif' ? ' badge-secondary' :
+                                                                      ' badge-warning'}"
+                              th:text="${r.statut}">
+                        </span>
+                    </td>
+
+                    <td th:text="${#temporals.format(r.dateAdmission, 'dd/MM/yyyy')}"></td>
+
+                    <td class="text-right">
+
+                        <!-- Voir -->
+                        <a th:href="@{|/residents/${r.idPersonne}|}"
+                           class="btn-circle mr-2"
+                           title="Voir le résident">
+                            <img th:src="@{/images/voir.png}" class="icon-24">
+                        </a>
+
+                        <!-- Modifier -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                           th:href="@{|/residents/${r.idPersonne}/edit|}"
+                           class="btn-circle mr-2"
+                           title="Modifier ce résident">
+                            <img th:src="@{/images/modifier.png}" class="icon-24">
+                        </a>
+
+                        <!-- Supprimer -->
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{|/residents/${r.idPersonne}/delete|}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer ce résident ?');">
+                            <button class="btn-circle" title="Supprimer ce résident">
+                                <img th:src="@{/images/supprimer.png}" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(residents)}">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Aucun résident trouvé.
+                    </td>
+                </tr>
+
+            </tbody>
+
+         </table>
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+<div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
+    <nav>
+        <ul class="pagination">
+
+            <!-- Précédent -->
+            <li class="page-item" th:classappend="${currentPage == 0 ? ' disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/residents(page=${currentPage - 1}, q=${q})}">
+                    &laquo;
+                </a>
+            </li>
+
+<!-- Numéros de pages (fenêtre de 5 autour de la page courante) -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:if="${i >= currentPage - 2 and i <= currentPage + 2}"
+                        th:classappend="${i == currentPage ? ' active' : ''}">
+                        <a class="page-link"
+                        th:href="@{/residents(page=${i}, q=${q})}"
+                        th:text="${i + 1}">
+                        </a>
+                    </li>
+
+            <!-- Suivant -->
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? ' disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/residents(page=${currentPage + 1}, q=${q})}">
+                    &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+
+</section>
+</html>

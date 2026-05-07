@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Détails employé', 'Informations générales', ~{::section})}">
+
+<th:block th:fragment="section"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Employé introuvable.</span>
+            <span th:case="'consultations'">Impossible de supprimer : des consultations sont associées.</span>
+            <span th:case="'activites'">Impossible de supprimer : des activités sont associées.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- BARRE HAUTE -->
+    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+
+
+        <div class="detail-actions d-flex gap-3">
+
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+               th:href="@{|/employes/${employe.idPersonne}/edit|}"
+               class="btn-circle">
+                <img src="/images/modifier.png" class="icon-26">
+            </a>
+
+            <form sec:authorize="hasRole('DIRECTEUR')"
+                  th:action="@{|/employes/${employe.idPersonne}/delete|}"
+                  method="post"
+                  onsubmit="return confirm('Supprimer cet employé ?');">
+                <button class="btn-circle">
+                    <img src="/images/supprimer.png" class="icon-26">
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- HEADER CENTRÉ -->
+    <div class="resident-header text-center">
+
+        <h2 class="resident-name" th:text="|${employe.nom} ${employe.prenom}|"></h2>
+
+    </div>
+
+    <!-- CONTENU -->
+    <div class="row mt-4">
+
+        <!-- COLONNE GAUCHE -->
+        <div class="col-12 col-md-6">
+            <div class="card detail-card p-3">
+                <div class="table-responsive">
+
+                    <table class="detail-table">
+                        <tbody>
+
+                        <tr><th>Nom</th><td th:text="${employe.nom}"></td></tr>
+                        <tr><th>Prénom</th><td th:text="${employe.prenom}"></td></tr>
+
+                        <tr>
+                            <th>Date de naissance</th>
+                            <td th:text="${#temporals.format(employe.dateNaissance,'dd/MM/yyyy')}"></td>
+                        </tr>
+
+                        <tr><th>Matricule</th><td th:text="${employe.matricule}"></td></tr>
+                        <tr><th>Poste</th><td th:text="${employe.poste}"></td></tr>
+                        <tr><th>Téléphone</th><td th:text="${employe.telephone}"></td></tr>
+                        <tr><th>Adresse</th><td th:text="${employe.adresse}"></td></tr>
+
+                        <tr>
+                            <th>Salaire</th>
+                            <td th:text="|${employe.salaire} €|"></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div class="col-12 col-md-6">
+            <!-- contenu optionnel -->
+        </div>
+
+    </div>
+
+</th:block>
+</html>

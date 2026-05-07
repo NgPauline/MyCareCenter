@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Équipement', 'Formulaire équipement', ~{::section})}">
+
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Équipement introuvable.</span>
+            <span th:case="'upload'">Erreur lors du téléversement de l’image.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- ERREUR TYPE PAR CHAMBRE -->
+    <div th:if="${errorTypeChambre}" class="alert alert-warning mb-3"
+         th:text="${errorTypeChambre}"></div>
+
+
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier l’équipement' : 'Ajouter un équipement'"></h2>
+        <div></div>
+    </div>
+
+    <!-- FORMULAIRE -->
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+          th:action="@{${submitUrl}}"
+          th:object="${equipement}"
+          method="post"
+          enctype="multipart/form-data"
+          class="form-card">
+
+        <div class="form-grid">
+
+            <!-- TYPE D'ÉQUIPEMENT -->
+            <div>
+                <label>Type d’équipement</label>
+                <select th:field="*{type}" class="form-control">
+                    <option th:each="t : ${types}"
+                            th:value="${t.id}"
+                            th:text="${t.nom}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- ÉTAT -->
+            <div>
+                <label>État</label>
+                <select th:field="*{etat}" class="form-control">
+                    <option value="BON">Bon</option>
+                    <option value="MOYEN">Moyen</option>
+                    <option value="MAUVAIS">Mauvais</option>
+                </select>
+            </div>
+
+            <!-- CHAMBRE -->
+            <div>
+                <label>Chambre</label>
+                <select th:field="*{chambre.idChambre}" class="form-control">
+                    <option th:each="c : ${chambres}"
+                            th:value="${c.idChambre}"
+                            th:text="'Chambre ' + ${c.numero}">
+                    </option>
+                </select>
+                <div class="error" th:errors="*{chambre}"></div>
+            </div>
+
+            <!-- PHOTO -->
+            <div>
+                <label>Photo</label>
+                <input type="file" name="photoFile" class="form-control">
+
+                    <div th:if="${equipement.photoPath != null}" class="mt-2">
+                        <img th:src="@{|/uploads/equipements/${equipement.photoPath}|}">
+                    </div>
+
+            </div>
+
+        </div>
+
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/equipements}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

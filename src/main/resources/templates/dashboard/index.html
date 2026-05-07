@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body th:replace="~{layout/base :: layout('Dashboard', 'Tableau de bord', ~{::content})}">
+<section th:fragment="content">
+
+  <div class="kpi-bar">
+
+    <div class="kpi-item"
+         sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')">
+      <span class="kpi-value" th:text="${nbResidents} ?: 0">0</span>
+      <span class="kpi-label">Résidents</span>
+    </div>
+
+    <div class="kpi-item"
+         sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
+      <span class="kpi-value" th:text="${nbEmployes} ?: 0">0</span>
+      <span class="kpi-label">Employés</span>
+    </div>
+
+    <div class="kpi-item kpi-warning"
+         sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')">
+      <span class="kpi-value" th:text="${nbFacturesEnAttente} ?: 0">0</span>
+      <span class="kpi-label">Factures en attente</span>
+    </div>
+
+    <div class="kpi-item kpi-success"
+         sec:authorize="hasAnyRole('DIRECTEUR','EDUCATEUR','SOIGNANT')">
+      <span class="kpi-value" th:text="${nbActivitesDuJour} ?: 0">0</span>
+      <span class="kpi-label">Activités aujourd'hui</span>
+    </div>
+
+  </div>
+
+  <div class="dash-grid">
+
+    <div class="card chart-card"
+         sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')">
+      <div class="card-header">
+        <h3>Factures — 6 derniers mois</h3>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#C9973A"></span>Total</span>
+          <span><span class="legend-dot" style="background:#22c55e"></span>Payées</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chartFactures"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-side">
+
+      <div class="card chart-card"
+           sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')">
+        <div class="card-header">
+          <h3>Résidents — évolution</h3>
+          <strong th:text="${nbResidents} ?: 0" class="chart-big-num">0</strong>
+        </div>
+        <div class="card-body">
+          <div class="chart-wrap-sm">
+            <canvas id="chartResidents"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card equip-card"
+           sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
+        <div class="card-header">
+          <h3>Équipements en chambre</h3>
+        </div>
+        <div class="card-body equip-body">
+
+          <div class="equip-gauge">
+            <svg viewBox="0 0 36 36">
+              <path class="gauge-track"
+                    d="M18 2.0845 a15.9155 15.9155 0 0 1 0 31.831 a15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="gauge-fill"
+                    th:attr="stroke-dasharray=${nbEquipementsTotal > 0}
+                        ? ${#numbers.formatDecimal(nbEquipementsEnChambre * 100.0 / nbEquipementsTotal, 1, 'POINT', 0, 'POINT')} + ' 100'
+                        : '0 100'"
+                    d="M18 2.0845 a15.9155 15.9155 0 0 1 0 31.831 a15.9155 15.9155 0 0 1 0 -31.831"
+                    transform="rotate(-90 18 18)"/>
+              <text x="18" y="21" class="gauge-text"
+                    th:text="${nbEquipementsEnChambre} + '/' + ${nbEquipementsTotal}">0/0</text>
+            </svg>
+          </div>
+
+          <div class="equip-info">
+            <span class="equip-main"
+                  th:text="${nbEquipementsEnChambre} + ' assignés'">0 assignés</span>
+            <span class="equip-sub"
+                  th:text="${nbEquipementsTotal - nbEquipementsEnChambre} + ' non assignés'">0 non assignés</span>
+            <a th:href="@{/equipements}" class="btn-small gold" style="margin-top:.5rem">Gérer</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.dashboardData = {
+      labels:           /*[[${chartLabels}]]*/    [],
+      facturesMontants: /*[[${facturesMontants}]]*/ [],
+      facturesPayees:   /*[[${facturesPayees}]]*/   [],
+      residentsData:    /*[[${residentsData}]]*/    []
+    };
+    /*]]>*/
+  </script>
+
+</section>
+</body>
+</html>

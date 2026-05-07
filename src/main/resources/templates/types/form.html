@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Type d\'équipement', '', ~{::section})}">
+
+<section th:fragment="section">
+
+    <a href="javascript:history.back()" class="back-arrow">← Retour</a>
+
+    <h2 th:text="${isEdit} ? 'Modifier un type' : 'Nouveau type'"></h2>
+
+    <form th:action="@{${submitUrl}}" th:object="${typeEquipement}" method="post"
+          enctype="multipart/form-data" class="mt-4">
+
+        <!-- NOM -->
+        <div class="form-group">
+            <label>Nom</label>
+            <input type="text" th:field="*{nom}" class="form-control" required>
+        </div>
+
+        <!-- QUANTITÉ -->
+        <div class="form-group mt-3">
+            <label>Quantité totale</label>
+            <input type="number" th:field="*{quantiteTotale}" class="form-control" min="1" required>
+        </div>
+
+        <!-- PHOTO -->
+        <div class="form-group mt-3">
+            <label>Photo</label>
+            <input type="file" name="photoFile" class="form-control-file">
+
+            <!-- APERÇU PHOTO EXISTANTE -->
+            <div th:if="${typeEquipement.photoPath != null}" class="mt-2">
+                <img th:src="@{|/uploads/types/${typeEquipement.photoPath}|}"
+                     alt="Photo actuelle"
+                     style="width:120px;height:120px;object-fit:cover;border-radius:8px;">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">
+            Enregistrer
+        </button>
+
+    </form>
+
+</section>
+</html>

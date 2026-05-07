@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Chambre', 'Formulaire chambre', ~{::section})}">
+
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        Une erreur est survenue.
+    </div>
+
+    <!-- HEADER -->
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier la chambre' : 'Ajouter une chambre'"></h2>
+        <div></div>
+    </div>
+
+    <!-- FORMULAIRE -->
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+          th:action="@{${submitUrl}}" th:object="${chambre}"
+          method="post" class="form-card">
+
+          <input type="hidden" th:if="${isEdit}" th:field="*{idChambre}">
+
+
+        <div class="form-grid">
+
+            <!-- Type -->
+            <div>
+                <label>Type</label>
+                <input type="text" th:field="*{type}" class="form-control">
+                <div class="error" th:errors="*{type}"></div>
+            </div>
+
+            <!-- Étage -->
+            <div>
+                <label>Étage</label>
+                <input type="number" th:field="*{etage}" class="form-control">
+                <div class="error" th:errors="*{etage}"></div>
+            </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/chambres}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

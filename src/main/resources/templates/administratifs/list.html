@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Administratifs', '', ~{::section})}">
+
+<section th:fragment="section">
+
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'planning'">Impossible de supprimer cet administratif : il est responsable d’un planning.</span>
+            <span th:case="'acces'">Accès refusé.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Administratifs
+
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarAdministratifs"
+                    title="Rechercher un administratif">
+                <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+            </button>
+        </h2>
+
+        <a sec:authorize="hasRole('DIRECTEUR')"
+           th:href="@{/administratifs/new}"
+           class="btn-circle"
+           title="Ajouter un administratif">
+            <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarAdministratifs" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit" title="Lancer la recherche">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU -->
+    <div class="card mt-3">
+        <div class="table-responsive"> 
+
+        <table class="table-modern">
+
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Matricule</th>
+                    <th>Fonction</th>
+                    <th>Téléphone</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="a : ${administratifs}">
+                    <td th:text="${a.nom + ' ' + a.prenom}"></td>
+                    <td th:text="${a.matricule}"></td>
+                    <td th:text="${a.fonction}"></td>
+                    <td th:text="${a.telephone}"></td>
+
+                    <td class="text-right">
+
+                        <!-- Voir -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                           th:href="@{|/administratifs/${a.idPersonne}|}"
+                           class="btn-circle mr-2"
+                           title="Voir le profil">
+                            <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
+                        </a>
+
+                        <!-- Modifier -->
+                        <a sec:authorize="hasRole('DIRECTEUR')"
+                           th:href="@{|/administratifs/${a.idPersonne}/edit|}"
+                           class="btn-circle mr-2"
+                           title="Modifier cet administratif">
+                            <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
+                        </a>
+
+                        <!-- Supprimer -->
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{|/administratifs/${a.idPersonne}/delete|}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cet administratif ?');">
+                            <button class="btn-circle" title="Supprimer cet administratif">
+                                <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(administratifs)}">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Aucun administratif trouvé.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+
+</>
+</html>

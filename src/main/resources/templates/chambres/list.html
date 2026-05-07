@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Chambres', '', ~{::section})}">
+
+<section th:fragment="section">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'occupee'">Impossible de supprimer cette chambre : elle est occupée.</span>
+            <span th:case="'acces'">Accès refusé.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Chambres
+
+            <!-- Bouton recherche -->
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarChambres"
+                    title="Rechercher une chambre">
+                <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+            </button>
+        </h2>
+
+        <!-- Ajouter -->
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+           th:href="@{/chambres/new}"
+           class="btn-circle"
+           title="Ajouter une chambre">
+            <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarChambres" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher une chambre..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit" title="Lancer la recherche">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU -->
+    <div class="card mt-3">
+        <div class="table-responsive"> 
+        <table class="table-modern">
+
+            <thead>
+                <tr>
+                    <th>Numéro</th>
+                    <th>Type</th>
+                    <th>Étage</th>
+                    <th>Occupant</th>
+                    <th>Disponibilité</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="c : ${chambres}">
+                    <td th:text="${c.numero}"></td>
+                    <td th:text="${c.type}"></td>
+                    <td th:text="${c.etage}"></td>
+
+                    <!-- Occupant -->
+                    <td th:text="${c.occupant != null ? c.occupant.nom + ' ' + c.occupant.prenom : 'Aucun'}"></td>
+
+                    <!-- Disponibilité -->
+                    <td>
+                        <span th:if="${c.occupant == null}" class="badge badge-success">
+                            Disponible
+                        </span>
+                        <span th:if="${c.occupant != null}" class="badge badge-danger">
+                            Occupée
+                        </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="text-right">
+
+                        <!-- Voir -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                           th:href="@{|/chambres/${c.idChambre}|}"
+                           class="btn-circle mr-2"
+                           title="Voir la chambre">
+                            <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
+                        </a>
+
+                        <!-- Modifier -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                           th:href="@{|/chambres/${c.idChambre}/edit|}"
+                           class="btn-circle mr-2"
+                           title="Modifier cette chambre">
+                            <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
+                        </a>
+
+                        <!-- Supprimer -->
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{|/chambres/${c.idChambre}/delete|}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cette chambre ?');">
+                            <button class="btn-circle" title="Supprimer cette chambre">
+                                <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(chambres)}">
+                    <td colspan="6" class="text-center text-muted py-3">
+                        Aucune chambre trouvée.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+<div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
+    <nav>
+        <ul class="pagination">
+
+            <li class="page-item" th:classappend="${currentPage == 0 ? ' disabled' : ''}">
+                <a class="page-link" th:href="@{/chambres(page=${currentPage - 1}, q=${q})}">&laquo;</a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:if="${i >= currentPage - 2 and i <= currentPage + 2}"
+                th:classappend="${i == currentPage ? ' active' : ''}">
+                <a class="page-link"
+                   th:href="@{/chambres(page=${i}, q=${q})}"
+                   th:text="${i + 1}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? ' disabled' : ''}">
+                <a class="page-link" th:href="@{/chambres(page=${currentPage + 1}, q=${q})}">&raquo;</a>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+
+</section>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Équipements chambre', 'Équipements de la chambre', ~{::section})}">
+
+<section th:fragment="section"
+         xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+         sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Équipement introuvable.</span>
+            <span th:case="'delete'">Impossible de supprimer cet équipement.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0">
+            Équipements de la chambre <span th:text="${idChambre}"></span>
+        </h2>
+    </div>
+
+    <!-- GRILLE RESPONSIVE -->
+    <div class="equipements-grid mt-4">
+
+        <div class="equipement-card" th:each="e : ${equipements}">
+
+            <!-- IMAGE -->
+            <div class="equipement-photo" onclick="showImage(this.querySelector('img').src)">
+                <img th:src="${e.photoPath != null} ?
+                             @{|/equipements-img/equipements/${e.photoPath}|} :
+                             @{/images/default-equipement.png}"
+                     alt="Photo équipement">
+            </div>
+
+            <!-- NOM DU TYPE -->
+            <h3 class="equipement-nom" th:text="${e.type.nom}"></h3>
+
+            <!-- ÉTAT -->
+            <span class="badge"
+                  th:classappend="${e.etat == 'BON' ? ' badge-success' :
+                                  e.etat == 'MOYEN' ? ' badge-warning' :
+                                                      ' badge-danger'}"
+                  th:text="${e.etat}">
+            </span>
+
+            <!-- CHAMBRE -->
+            <p class="equipement-chambre">
+                Chambre n° <span th:text="${idChambre}"></span>
+            </p>
+
+            <!-- ACTIONS -->
+            <div class="equipement-actions d-flex justify-content-between mt-2">
+
+                <!-- Modifier -->
+                <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                   th:href="@{|/equipements/${e.idEquipement}/edit|}"
+                   class="btn-circle">
+                    <img th:src="@{/images/modifier.png}" class="icon-20">
+                </a>
+
+                <!-- Supprimer -->
+                <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                      th:action="@{|/equipements/${e.idEquipement}/delete|}"
+                      method="post"
+                      onsubmit="return confirm('Supprimer cet équipement ?');">
+                    <button type="submit" class="btn-circle">
+                        <img th:src="@{/images/supprimer.png}" class="icon-20">
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- AUCUN ÉQUIPEMENT -->
+        <div th:if="${#lists.isEmpty(equipements)}"
+             class="text-center text-muted py-4 col-12">
+            Aucun équipement dans cette chambre.
+        </div>
+
+    </div>
+
+</section>
+</html>

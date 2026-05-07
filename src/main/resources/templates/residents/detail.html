@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Détails résident', 'Informations générales', ~{::section})}">
+
+<section th:fragment="section"
+         xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'chambre'">Impossible de supprimer ce résident : il occupe une chambre.</span>
+            <span th:case="'impaye'">Impossible de supprimer ce résident : des factures impayées existent.</span>
+            <span th:case="'consultations'">Impossible de supprimer ce résident : des consultations sont associées.</span>
+            <span th:case="'traitements'">Impossible de supprimer ce résident : des traitements sont associés.</span>
+            <span th:case="'activites'">Impossible de supprimer ce résident : des activités sont associées.</span>
+            <span th:case="'introuvable'">Résident introuvable.</span>
+            <span th:case="'chambreId'">Chambre introuvable.</span>
+            <span th:case="'familleId'">Famille introuvable.</span>
+        </span>
+    </div>
+
+    <!-- BARRE HAUTE -->
+    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+
+
+        <div class="detail-actions d-flex gap-3">
+
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+               th:href="@{/residents/{id}/edit(id=${resident.idPersonne})}"
+               class="btn-circle">
+                <img src="/images/modifier.png" class="icon-26">
+            </a>
+
+            <form sec:authorize="hasRole('DIRECTEUR')"
+                  th:action="@{/residents/{id}/delete(id=${resident.idPersonne})}"
+                  method="post"
+                  onsubmit="return confirm('Supprimer ce résident ?');">
+                <button class="btn-circle">
+                    <img src="/images/supprimer.png" class="icon-26">
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- HEADER CENTRÉ -->
+    <div class="resident-header text-center">
+
+        <h2 class="resident-name" th:text="|${resident.nom} ${resident.prenom}|"></h2>
+
+        <!-- BOUTONS HORIZONTAUX -->
+        <div class="resident-links">
+
+            <a th:href="@{/familles(resident=${resident.idPersonne})}" class="btn-link-gold">
+                Familles
+            </a>
+
+            <a th:href="@{/activites(resident=${resident.idPersonne})}" class="btn-link-gold">
+                Activités
+            </a>
+
+            <a th:href="@{/factures(resident=${resident.idPersonne})}" class="btn-link-gold">
+                Factures
+            </a>
+
+            <a th:href="@{/paiements(resident=${resident.idPersonne})}" class="btn-link-gold">
+                Paiements
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- CONTENU EN DEUX COLONNES -->
+    <div class="row mt-4">
+
+        <!-- COLONNE GAUCHE -->
+        <div class="col-12 col-md-6">
+            <div class="card detail-card p-3">
+                <div class="table-responsive">
+
+                    <table class="detail-table">
+                        <tbody>
+
+                        <tr><th>Nom</th><td th:text="${resident.nom}"></td></tr>
+                        <tr><th>Prénom</th><td th:text="${resident.prenom}"></td></tr>
+
+                        <tr>
+                            <th>Date de naissance</th>
+                            <td th:text="${#temporals.format(resident.dateNaissance,'dd/MM/yyyy')}"></td>
+                        </tr>
+
+                        <tr><th>Type handicap</th><td th:text="${resident.typeHandicap}"></td></tr>
+                        <tr><th>Niveau autonomie</th><td th:text="${resident.niveauAutonomie}"></td></tr>
+
+                        <tr>
+                            <th>Date admission</th>
+                            <td th:text="${#temporals.format(resident.dateAdmission,'dd/MM/yyyy')}"></td>
+                        </tr>
+
+                        <tr><th>Statut</th><td th:text="${resident.statut}"></td></tr>
+
+                        <tr>
+                            <th>Chambre</th>
+                            <td>
+                                <a th:if="${resident.chambre != null}"
+                                   th:href="@{/chambres/{id}(id=${resident.chambre.idChambre})}"
+                                   class="btn-small gold">
+                                    Chambre <span th:text="${resident.chambre.numero}"></span>
+                                </a>
+                                <span th:if="${resident.chambre == null}" class="text-muted">Aucune</span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Familles</th>
+                            <td>
+                                <div class="participants-container">
+                                    <div th:each="f : ${resident.familles}"
+                                         class="badge badge-light d-inline-flex align-items-center p-2">
+                                        <span th:text="|${f.nom} ${f.prenom}|"></span>
+                                    </div>
+                                </div>
+                                <span th:if="${#lists.isEmpty(resident.familles)}" class="text-muted">Aucune</span>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div class="col-12 col-md-6"></div>
+
+    </div>
+
+</section>
+</html>
+

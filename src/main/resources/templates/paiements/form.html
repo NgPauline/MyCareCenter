@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Paiement', 'Formulaire paiement', ~{::section})}">
+
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'montant'">Le montant dépasse le solde restant de la facture.</span>
+            <span th:case="'introuvable'">Paiement introuvable.</span>
+            <span th:case="'facture'">Facture introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier le paiement' : 'Ajouter un paiement'"></h2>
+        <div></div>
+    </div>
+
+    <form sec:authorize="hasRole('FINANCE')"
+          th:action="@{${submitUrl}}"
+          th:object="${paiement}"
+          method="post"
+          class="form-card">
+
+        <input type="hidden" th:if="${isEdit}" th:field="*{idPaiement}">
+
+        <div class="form-grid">
+
+            <!-- FACTURE -->
+            <div>
+                <label>Facture</label>
+
+                <!-- Mode édition ou facture imposée -->
+                <div th:if="${factureId != null}">
+                    <input type="hidden" name="factureId" th:value="${factureId}">
+                    <input type="text"
+                           class="form-control"
+                           th:value="|Facture ${paiement.facture.idFacture} — ${paiement.facture.resident.nom} ${paiement.facture.resident.prenom}|"
+                           readonly>
+                </div>
+
+                <!-- Mode création -->
+                <select th:if="${factureId == null}"
+                        name="factureId"
+                        class="form-select">
+                    <option th:each="f : ${factures}"
+                            th:value="${f.idFacture}"
+                            th:selected="${f.idFacture == factureId}"
+                            th:text="|Facture ${f.idFacture} — ${f.resident.nom} ${f.resident.prenom}|">
+                    </option>
+                </select>
+            </div>
+
+            <!-- MONTANT -->
+            <div>
+                <label>Montant (€)</label>
+                <input type="number" step="0.01" th:field="*{montant}" class="form-control">
+                <div class="error" th:errors="*{montant}"></div>
+            </div>
+
+            <!-- DATE -->
+            <div>
+                <label>Date du paiement</label>
+                <input type="date" th:field="*{datePaiement}" class="form-control">
+                <div class="error" th:errors="*{datePaiement}"></div>
+            </div>
+
+            <!-- MODE -->
+            <div>
+                <label>Mode de paiement</label>
+                <select th:field="*{mode}" class="form-control">
+                    <option value="CB">Carte bancaire</option>
+                    <option value="VIREMENT">Virement</option>
+                    <option value="ESPECES">Espèces</option>
+                </select>
+                <div class="error" th:errors="*{mode}"></div>
+            </div>
+
+        </div>
+
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/paiements}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

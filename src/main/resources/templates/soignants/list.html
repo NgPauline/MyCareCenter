@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Soignants', '', ~{::section})}">
+
+<section th:fragment="content">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'consultations'">Impossible de supprimer ce soignant : des consultations sont associées.</span>
+            <span th:case="'activites'">Impossible de supprimer ce soignant : des activités sont associées.</span>
+            <span th:case="'introuvable'">Soignant introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Soignants
+
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarSoignants"
+                    title="Rechercher un soignant">
+                <img th:src="@{/images/rechercher.png}" class="icon-22">
+            </button>
+        </h2>
+
+        <a sec:authorize="hasRole('DIRECTEUR')"
+           th:href="@{/soignants/new}"
+           class="btn-circle"
+           title="Ajouter un soignant">
+            <img th:src="@{/images/ajouter.png}" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarSoignants" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher un soignant..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit">
+                    <img th:src="@{/images/rechercher.png}" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU PREMIUM -->
+    <div class="card mt-3">
+        <div class="table-responsive"> 
+
+        <table class="table-modern">
+
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Matricule</th>
+                    <th>Diplôme</th>
+                    <th>Spécialité</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="s : ${soignants}">
+                    <td th:text="${s.nom + ' ' + s.prenom}"></td>
+                    <td th:text="${s.matricule}"></td>
+                    <td th:text="${s.diplome}"></td>
+                    <td th:text="${s.specialite}"></td>
+
+                    <td class="text-right">
+
+                        <!-- Voir -->
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                           th:href="@{|/soignants/${s.idPersonne}|}"
+                           class="btn-circle mr-2"
+                           title="Voir le soignant">
+                            <img th:src="@{/images/voir.png}" class="icon-24">
+                        </a>
+
+                        <!-- Modifier -->
+                        <a sec:authorize="hasRole('DIRECTEUR')"
+                           th:href="@{|/soignants/${s.idPersonne}/edit|}"
+                           class="btn-circle mr-2"
+                           title="Modifier ce soignant">
+                            <img th:src="@{/images/modifier.png}" class="icon-24">
+                        </a>
+
+                        <!-- Supprimer -->
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{|/soignants/${s.idPersonne}/delete|}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer ce soignant ?');">
+                            <button class="btn-circle" title="Supprimer ce soignant">
+                                <img th:src="@{/images/supprimer.png}" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(soignants)}">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Aucun soignant trouvé.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+</section>
+</html>

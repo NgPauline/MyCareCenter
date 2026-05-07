@@ -1,0 +1,56 @@
+/* ============================
+   CALENDAR COLORS (DYNAMIQUE)
+   ============================ */
+
+/* Style générique */
+.fc-event {
+    border-radius: var(--radius);
+    padding: 4px 6px;
+    font-size: 0.85rem;
+    border: none;
+}
+
+/* Pastille couleur premium */
+.fc-event-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fc-event-title::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* ============================
+   LÉGENDE CALENDRIER
+   ============================ */
+
+.legend-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 8px 4px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card-bg);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    font-size: 0.9rem;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+}
+

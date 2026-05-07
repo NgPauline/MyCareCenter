@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Planning', 'Formulaire planning', ~{::section})}">
+
+<section th:fragment="content" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Planning introuvable.</span>
+            <span th:case="'responsable'">Responsable introuvable.</span>
+            <span th:case="'activite'">Activité introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <div class="form-header d-flex justify-content-between align-items-center">
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier le créneau' : 'Ajouter un créneau'"></h2>
+        <div></div>
+    </div>
+
+    <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR')"
+          th:action="@{${submitUrl}}" th:object="${planning}"
+          method="post" class="form-card">
+
+        <div class="form-grid">
+
+            <div>
+                <label>Date</label>
+                <input type="date" th:field="*{date}" class="form-control">
+                <div class="error" th:errors="*{date}"></div>
+            </div>
+
+            <div>
+                <label>Heure début</label>
+                <input type="time" th:field="*{heureDebut}" class="form-control">
+                <div class="error" th:errors="*{heureDebut}"></div>
+            </div>
+
+            <div>
+                <label>Heure fin</label>
+                <input type="time" th:field="*{heureFin}" class="form-control">
+                <div class="error" th:errors="*{heureFin}"></div>
+            <!--    <div class="error" th:if="${#fields.hasErrors('heureValide')}" th:errors="*{heureValide}"></div>  -->
+            </div>
+
+            <div>
+                <label>Employé</label>
+                <select name="employeId" class="form-control">
+                    <option th:each="e : ${employes}"
+                            th:value="${e.idPersonne}"
+                            th:text="${e.nom + ' ' + e.prenom}">
+                    </option>
+                </select>
+
+           <!--     <div class="error" th:if="${#fields.hasErrors('responsable')}" th:errors="*{responsable}"></div>  -->
+           <!--     <div class="error" th:if="${#fields.hasErrors('responsableValide')}" th:errors="*{responsableValide}"></div> -->
+
+            </div>
+
+         <!-- ACTIVITÉS -->
+        <div>
+            <label>Activités disponibles</label>
+
+            <div th:if="${#lists.isEmpty(activites)}" class="alert alert-warning mt-2">
+                Aucune activité disponible. 
+                <a th:href="@{/activites/new}">Créer une activité d'abord</a>
+            </div>
+
+            <div th:each="a : ${activites}" class="form-check mb-2">
+                <input type="checkbox"
+                name="activiteIds"
+                th:value="${a.idActivite}"
+                th:checked="${planning.activites != null and planning.activites.contains(a)}"
+                class="form-check-input activite-checkbox"
+                th:attr="data-date=${a.date},
+                            data-heure-debut=${a.heureDebut},
+                            data-heure-fin=${a.heureFin}">
+                <label>
+                    <!-- Nom + type -->
+                    <strong th:text="${a.nom}"></strong>
+                    <span class="text-muted" th:text="'(' + ${a.type} + ')'"></span>
+                    —
+                    <!-- Date -->
+                    <span th:text="${#temporals.format(a.date, 'dd/MM/yyyy')}"></span>
+                    —
+                    <!-- Heure début → fin -->
+                    <span th:text="${a.heureDebut} + ' → ' + ${a.heureFin}"></span>
+                    —
+                    <!-- Lieu -->
+                    <span th:text="${a.lieu}"></span>
+                    —
+                    <!-- Responsable soignant -->
+                    <span th:if="${a.responsable != null}"
+                        th:text="'Dr. ' + ${a.responsable.nom} + ' ' + ${a.responsable.prenom}">
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        </div>
+
+        <div class="form-actions mt-3">
+            <button class="btn-gold">Enregistrer</button>
+            <a th:href="@{/plannings}" class="btn-ghost">Annuler</a>
+        </div>
+
+    </form>
+
+</section>
+</html>

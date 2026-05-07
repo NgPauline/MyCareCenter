@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Détails activité', 'Informations générales', ~{::section})}">
+
+<section th:fragment="section"
+         xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE D’ERREUR GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'acces'">Accès refusé.</span>
+            <span th:case="'participant'">Impossible de désinscrire ce participant.</span>
+            <span th:case="'passee'">Cette activité est déjà passée : action impossible.</span>
+            <span th:case="'inscription'">Impossible d’inscrire ce résident à cette activité.</span>
+            <span th:case="'desinscription'">Impossible de désinscrire ce résident.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- BARRE HAUTE -->
+    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+
+        <div class="detail-actions d-flex gap-3">
+
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+               th:href="@{/activites/{id}/edit(id=${activite.idActivite})}"
+               class="btn-circle">
+                <img src="/images/modifier.png" class="icon-24">
+            </a>
+
+            <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                  th:action="@{/activites/{id}/delete(id=${activite.idActivite})}"
+                  method="post"
+                  onsubmit="return confirm('Supprimer cette activité ?');">
+                <button class="btn-circle">
+                    <img src="/images/supprimer.png" class="icon-24">
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- NOM CENTRÉ -->
+    <div class="activity-header text-center mb-3">
+        <h2 class="activity-name" th:text="${activite.nom}"></h2>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="row mt-3">
+
+        <!-- COLONNE GAUCHE -->
+        <div class="col-12 col-md-6">
+
+            <!-- INFORMATIONS -->
+            <div class="card detail-card p-3 mb-4">
+
+                <div class="table-responsive">
+                    <table class="detail-table">
+                        <tbody>
+
+                        <tr><th>Nom</th><td th:text="${activite.nom}"></td></tr>
+                        <tr><th>Type</th><td th:text="${activite.type}"></td></tr>
+
+                        <tr>
+                            <th>Date</th>
+                            <td th:text="${#temporals.format(activite.date,'dd/MM/yyyy')}"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Heure de début</th>
+                            <td th:text="${activite.heureDebut}"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Heure de fin</th>
+                            <td th:text="${activite.heureFin}"></td>
+                        </tr>
+
+                        <tr><th>Lieu</th><td th:text="${activite.lieu}"></td></tr>
+                        <tr><th>Durée (min)</th><td th:text="${activite.duree}"></td></tr>
+
+                        <tr>
+                            <th>Responsable</th>
+                            <td th:text="${activite.responsable != null ? activite.responsable.nom + ' ' + activite.responsable.prenom : 'Aucun'}"></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PARTICIPANTS -->
+            <div class="card detail-card p-3">
+
+                <h4 class="mb-3">Participants</h4>
+
+                <div class="participants-container mb-3">
+
+                    <div th:each="p : ${activite.participants}"
+                         class="badge badge-light d-inline-flex align-items-center p-2 mr-2 mb-2">
+
+                        <span th:text="|${p.nom} ${p.prenom}|"></span>
+
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                              th:action="@{/activites/{id}/desinscrire(id=${activite.idActivite})}"
+                              method="post"
+                              class="inline-form ml-2">
+
+                            <input type="hidden" name="residentId" th:value="${p.idPersonne}">
+                            <button class="btn-circle">
+                                <img src="/images/supprimer.png" class="icon-20">
+                            </button>
+
+                        </form>
+                    </div>
+
+                </div>
+
+                <div th:if="${#lists.isEmpty(activite.participants)}" class="text-muted mb-3">
+                    Aucun participant.
+                </div>
+
+                <!-- INSCRIPTION -->
+                <div sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+
+                    <h4 class="mb-2">Inscrire un résident</h4>
+
+                    <form th:action="@{/activites/{id}/inscrire(id=${activite.idActivite})}"
+                          method="post"
+                          class="inline-form">
+
+                        <select name="residentId" class="form-control d-inline-block w-auto">
+                            <option th:each="r : ${residents}"
+                                    th:value="${r.idPersonne}"
+                                    th:text="|${r.nom} ${r.prenom}|">
+                            </option>
+                        </select>
+
+                        <button class="btn-circle ml-2">
+                            <img src="/images/ok.png" class="icon-24">
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div class="col-12 col-md-6"></div>
+
+    </div>
+
+</section>
+</html>

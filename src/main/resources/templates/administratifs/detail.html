@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Détails administratif', 'Détails du personnel administratif', ~{::section})}">
+
+<th:block th:fragment="section"
+          xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'planning'">Impossible de supprimer cet administratif : il est responsable d’un planning.</span>
+            <span th:case="'acces'">Accès refusé.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+
+    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+
+        <!-- Nom complet -->
+        <h2 class="m-0" th:text="|${administratif.nom} ${administratif.prenom}|"></h2>
+
+        <!-- Actions -->
+        <div class="detail-actions d-flex gap-2">
+
+            <!-- Modifier -->
+            <a sec:authorize="hasRole('DIRECTEUR')"
+               th:href="@{|/administratifs/${administratif.idPersonne}/edit|}"
+               class="btn-circle">
+                <img src="/images/modifier.png" class="icon-24" alt="Modifier">
+            </a>
+
+            <!-- Supprimer -->
+            <form sec:authorize="hasRole('DIRECTEUR')"
+                  th:action="@{|/administratifs/${administratif.idPersonne}/delete|}"
+                  method="post"
+                  onsubmit="return confirm('Supprimer cet administratif ?');">
+                <button class="btn-circle">
+                    <img src="/images/supprimer.png" class="icon-24" alt="Supprimer">
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="card detail-card mt-3">
+
+         <div class="table-responsive">
+
+        <table class="detail-table">
+            <tbody>
+
+                <tr><th>Nom</th><td th:text="${administratif.nom}"></td></tr>
+                <tr><th>Prénom</th><td th:text="${administratif.prenom}"></td></tr>
+
+                <tr>
+                    <th>Date de naissance</th>
+                    <td th:text="${#temporals.format(administratif.dateNaissance,'dd/MM/yyyy')}"></td>
+                </tr>
+
+                <tr><th>Matricule</th><td th:text="${administratif.matricule}"></td></tr>
+                <tr><th>Téléphone</th><td th:text="${administratif.telephone}"></td></tr>
+                <tr><th>Adresse</th><td th:text="${administratif.adresse}"></td></tr>
+                <tr><th>Poste</th><td th:text="${administratif.poste}"></td></tr>
+
+                <tr>
+                    <th>Salaire</th>
+                    <td th:text="|${administratif.salaire} €|"></td>
+                </tr>
+
+                <tr><th>Fonction</th><td th:text="${administratif.fonction}"></td></tr>
+
+            </tbody>
+        </table>
+         </div>
+    </div>
+
+</th:block>
+</html>

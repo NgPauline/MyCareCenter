@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Équipements', '', ~{::section})}">
+
+<section th:fragment="section">
+    
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Équipement introuvable.</span>
+            <span th:case="'delete'">Impossible de supprimer cet équipement.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Équipements
+
+            <button class="icon-btn ml-2"
+                    data-search-toggle="searchBarEquipements"
+                    title="Rechercher un équipement">
+                <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+            </button>
+        </h2>
+
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+           th:href="@{/equipements/new}"
+           class="icon-btn"
+           title="Ajouter un équipement">
+            <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarEquipements" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher un équipement..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="submit">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- GRILLE -->
+    <div class="equipements-grid mt-4">
+
+        <div class="equipement-card" th:each="e : ${equipements}">
+
+            <!-- IMAGE CLIQUABLE -->
+            <div class="equipement-photo" onclick="showImage(this.querySelector('img').src)">
+                <img th:src="${e.photoPath != null} ?
+                            @{|/equipements-img/equipements/${e.photoPath}|} :
+                            @{/images/default-equipement.png}"
+                     alt="Photo équipement">
+            </div>
+
+            <!-- NOM DU TYPE (au lieu de e.nom) -->
+            <h3 class="equipement-nom" th:text="${e.type.nom}"></h3>
+
+            <!-- ÉTAT -->
+            <span class="badge"
+                  th:classappend="${e.etat == 'BON' ? ' badge-success' :
+                                  e.etat == 'MOYEN' ? ' badge-warning' :
+                                                      ' badge-danger'}"
+                  th:text="${e.etat}">
+            </span>
+
+            <!-- CHAMBRE -->
+            <p class="equipement-chambre">
+                <span th:if="${e.chambre != null}">
+                    Chambre n° <span th:text="${e.chambre.idChambre}"></span>
+                </span>
+                <span th:if="${e.chambre == null}" class="text-muted">
+                    Stock
+                </span>
+            </p>
+
+            <!-- ACTIONS -->
+            <div class="equipement-actions d-flex justify-content-between mt-2">
+
+                <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                   th:href="@{|/equipements/${e.idEquipement}/edit|}"
+                   class="icon-btn-small">
+                    <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-20">
+                </a>
+
+                <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                      th:action="@{|/equipements/${e.idEquipement}/delete|}"
+                      method="post"
+                      onsubmit="return confirm('Supprimer cet équipement ?');">
+                    <button type="submit" class="icon-btn ml-2">
+                        <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-20">
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(equipements)}"
+             class="text-center text-muted py-4 col-12">
+            Aucun équipement trouvé.
+        </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
+        <nav>
+            <ul class="pagination">
+
+                <li class="page-item" th:classappend="${currentPage == 0 ? ' disabled' : ''}">
+                    <a class="page-link" th:href="@{/equipements(page=${currentPage - 1}, q=${q})}">&laquo;</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:if="${i >= currentPage - 2 and i <= currentPage + 2}"
+                    th:classappend="${i == currentPage ? ' active' : ''}">
+                    <a class="page-link"
+                       th:href="@{/equipements(page=${i}, q=${q})}"
+                       th:text="${i + 1}"></a>
+                </li>
+
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? ' disabled' : ''}">
+                    <a class="page-link" th:href="@{/equipements(page=${currentPage + 1}, q=${q})}">&raquo;</a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+
+</section>
+</html>

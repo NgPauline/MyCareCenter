@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<aside class="main-sidebar elevation-4" th:fragment="sidebar">
+
+    <!-- BRAND -->
+<div class="brand-link d-flex align-items-center">
+    <img th:src="@{/images/logo.png}" alt="CareCenter Logo"
+         class="brand-image img-circle elevation-3" style="opacity:.9">
+    <span class="brand-text font-weight-light ml-2">CareCenter</span>
+</div>
+
+
+    <div class="sidebar">
+        <nav class="mt-3 sidebar-nav">
+            <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
+
+                <!-- DASHBOARD -->
+                <li class="nav-item">
+                    <a th:href="@{/dashboard}" class="nav-link"
+                    th:classappend="${activePage=='dashboard'} ? ' active'">
+                        <img th:src="@{/images/icones/dashboard.png}" alt="" class="nav-icon-img">
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                <!-- RÉSIDENTS -->
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')">
+                    <a th:href="@{/residents}" class="nav-link"
+                    th:classappend="${activePage=='residents'} ? ' active'">
+                        <img th:src="@{/images/icones/résident.png}" alt="" class="nav-icon-img">
+                        <p>Résidents</p>
+                    </a>
+                </li>
+
+                <!-- EMPLOYÉS -->
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
+                    <a th:href="@{/employes}" class="nav-link"
+                    th:classappend="${activePage=='employes'} ? ' active'">
+                        <img th:src="@{/images/icones/employe.png}" alt="" class="nav-icon-img">
+                        <p>Employés</p>
+                    </a>
+                </li>
+
+                <!-- CHAMBRES -->
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+                    <a th:href="@{/chambres}" class="nav-link"
+                    th:classappend="${activePage=='chambres'} ? ' active'">
+                        <img th:src="@{/images/icones/chambre.png}" alt="" class="nav-icon-img">
+                        <p>Chambres</p>
+                    </a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+                    <a th:href="@{/types-equipement}" class="nav-link"
+                    th:classappend="${activePage=='types-equipement'} ? ' active'">
+                        <img th:src="@{/images/icones/equipement.png}" alt="" class="nav-icon-img">
+                        <p>Stock équipements</p>
+                    </a>
+                </li>
+
+
+                <!-- ÉQUIPEMENTS -->
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+                    <a th:href="@{/equipements}" class="nav-link"
+                    th:classappend="${activePage=='equipements'} ? ' active'">
+                        <img th:src="@{/images/icones/equipement.png}" alt="" class="nav-icon-img">
+                        <p>Équipements</p>
+                    </a>
+                </li>
+
+                <!-- ACTIVITÉS -->
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR')">
+                    <a th:href="@{/activites}" class="nav-link"
+                    th:classappend="${activePage=='activites'} ? ' active'">
+                        <img th:src="@{/images/icones/activites.png}" alt="" class="nav-icon-img">
+                        <p>Activités</p>
+                    </a>
+                </li>
+
+                <!-- PLANNING -->
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+                    <a th:href="@{/plannings}" class="nav-link"
+                    th:classappend="${activePage=='planning'} ? ' active'">
+                        <img th:src="@{/images/icones/planning.png}" alt="" class="nav-icon-img">
+                        <p>Planning</p>
+                    </a>
+                </li>
+
+                <!-- FACTURES -->
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')">
+                    <a th:href="@{/factures}" class="nav-link"
+                    th:classappend="${activePage=='factures'} ? ' active'">
+                        <img th:src="@{/images/icones/facture.png}" alt="" class="nav-icon-img">
+                        <p>Factures</p>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+
+</aside>
+
+</body>
+</html>

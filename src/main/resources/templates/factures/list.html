@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Factures', '', ~{::section})}">
+
+<section th:fragment="section">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'paiements'">Impossible de supprimer cette facture : des paiements sont associés.</span>
+            <span th:case="'payee'">Impossible de modifier cette facture : elle est déjà payée.</span>
+            <span th:case="'introuvable'">Facture introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Factures
+
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarFactures"
+                    title="Rechercher une facture">
+                <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+            </button>
+        </h2>
+
+        <a sec:authorize="hasRole('FINANCE')"
+           th:href="@{/factures/new}"
+           class="btn-circle"
+           title="Ajouter une facture">
+            <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarFactures" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher une facture..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU -->
+    <div class="card mt-3">
+        <div class="table-responsive">
+
+            <table class="table-modern">
+
+                <thead>
+                <tr>
+                    <th>Résident</th>
+                    <th>Montant</th>
+                    <th>Date émission</th>
+                    <th>Statut</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="f : ${factures}">
+                    <td th:text="${f.resident.nom + ' ' + f.resident.prenom}"></td>
+
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(f.montant, 0, 'NONE', 2, 'POINT')}"></span> €
+                    </td>
+
+                    <td th:text="${f.dateEmission != null ? #temporals.format(f.dateEmission, 'dd/MM/yyyy') : '—'}"></td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${f.statut == 'PAYEE' ? ' badge-success' :
+                                              f.statut == 'PARTIELLE' ? ' badge-warning' :
+                                                                        ' badge-secondary'}"
+                              th:text="${f.statut}">
+                        </span>
+                    </td>
+
+                    <td class="text-right">
+
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','FINANCE')"
+                           th:href="@{/factures/{id}(id=${f.idFacture})}"
+                           class="btn-circle mr-2"
+                           title="Voir la facture">
+                            <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
+                        </a>
+
+                        <a th:href="@{/factures/{id}/pdf(id=${f.idFacture})}"
+                           class="btn-circle mr-2"
+                           title="Télécharger PDF">
+                            <img th:src="@{/images/pdf.png}" alt="PDF" class="icon-24">
+                        </a>
+
+                        <a sec:authorize="hasRole('FINANCE')"
+                           th:href="@{/factures/{id}/edit(id=${f.idFacture})}"
+                           class="btn-circle mr-2"
+                           title="Modifier">
+                            <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
+                        </a>
+
+                        <form sec:authorize="hasRole('DIRECTEUR')"
+                              th:action="@{/factures/{id}/delete(id=${f.idFacture})}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cette facture ?');">
+                            <button class="btn-circle" title="Supprimer">
+                                <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(factures)}">
+                    <td colspan="5" class="text-center text-muted py-3">
+                        Aucune facture trouvée.
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
+        <nav>
+            <ul class="pagination">
+
+                <li class="page-item" th:classappend="${currentPage == 0 ? ' disabled' : ''}">
+                    <a class="page-link" th:href="@{/factures(page=${currentPage - 1}, q=${q})}">&laquo;</a>
+                </li>
+
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:if="${i >= currentPage - 2 and i <= currentPage + 2}"
+                    th:classappend="${i == currentPage ? ' active' : ''}">
+                    <a class="page-link"
+                       th:href="@{/factures(page=${i}, q=${q})}"
+                       th:text="${i + 1}"></a>
+                </li>
+
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? ' disabled' : ''}">
+                    <a class="page-link" th:href="@{/factures(page=${currentPage + 1}, q=${q})}">&raquo;</a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+
+</section>
+</html>

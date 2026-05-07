@@ -1,0 +1,19 @@
+<nav class="main-header navbar navbar-expand navbar-white navbar-light" th:fragment="header">
+
+    <!-- GAUCHE : Slogan -->
+    <div class="navbar-text d-flex flex-column">
+        <span class="header-slogan">CHANGEONS DE REGARD SUR LES AUTRES !</span>
+        <span class="header-subtext">80% des handicaps sont invisibles</span>
+    </div>
+
+    <!-- DROITE : Déconnexion -->
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link text-danger" th:href="@{/logout}">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
+        </li>
+    </ul>
+
+</nav>
+

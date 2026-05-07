@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Activités', '', ~{::section})}">
+
+<section th:fragment="section">
+
+    <!-- MESSAGE D’ERREUR GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'passee'">Impossible de supprimer une activité déjà passée.</span>
+            <span th:case="'acces'">Accès refusé.</span>
+            <span th:case="'inscription'">Impossible d’inscrire ce résident.</span>
+            <span th:case="'desinscription'">Impossible de désinscrire ce résident.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="list-header d-flex justify-content-between align-items-center">
+
+        <h2 class="m-0 d-flex align-items-center">
+            Activités
+
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarActivites"
+                    title="Rechercher une activité">
+                <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
+            </button>
+        </h2>
+
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+           th:href="@{/activites/new}"
+           class="btn-circle"
+           title="Ajouter une activité">
+            <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
+        </a>
+
+    </div>
+
+    <!-- BARRE DE RECHERCHE -->
+    <form id="searchBarActivites" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher une activité..."
+                   th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit">
+                    <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- TABLEAU -->
+    <div class="card mt-3">
+        <div class="table-responsive"> 
+          <table class="table-modern">
+
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>Lieu</th>
+                    <th>Participants</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="a : ${activites}">
+                    <td th:text="${a.nom}"></td>
+                    <td th:text="${a.type}"></td>
+
+                    <td th:text="${a.date != null ? #temporals.format(a.date, 'dd/MM/yyyy') : '—'}"></td>
+
+                    <td th:text="${a.heureDebut != null ? a.heureDebut + ' → ' + a.heureFin : '—'}"></td>
+
+                    <td th:text="${a.lieu}"></td>
+
+                    <td>
+                        <span th:each="p : ${a.participants}"
+                              class="badge badge-light mr-1"
+                              th:text="|${p.nom} ${p.prenom}|">
+                        </span>
+
+                        <span th:if="${#lists.isEmpty(a.participants)}"
+                              class="text-muted">
+                            Aucun
+                        </span>
+                    </td>
+
+                    <td class="text-right">
+
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                           th:href="@{/activites/{id}(id=${a.idActivite})}"
+                           class="btn-circle mr-2"
+                           title="Voir l'activité">
+                            <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
+                        </a>
+
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                           th:href="@{/activites/{id}/edit(id=${a.idActivite})}"
+                           class="btn-circle mr-2"
+                           title="Modifier cette activité">
+                            <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
+                        </a>
+
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                              th:action="@{/activites/{id}/delete(id=${a.idActivite})}"
+                              method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cette activité ?');">
+                            <button class="btn-circle" title="Supprimer cette activité">
+                                <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-24">
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(activites)}">
+                    <td colspan="7" class="text-center text-muted py-3">
+                        Aucune activité trouvée.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+<div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-3">
+    <nav>
+        <ul class="pagination">
+
+            <li class="page-item" th:classappend="${currentPage == 0 ? ' disabled' : ''}">
+                <a class="page-link" th:href="@{/activites(page=${currentPage - 1}, q=${q})}">&laquo;</a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:if="${i >= currentPage - 2 and i <= currentPage + 2}"
+                th:classappend="${i == currentPage ? ' active' : ''}">
+                <a class="page-link"
+                   th:href="@{/activites(page=${i}, q=${q})}"
+                   th:text="${i + 1}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? ' disabled' : ''}">
+                <a class="page-link" th:href="@{/activites(page=${currentPage + 1}, q=${q})}">&raquo;</a>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+
+</section>
+</html>

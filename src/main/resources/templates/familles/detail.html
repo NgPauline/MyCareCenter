@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout('Détails famille', 'Informations générales', ~{::section})}">
+
+<section th:fragment="section"
+         xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <!-- MESSAGE GLOBAL -->
+    <div th:if="${param.error}" class="alert alert-danger mb-3">
+        <span th:switch="${param.error}">
+            <span th:case="'introuvable'">Famille introuvable.</span>
+            <span th:case="'resident'">Résident introuvable.</span>
+            <span th:case="*">Une erreur est survenue.</span>
+        </span>
+    </div>
+
+    <!-- BARRE HAUTE -->
+    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+
+        <!-- ACTIONS -->
+        <div class="detail-actions d-flex gap-3">
+
+            <!-- Modifier -->
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+               th:href="@{/familles/{id}/edit(id=${famille.idFamille})}"
+               class="btn-circle">
+                <img src="/images/modifier.png" class="icon-26">
+            </a>
+
+            <!-- Supprimer -->
+            <form sec:authorize="hasRole('DIRECTEUR')"
+                  th:action="@{/familles/{id}/delete(id=${famille.idFamille})}"
+                  method="post"
+                  onsubmit="return confirm('Supprimer cette famille ?');">
+                <button class="btn-circle">
+                    <img src="/images/supprimer.png" class="icon-26">
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- NOM CENTRÉ -->
+    <div class="family-header text-center mb-3">
+        <h2 class="family-name" th:text="|${famille.nom} ${famille.prenom}|"></h2>
+    </div>
+
+    <!-- CONTENU -->
+    <div class="row mt-3">
+
+        <!-- COLONNE GAUCHE -->
+        <div class="col-12 col-md-6">
+            <div class="card detail-card p-3">
+
+                <div class="table-responsive">
+                    <table class="detail-table">
+                        <tbody>
+
+                        <tr><th>Nom</th><td th:text="${famille.nom}"></td></tr>
+                        <tr><th>Prénom</th><td th:text="${famille.prenom}"></td></tr>
+                        <tr><th>Lien de parenté</th><td th:text="${famille.lienParente}"></td></tr>
+                        <tr><th>Téléphone</th><td th:text="${famille.telephone}"></td></tr>
+                        <tr><th>Email</th><td th:text="${famille.email}"></td></tr>
+                        <tr><th>Adresse</th><td th:text="${famille.adresse}"></td></tr>
+
+                        <!-- Résidents associés -->
+                        <tr>
+                            <th>Résidents associés</th>
+                            <td>
+
+                                <div class="participants-container">
+                                    <div th:each="r : ${famille.residents}"
+                                         class="badge badge-light d-inline-flex align-items-center p-2">
+                                        <span th:text="|${r.nom} ${r.prenom}|"></span>
+                                    </div>
+                                </div>
+
+                                <div th:if="${#lists.isEmpty(famille.residents)}"
+                                     class="text-muted">
+                                    Aucun résident associé.
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE -->
+        <div class="col-12 col-md-6"></div>
+
+    </div>
+
+</section>
+</html>
