@@ -18,7 +18,7 @@
         <div></div>
     </div>
 
-    <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')"
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${famille}"
           method="post" class="form-card">
 
@@ -62,7 +62,7 @@
                 <div class="error" th:errors="*{adresse}"></div>
             </div>
 
-            <div th:if="${!isEdit}">
+            <div th:if="${!isEdit and residentId == null}">
                 <label>Associer un résident</label>
                 <select name="residentId" class="form-control">
                     <option value="">-- Aucun --</option>
@@ -72,6 +72,7 @@
                     </option>
                 </select>
             </div>
+
 
         </div>
 

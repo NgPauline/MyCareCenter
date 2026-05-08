@@ -104,8 +104,8 @@ public class ResidentController {
         if (chambreId != null) {
             Chambre chambre = chambreService.findById(chambreId).orElseThrow();
             resident.setChambre(chambre);
-            chambre.setOccupant(resident);
         }
+
 
         if (familleId != null) {
             resident.ajouterFamille(familleService.findById(familleId).orElseThrow());

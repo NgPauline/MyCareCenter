@@ -66,9 +66,9 @@ public class FamilleController {
     @PostMapping
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String create(@Valid @ModelAttribute Famille famille,
-                         BindingResult bindingResult,
-                         @RequestParam(required = false) Integer residentId,
-                         Model model) {
+                        BindingResult bindingResult,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("isEdit", false);
@@ -78,15 +78,23 @@ public class FamilleController {
             return "familles/form";
         }
 
+        //  Sauvegarde de la famille
+        Famille savedFamille = familleService.save(famille);
+
+        //  Association au résident si fourni
         if (residentId != null) {
             Resident resident = residentService.findById(residentId).orElseThrow();
-            familleService.associerResident(famille, resident);
-            return "redirect:/familles?resident=" + residentId;
+            resident.ajouterFamille(savedFamille);
+            residentService.save(resident);
+
+            //  Redirection vers le résident
+            return "redirect:/residents/" + residentId;
         }
 
-        familleService.save(famille);
+        //  Sinon, retour à la liste des familles
         return "redirect:/familles";
     }
+
 
     /* DETAIL */
     @GetMapping("/{id}")

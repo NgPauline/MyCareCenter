@@ -102,7 +102,7 @@
                         </a>
 
                         <!-- Modifier -->
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                            th:href="@{|/chambres/${c.idChambre}/edit|}"
                            class="btn-circle mr-2"
                            title="Modifier cette chambre">

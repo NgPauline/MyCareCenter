@@ -90,7 +90,7 @@
                 </li>
 
                 
-                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
                     <a th:href="@{/types-equipement}" class="nav-link"
                     th:classappend="${activePage=='types-equipement'} ? ' active'">
                         <img th:src="@{/images/icones/equipement.png}" alt="" class="nav-icon-img">

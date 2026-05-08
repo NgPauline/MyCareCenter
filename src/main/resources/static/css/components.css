@@ -146,9 +146,10 @@
     margin-bottom: 10px;
 }
 
-.badge-success { background: #28a745; color: white; }
-.badge-warning { background: #ffc107; color: black; }
-.badge-danger  { background: #dc3545; color: white; }
+/* État équipement */
+.badge-success { background: #d1fae5; color: #065f46; border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; }
+.badge-warning { background: #fef3c7; color: #92400e; border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; }
+.badge-danger  { background: #fee2e2; color: #991b1b; border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; }
 
 /* ============================
    EQUIPEMENTS GRID

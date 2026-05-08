@@ -170,7 +170,7 @@ public class ChambreController {
         model.addAttribute("chambre", chambre);
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/chambres/" + id);
-        model.addAttribute("activePage", "chambres"); // 👈
+        model.addAttribute("activePage", "chambres"); 
 
         return "chambres/form";
     }

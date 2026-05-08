@@ -30,38 +30,27 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        // 1. Chercher dans Employe
-        Employe emp = employeRepository.findByMatricule(username);
-        if (emp != null) {
-            return new User(
-                    emp.getMatricule(),
-                    emp.getPassword(),
-                    List.of(new SimpleGrantedAuthority("ROLE_" + emp.getRoleApp()))
-            );
-        }
-
-        // 2. Chercher dans Soignant
-        Soignant soi = soignantRepository.findByMatricule(username);
-        if (soi != null) {
-            return new User(
-                    soi.getMatricule(),
-                    soi.getPassword(),
-                    List.of(new SimpleGrantedAuthority("ROLE_" + soi.getRoleApp()))
-            );
-        }
-
-        // 3. Chercher dans Administratif
-        Administratif adm = administratifRepository.findByMatricule(username);
-        if (adm != null) {
-            return new User(
-                    adm.getMatricule(),
-                    adm.getPassword(),
-                    List.of(new SimpleGrantedAuthority("ROLE_" + adm.getRoleApp()))
-            );
-        }
-
-        throw new UsernameNotFoundException("Utilisateur non trouvé");
+    // 1. Chercher dans Employe
+    Employe emp = employeRepository.findByMatricule(username);
+    if (emp != null) {
+        return new CustomUserDetails(emp);
     }
+
+    // 2. Chercher dans Soignant
+    Soignant soi = soignantRepository.findByMatricule(username);
+    if (soi != null) {
+        return new CustomUserDetails(soi);
+    }
+
+    // 3. Chercher dans Administratif
+    Administratif adm = administratifRepository.findByMatricule(username);
+    if (adm != null) {
+        return new CustomUserDetails(adm);
+    }
+
+    throw new UsernameNotFoundException("Utilisateur non trouvé");
+}
+
 }

@@ -5,9 +5,30 @@
 /* Style générique */
 .fc-event {
     border-radius: var(--radius);
-    padding: 4px 6px;
+    padding: 3px 8px;
+    font-weight: 500;
     font-size: 0.85rem;
     border: none;
+}
+
+.fc-col-header-cell-cushion {
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.fc-daygrid-day-number {
+    color: #000 !important;
+}
+
+.fc-col-header-cell-cushion {
+    color: #000 !important;
+}
+
+.fc-button {
+    color: #d4af37;;
 }
 
 /* Pastille couleur premium */

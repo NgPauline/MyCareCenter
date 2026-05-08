@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+
 public interface ResidentRepository extends JpaRepository<Resident, Integer> {
 
     boolean existsByIdResident(Integer idResident);

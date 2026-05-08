@@ -24,7 +24,7 @@ import java.nio.file.StandardCopyOption;
 
 @Controller
 @RequestMapping("/equipements")
-@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')")
 public class EquipementController {
 
     private final EquipementService equipementService;
@@ -43,6 +43,7 @@ public class EquipementController {
     // LISTE GÉNÉRALE + RECHERCHE + PAGINATION
     // ---------------------------------------------------------
     @GetMapping
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')")
     public String list(@RequestParam(required = false) String q,
                        @RequestParam(required = false) Integer chambre,
                        @RequestParam(value = "page", defaultValue = "0") int page,
@@ -75,6 +76,7 @@ public class EquipementController {
     // LISTE PAR CHAMBRE
     // ---------------------------------------------------------
     @GetMapping("/chambre/{idChambre}")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')")
     public String listByChambre(@PathVariable Integer idChambre, Model model) {
         model.addAttribute("equipements", equipementService.findByChambre(idChambre));
         model.addAttribute("idChambre", idChambre);
@@ -86,6 +88,7 @@ public class EquipementController {
     // FORMULAIRE AJOUT
     // ---------------------------------------------------------
     @GetMapping("/new")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String createForm(Model model) {
 
         model.addAttribute("equipement", new Equipement());
@@ -102,6 +105,7 @@ public class EquipementController {
     // CRÉATION (AFFECTATION D’UN EXEMPLAIRE)
     // ---------------------------------------------------------
     @PostMapping
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String create(@Valid @ModelAttribute Equipement equipement,
                          BindingResult bindingResult,
                          @RequestParam("photoFile") MultipartFile photoFile,
@@ -149,6 +153,7 @@ public class EquipementController {
     // FORMULAIRE EDIT
     // ---------------------------------------------------------
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String editForm(@PathVariable Integer id, Model model) {
 
         Equipement equipement = equipementService.findById(id)
@@ -168,6 +173,7 @@ public class EquipementController {
     // UPDATE (NE PAS DÉPLACER / NE PAS CHANGER LE TYPE)
     // ---------------------------------------------------------
     @PostMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String update(@PathVariable Integer id,
                          @Valid @ModelAttribute Equipement equipementForm,
                          BindingResult bindingResult,
@@ -216,6 +222,7 @@ public class EquipementController {
     // DELETE (LIBÈRE UN EXEMPLAIRE)
     // ---------------------------------------------------------
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String delete(@PathVariable Integer id) {
         equipementService.delete(id);
         return "redirect:/equipements";
