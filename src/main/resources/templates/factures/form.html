@@ -20,7 +20,7 @@
     </div>
 
     <!-- FORMULAIRE -->
-    <form sec:authorize="hasRole('FINANCE')"
+    <form sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
           th:action="@{${submitUrl}}"
           th:object="${facture}"
           method="post"

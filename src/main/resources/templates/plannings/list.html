@@ -32,7 +32,7 @@
         <div class="d-flex align-items-center">
 
             <!-- Vue calendrier -->
-            <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR')"
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
                th:href="@{/plannings/calendar}"
                class="btn-circle mr-2"
                title="Vue calendrier">
@@ -40,7 +40,7 @@
             </a>
 
             <!-- Ajouter -->
-            <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR')"
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
                th:href="@{/plannings/new}"
                class="btn-circle"
                title="Ajouter un créneau">
@@ -108,7 +108,7 @@
                         </a>
 
                         <!-- Modifier -->
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
                            th:href="@{|/plannings/${p.idPlanning}/edit|}"
                            class="btn-circle mr-2"
                            title="Modifier ce créneau">
@@ -116,7 +116,7 @@
                         </a>
 
                         <!-- Supprimer -->
-                        <form sec:authorize="hasRole('DIRECTEUR')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                               th:action="@{|/plannings/${p.idPlanning}/delete|}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer ce créneau ?');">

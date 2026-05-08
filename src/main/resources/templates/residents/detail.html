@@ -31,7 +31,7 @@
                 <img src="/images/modifier.png" class="icon-26">
             </a>
 
-            <form sec:authorize="hasRole('DIRECTEUR')"
+            <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                   th:action="@{/residents/{id}/delete(id=${resident.idPersonne})}"
                   method="post"
                   onsubmit="return confirm('Supprimer ce résident ?');">
@@ -64,11 +64,13 @@
                 Dossier médical
             </a>
 
-            <a th:href="@{/factures(resident=${resident.idPersonne})}" class="btn-link-gold">
+            <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
+            th:href="@{/factures(resident=${resident.idPersonne})}" class="btn-link-gold">
                 Factures
             </a>
 
-            <a th:href="@{/paiements(resident=${resident.idPersonne})}" class="btn-link-gold">
+            <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
+            th:href="@{/paiements(resident=${resident.idPersonne})}" class="btn-link-gold">
                 Paiements
             </a>
 

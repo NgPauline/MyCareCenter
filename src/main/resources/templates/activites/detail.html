@@ -22,7 +22,7 @@
 
         <div class="detail-actions d-flex gap-3">
 
-            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
                th:href="@{/activites/{id}/edit(id=${activite.idActivite})}"
                class="btn-circle">
                 <img src="/images/modifier.png" class="icon-24">

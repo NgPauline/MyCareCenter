@@ -28,14 +28,14 @@
             </a>
 
             <!-- Modifier -->
-            <a sec:authorize="hasRole('FINANCE')"
+            <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                th:href="@{/factures/{id}/edit(id=${facture.idFacture})}"
                class="btn-circle" title="Modifier">
                 <img src="/images/modifier.png" class="icon-26">
             </a>
 
             <!-- Supprimer -->
-            <form sec:authorize="hasRole('DIRECTEUR')"
+            <form sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                   th:action="@{/factures/{id}/delete(id=${facture.idFacture})}"
                   method="post"
                   onsubmit="return confirm('Supprimer cette facture ?');">
@@ -125,7 +125,7 @@
                 </div>
 
                 <!-- Ajouter paiement -->
-                <div class="mt-3" sec:authorize="hasRole('FINANCE')">
+                <div class="mt-3" sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')">
                     <a th:href="@{/paiements/new(factureId=${facture.idFacture}, from='/factures/' + ${facture.idFacture})}"
                     class="btn-small gold">
                         <img src="/images/ajouter.png" class="icon-20">

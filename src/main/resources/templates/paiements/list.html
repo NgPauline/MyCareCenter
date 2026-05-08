@@ -30,7 +30,7 @@
             </button>
         </h2>
 
-        <a sec:authorize="hasRole('FINANCE')"
+        <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
            th:href="@{/paiements/new}"
            class="btn-circle"
            title="Ajouter un paiement">
@@ -81,19 +81,19 @@
 
                     <td class="text-right">
 
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','FINANCE')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                            th:href="@{/paiements/{id}(id=${p.idPaiement})}"
                            class="btn-circle mr-2">
                             <img th:src="@{/images/voir.png}" class="icon-24">
                         </a>
 
-                        <a sec:authorize="hasRole('FINANCE')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                            th:href="@{/paiements/{id}/edit(id=${p.idPaiement})}"
                            class="btn-circle mr-2">
                             <img th:src="@{/images/modifier.png}" class="icon-24">
                         </a>
 
-                        <form sec:authorize="hasRole('DIRECTEUR')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                               th:action="@{/paiements/{id}/delete(id=${p.idPaiement})}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer ce paiement ?');">

@@ -16,7 +16,7 @@
     </div>
 
     <!-- FORMULAIRE -->
-    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+    <<form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${chambre}"
           method="post" class="form-card">
 

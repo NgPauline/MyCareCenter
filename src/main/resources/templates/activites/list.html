@@ -103,7 +103,7 @@
                             <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
                         </a>
 
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
                            th:href="@{/activites/{id}/edit(id=${a.idActivite})}"
                            class="btn-circle mr-2"
                            title="Modifier cette activité">

@@ -114,8 +114,8 @@
                         </a>
 
                         <!-- Supprimer -->
-                        <form sec:authorize="hasRole('DIRECTEUR')"
-                              th:action="@{|/residents/${r.idPersonne}/delete|}"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                         th:action="@{|/residents/${r.idPersonne}/delete|}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer ce résident ?');">
                             <button class="btn-circle" title="Supprimer ce résident">

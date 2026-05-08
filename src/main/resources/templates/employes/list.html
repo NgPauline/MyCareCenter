@@ -96,7 +96,7 @@
                         </a>
 
                         <!-- Supprimer -->
-                        <form sec:authorize="hasRole('DIRECTEUR')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                               th:action="@{|/employes/${e.idPersonne}/delete|}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer cet employé ?');">

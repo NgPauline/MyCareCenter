@@ -53,7 +53,7 @@ public class SecurityConfig {
 
                 // ACTIVITES
                 .requestMatchers("/activites/**")
-                    .hasAnyRole("DIRECTEUR", "ADMINISTRATIF", "EDUCATEUR")
+                    .hasAnyRole("DIRECTEUR", "ADMINISTRATIF", "SOIGNANT", "EDUCATEUR")
 
                 // PLANNING
                 .requestMatchers("/plannings/**")
@@ -65,7 +65,7 @@ public class SecurityConfig {
 
                 // EQUIPEMENTS
                 .requestMatchers("/equipements/**")
-                    .hasAnyRole("DIRECTEUR", "ADMINISTRATIF")
+                    .hasAnyRole("DIRECTEUR", "ADMINISTRATIF", "SOIGNANT", "EDUCATEUR")
 
                 // TOUT LE RESTE
                 .anyRequest().authenticated()

@@ -28,7 +28,7 @@
             </a>
 
             <!-- Supprimer -->
-            <form sec:authorize="hasRole('DIRECTEUR')"
+            <form sec:authorize="hasRole('DIRECTEUR','SOIGNANT')"
                   th:action="@{|/traitements/${traitement.idTraitement}/delete|}"
                   method="post"
                   onsubmit="return confirm('Supprimer ce traitement ?');">

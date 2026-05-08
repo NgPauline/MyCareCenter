@@ -14,7 +14,7 @@
         <div></div>
     </div>
 
-    <form sec:authorize="hasRole('DIRECTEUR')"
+    <form sec:authorize="hasRole('DIRECTEUR','ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${soignant}"
           method="post" class="form-card">
 

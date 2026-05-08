@@ -31,7 +31,7 @@
         </h2>
 
         <!-- Ajouter -->
-        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
            th:href="@{/chambres/new}"
            class="btn-circle"
            title="Ajouter une chambre">
@@ -110,7 +110,7 @@
                         </a>
 
                         <!-- Supprimer -->
-                        <form sec:authorize="hasRole('DIRECTEUR')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                               th:action="@{|/chambres/${c.idChambre}/delete|}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer cette chambre ?');">

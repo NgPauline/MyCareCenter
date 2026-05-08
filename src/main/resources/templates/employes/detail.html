@@ -27,7 +27,7 @@
                 <img src="/images/modifier.png" class="icon-26">
             </a>
 
-            <form sec:authorize="hasRole('DIRECTEUR')"
+            <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                   th:action="@{|/employes/${employe.idPersonne}/delete|}"
                   method="post"
                   onsubmit="return confirm('Supprimer cet employé ?');">

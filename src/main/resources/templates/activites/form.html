@@ -22,7 +22,7 @@
     </div>
 
     <!-- FORMULAIRE -->
-    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
           th:action="@{${submitUrl}}"
           th:object="${activite}"
           method="post"

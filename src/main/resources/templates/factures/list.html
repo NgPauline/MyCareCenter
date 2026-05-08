@@ -29,7 +29,7 @@
             </button>
         </h2>
 
-        <a sec:authorize="hasRole('FINANCE')"
+        <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
            th:href="@{/factures/new}"
            class="btn-circle"
            title="Ajouter une facture">
@@ -90,7 +90,7 @@
 
                     <td class="text-right">
 
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','FINANCE')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                            th:href="@{/factures/{id}(id=${f.idFacture})}"
                            class="btn-circle mr-2"
                            title="Voir la facture">
@@ -103,14 +103,14 @@
                             <img th:src="@{/images/pdf.png}" alt="PDF" class="icon-24">
                         </a>
 
-                        <a sec:authorize="hasRole('FINANCE')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                            th:href="@{/factures/{id}/edit(id=${f.idFacture})}"
                            class="btn-circle mr-2"
                            title="Modifier">
                             <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
                         </a>
 
-                        <form sec:authorize="hasRole('DIRECTEUR')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
                               th:action="@{/factures/{id}/delete(id=${f.idFacture})}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer cette facture ?');">

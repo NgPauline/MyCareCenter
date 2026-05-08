@@ -29,7 +29,7 @@
             </a>
 
             <!-- Supprimer -->
-            <form sec:authorize="hasRole('DIRECTEUR')"
+            <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                   th:action="@{/familles/{id}/delete(id=${famille.idFamille})}"
                   method="post"
                   onsubmit="return confirm('Supprimer cette famille ?');">

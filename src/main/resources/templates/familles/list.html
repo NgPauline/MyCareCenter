@@ -28,7 +28,7 @@
             </button>
         </h2>
 
-        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')"
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
            th:href="@{/familles/new}"
            class="btn-circle"
            title="Ajouter une famille">
@@ -91,7 +91,7 @@
 
 
                         <!-- Modifier -->
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                            th:href="@{/familles/{id}/edit(id=${f.idFamille})}"
                            class="btn-circle mr-2"
                            title="Modifier">
@@ -99,7 +99,7 @@
                         </a>
 
                         <!-- Supprimer -->
-                        <form sec:authorize="hasRole('DIRECTEUR')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                               th:action="@{/familles/{id}/delete(id=${f.idFamille})}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer cette famille ?');">

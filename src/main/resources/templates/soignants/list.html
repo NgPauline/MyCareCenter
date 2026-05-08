@@ -30,7 +30,7 @@
             </button>
         </h2>
 
-        <a sec:authorize="hasRole('DIRECTEUR')"
+        <a sec:authorize="hasRole('DIRECTEUR','ADMINISTRATIF')"
            th:href="@{/soignants/new}"
            class="btn-circle"
            title="Ajouter un soignant">
@@ -88,7 +88,7 @@
                         </a>
 
                         <!-- Modifier -->
-                        <a sec:authorize="hasRole('DIRECTEUR')"
+                        <a sec:authorize="hasRole('DIRECTEUR','ADMINISTRATIF')"
                            th:href="@{|/soignants/${s.idPersonne}/edit|}"
                            class="btn-circle mr-2"
                            title="Modifier ce soignant">
@@ -96,7 +96,7 @@
                         </a>
 
                         <!-- Supprimer -->
-                        <form sec:authorize="hasRole('DIRECTEUR')"
+                        <form sec:authorize="hasRole('DIRECTEUR','ADMINISTRATIF')"
                               th:action="@{|/soignants/${s.idPersonne}/delete|}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer ce soignant ?');">

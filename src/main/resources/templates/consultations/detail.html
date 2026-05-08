@@ -28,7 +28,7 @@
             </a>
 
             <!-- Supprimer -->
-            <form sec:authorize="hasRole('DIRECTEUR')"
+            <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
                   th:action="@{|/consultations/${consultation.idConsultation}/delete|}"
                   method="post"
                   onsubmit="return confirm('Supprimer cette consultation ?');">

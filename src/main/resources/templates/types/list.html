@@ -8,7 +8,8 @@
     <div class="list-header d-flex justify-content-between align-items-center">
         <h2 class="m-0">Catalogue des équipements</h2>
 
-        <a th:href="@{/types-equipement/new}" class="icon-btn">
+        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+            th:href="@{/types-equipement/new}" class="icon-btn">
             <img th:src="@{/images/ajouter.png}" class="icon-26">
         </a>
     </div>
@@ -36,11 +37,13 @@
 
             <div class="equipement-actions d-flex justify-content-between mt-3">
 
-                <a th:href="@{|/types-equipement/${t.id}/edit|}" class="icon-btn-small">
+                <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                th:href="@{|/types-equipement/${t.id}/edit|}" class="icon-btn-small">
                     <img th:src="@{/images/modifier.png}" class="icon-20">
                 </a>
 
-                <form th:action="@{|/types-equipement/${t.id}/delete|}" method="post"
+                <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+              th:action="@{|/types-equipement/${t.id}/delete|}" method="post"
                       onsubmit="return confirm('Supprimer ce type ?');">
                     <button class="btn-circle">
                         <img th:src="@{/images/supprimer.png}" class="icon-20">
@@ -61,3 +64,4 @@
 
 </section>
 </html>
+
