@@ -25,8 +25,6 @@ public class Activite {
 
     private String lieu;
 
-    private String type;
-
     private String nom;
 
     @Enumerated(EnumType.STRING)
@@ -43,15 +41,14 @@ public class Activite {
     private List<Resident> participants = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Soignant responsable;
+    private Employe responsable;
 
     public Activite() {}
 
-    public Activite(LocalDate date, int duree, String lieu, String type, LocalTime heureDebut) {
+    public Activite(LocalDate date, int duree, String lieu, LocalTime heureDebut) {
         this.date = date;
         this.duree = duree;
         this.lieu = lieu;
-        this.type = type;
         this.heureDebut = heureDebut;
     }
 
@@ -66,9 +63,6 @@ public class Activite {
 
     public String getLieu() { return lieu; }
     public void setLieu(String lieu) { this.lieu = lieu; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
 
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
@@ -87,8 +81,8 @@ public class Activite {
     public List<Resident> getParticipants() { return participants; }
     public void setParticipants(List<Resident> participants) { this.participants = participants; }
 
-    public Soignant getResponsable() { return responsable; }
-    public void setResponsable(Soignant responsable) { this.responsable = responsable; }
+    public Employe getResponsable() { return responsable; }
+    public void setResponsable(Employe responsable) { this.responsable = responsable; }
 
     // 🔥 Heure de fin calculée automatiquement
     @Transient
@@ -117,7 +111,7 @@ public class Activite {
         return participants;
     }
 
-    @AssertTrue(message = "Les activités doivent être planifiées au moins 7 jours à l'avance")
+    // @AssertTrue(message = "Les activités doivent être planifiées au moins 7 jours à l'avance")
     public boolean isPlanifieeAssezTot() {
         if (date == null) return true;
         return !date.isBefore(LocalDate.now().plusDays(7));

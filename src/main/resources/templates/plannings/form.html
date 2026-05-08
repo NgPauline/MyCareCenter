@@ -2,7 +2,7 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout('Planning', 'Formulaire planning', ~{::section})}">
 
-<section th:fragment="content" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
@@ -19,7 +19,7 @@
         <div></div>
     </div>
 
-    <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR')"
+    <form sec:authorize="hasAnyRole('DIRECTEUR', 'ADMINISTRATIF','EDUCATEUR')"
           th:action="@{${submitUrl}}" th:object="${planning}"
           method="post" class="form-card">
 
@@ -79,7 +79,7 @@
                 <label>
                     <!-- Nom + type -->
                     <strong th:text="${a.nom}"></strong>
-                    <span class="text-muted" th:text="'(' + ${a.type} + ')'"></span>
+                    <span class="text-muted" th:text="'(' + ${a.categorie} + ')'"></span>
                     —
                     <!-- Date -->
                     <span th:text="${#temporals.format(a.date, 'dd/MM/yyyy')}"></span>
@@ -92,7 +92,7 @@
                     —
                     <!-- Responsable soignant -->
                     <span th:if="${a.responsable != null}"
-                        th:text="'Dr. ' + ${a.responsable.nom} + ' ' + ${a.responsable.prenom}">
+                        th:text="${a.responsable.nom} + ' ' + ${a.responsable.prenom}">
                     </span>
                 </label>
             </div>

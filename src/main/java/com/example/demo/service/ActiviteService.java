@@ -74,6 +74,9 @@ public class ActiviteService {
     }
 
     public Activite save(Activite activite, Employe createur) {
+        if (activite.getDate() != null && activite.getDate().isBefore(LocalDate.now().plusDays(7))) {
+        throw new IllegalArgumentException("Les activités doivent être planifiées au moins 7 jours à l'avance.");
+    }
         // 🔒 ÉDUCATEUR → interdit de créer du médical
         if ("EDUCATEUR".equals(createur.getRoleApp()) &&
             activite.getCategorie() == CategorieActivite.MEDICAL) {
@@ -87,34 +90,27 @@ public class ActiviteService {
             throw new IllegalArgumentException("Un soignant ne peut pas créer une activité éducative ou sportive.");
         }
 
-        // 🔥 Collision horaire (ta logique existante)
-        List<Activite> existantes = activiteRepository.findByDate(activite.getDate());
-        if (aCollisionActivite(activite, existantes)) {
-            throw new IllegalArgumentException("Collision détectée : l’horaire chevauche une autre activité.");
-        }
+        //  Collision horaire 
+        //List<Activite> existantes = activiteRepository.findByDate(activite.getDate());
+       // if (aCollisionActivite(activite, existantes)) {
+           // throw new IllegalArgumentException("Collision détectée : l’horaire chevauche une autre activité.");
+       // }
 
         return activiteRepository.save(activite);
     }
 
 
     public void update(Integer id, Activite updated, Employe createur) {
-        // 🔒 ÉDUCATEUR → interdit de modifier du médical
+
         if ("EDUCATEUR".equals(createur.getRoleApp()) &&
             updated.getCategorie() == CategorieActivite.MEDICAL) {
             throw new IllegalArgumentException("Un éducateur ne peut pas modifier une activité médicale.");
         }
 
-        // 🔒 SOIGNANT → interdit de modifier éducatif / sportif
         if (createur instanceof Soignant &&
             (updated.getCategorie() == CategorieActivite.EDUCATIF
             || updated.getCategorie() == CategorieActivite.SPORTIF)) {
             throw new IllegalArgumentException("Un soignant ne peut pas modifier une activité éducative ou sportive.");
-        }
-
-        // 🔥 Collision horaire
-        List<Activite> existantes = activiteRepository.findByDate(updated.getDate());
-        if (aCollisionActivite(updated, existantes)) {
-            throw new IllegalArgumentException("Collision détectée : l’horaire chevauche une autre activité.");
         }
 
         Activite original = activiteRepository.findById(id)
@@ -191,6 +187,8 @@ public class ActiviteService {
     public Page<Activite> search(String keyword, Pageable pageable) {
         return activiteRepository.search(keyword.toLowerCase(), pageable);
     }
+  
+    
+}
 
-    }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.example.demo.service.TypeEquipementService;
 import com.example.demo.service.ResidentService;
 import com.example.demo.service.EmployeService;
 import com.example.demo.service.FactureService;
@@ -25,18 +26,21 @@ public class AuthController {
     private final FactureService factureService;
     private final ActiviteService activiteService;
     private final EquipementService equipementService; 
+    private final TypeEquipementService typeEquipementService;
     
 
     public AuthController(ResidentService residentService,
                           EmployeService employeService,
                           FactureService factureService,
                           ActiviteService activiteService,
-                          EquipementService equipementService) {
+                          EquipementService equipementService,
+                        TypeEquipementService typeEquipementService) {
         this.residentService = residentService;
         this.employeService = employeService;
         this.factureService = factureService;
         this.activiteService = activiteService;
         this.equipementService = equipementService;
+        this.typeEquipementService = typeEquipementService;
     }
 
     @GetMapping("/login")
@@ -52,7 +56,7 @@ public class AuthController {
         model.addAttribute("nbEmployes", employeService.count());
         model.addAttribute("nbFacturesEnAttente", factureService.countEnAttente());
         model.addAttribute("nbActivitesDuJour", activiteService.countToday());
-        model.addAttribute("nbEquipementsTotal",      equipementService.count());
+        model.addAttribute("nbEquipementsTotal", typeEquipementService.getTotalStock());
         model.addAttribute("nbEquipementsEnChambre",  equipementService.countEnChambre());
 
             // labels communs aux deux graphiques

@@ -92,6 +92,7 @@ public class PaiementController {
 
         paiementService.save(paiement);
         facture.ajouterPaiement(paiement);
+        facture.recalculerStatut();
         factureService.save(facture);
 
         if (from != null && !from.isBlank()) return "redirect:" + from;

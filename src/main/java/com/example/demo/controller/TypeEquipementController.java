@@ -51,7 +51,7 @@ public class TypeEquipementController {
         model.addAttribute("types", types);
         model.addAttribute("utilisesMap", utilisesMap);
         model.addAttribute("restantsMap", restantsMap);
-        model.addAttribute("activePage", "equipements");
+        model.addAttribute("activePage", "types-equipement");
 
         return "types/list";
     }

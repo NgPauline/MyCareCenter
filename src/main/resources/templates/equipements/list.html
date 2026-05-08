@@ -59,9 +59,9 @@
             <!-- IMAGE CLIQUABLE -->
             <div class="equipement-photo" onclick="showImage(this.querySelector('img').src)">
                 <img th:src="${e.photoPath != null} ?
-                            @{|/equipements-img/equipements/${e.photoPath}|} :
-                            @{/images/default-equipement.png}"
-                     alt="Photo équipement">
+                        @{|/uploads/equipements/${e.photoPath}|} :
+                        @{/images/default-equipement.png}"
+                alt="Photo équipement">
             </div>
 
             <!-- NOM DU TYPE (au lieu de e.nom) -->

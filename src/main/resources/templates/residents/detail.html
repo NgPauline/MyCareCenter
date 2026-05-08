@@ -59,6 +59,11 @@
                 Activités
             </a>
 
+            <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
+            th:href="@{/dossiers/{id}(id=${resident.idPersonne})}" class="btn-link-gold">
+                Dossier médical
+            </a>
+
             <a th:href="@{/factures(resident=${resident.idPersonne})}" class="btn-link-gold">
                 Factures
             </a>

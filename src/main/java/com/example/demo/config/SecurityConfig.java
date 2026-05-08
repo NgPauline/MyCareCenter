@@ -25,7 +25,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 // PUBLIC
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/login").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**", "/login").permitAll()
 
                 // EMPLOYES (directeur + administratif)
                 .requestMatchers("/employes/**")

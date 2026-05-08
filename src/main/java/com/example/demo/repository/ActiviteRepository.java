@@ -2,7 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Activite;
 import com.example.demo.model.Resident;
-import com.example.demo.model.Soignant;
+  import com.example.demo.model.Employe;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,14 +21,15 @@ public interface ActiviteRepository extends JpaRepository<Activite, Integer> {
 
     List<Activite> findByParticipants_IdPersonne(Integer idPersonne);
 
-    List<Activite> findByResponsable(Soignant responsable); // OK
+
+    List<Activite> findByResponsable(Employe responsable);
 
     long countByDate(LocalDate date);
 
     @Query("""
         SELECT a FROM Activite a
         WHERE LOWER(a.nom) LIKE %:kw%
-            OR LOWER(a.type) LIKE %:kw%
+            OR LOWER(CAST(a.categorie AS string)) LIKE %:kw%
             OR LOWER(a.lieu) LIKE %:kw%
             OR CAST(a.date AS string) LIKE %:kw%
             OR CAST(a.heureDebut AS string) LIKE %:kw%
@@ -37,10 +38,10 @@ public interface ActiviteRepository extends JpaRepository<Activite, Integer> {
         """)
     List<Activite> search(@Param("kw") String keyword);
 
-        @Query("""
+    @Query("""
         SELECT a FROM Activite a
         WHERE LOWER(a.nom) LIKE %:kw%
-            OR LOWER(a.type) LIKE %:kw%
+            OR LOWER(CAST(a.categorie AS string)) LIKE %:kw%
             OR LOWER(a.lieu) LIKE %:kw%
             OR CAST(a.date AS string) LIKE %:kw%
             OR CAST(a.heureDebut AS string) LIKE %:kw%

@@ -71,7 +71,7 @@ public class PlanningController {
 
     /* CRÉATION */
     @GetMapping("/new")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
     public String createForm(@RequestParam(required = false) String date, Model model) {
 
         Planning planning = new Planning();
@@ -82,7 +82,7 @@ public class PlanningController {
 
         model.addAttribute("planning", planning);
         model.addAttribute("activites", planningService.findActivitesSansPlanning());
-        model.addAttribute("employes", employeService.findBySoignantOuEducateur());
+        model.addAttribute("employes", employeService.findAll());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/plannings");
         model.addAttribute("activePage", "planning");
@@ -91,7 +91,7 @@ public class PlanningController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
     public String create(@Valid @ModelAttribute Planning planning,
                         BindingResult bindingResult,
                         @RequestParam(required = false) List<Integer> activiteIds,
@@ -106,7 +106,7 @@ public class PlanningController {
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/plannings");
             model.addAttribute("activites", planningService.findActivitesSansPlanning());
-            model.addAttribute("employes", employeService.findBySoignantOuEducateur());
+            model.addAttribute("employes", employeService.findAll());
             model.addAttribute("activePage", "planning");
             return "plannings/form";
         }
@@ -133,14 +133,14 @@ public class PlanningController {
 
     /* MODIFICATION */
     @GetMapping("/{id}/edit")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
     public String editForm(@PathVariable Integer id, Model model) {
 
         Planning planning = planningService.findById(id).orElseThrow();
 
         model.addAttribute("planning", planning);
         model.addAttribute("activites", activiteService.findAll());
-        model.addAttribute("employes", employeService.findBySoignantOuEducateur());
+        model.addAttribute("employes", employeService.findAll());
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/plannings/" + id);
         model.addAttribute("activePage", "planning");
@@ -149,7 +149,7 @@ public class PlanningController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
     public String update(@PathVariable Integer id,
                         @Valid @ModelAttribute Planning planning,
                         BindingResult bindingResult,
@@ -165,7 +165,7 @@ public class PlanningController {
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/plannings/" + id);
             model.addAttribute("activites", activiteService.findAll());
-            model.addAttribute("employes", employeService.findBySoignantOuEducateur());
+            model.addAttribute("employes", employeService.findAll());
             model.addAttribute("activePage", "planning");
             return "plannings/form";
         }

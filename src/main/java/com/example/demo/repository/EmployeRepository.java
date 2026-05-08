@@ -18,6 +18,7 @@ public interface EmployeRepository extends JpaRepository<Employe, Integer> {
     Employe findByMatricule(String matricule);
 
     boolean existsByRoleApp(String roleApp);
+    List<Employe> findByRoleApp(String roleApp);
 
     long countByMatriculeStartingWith(String prefix);
 

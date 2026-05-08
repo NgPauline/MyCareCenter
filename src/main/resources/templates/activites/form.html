@@ -37,13 +37,6 @@
                 <div class="error" th:errors="*{nom}"></div>
             </div>
 
-            <!-- TYPE -->
-            <div>
-                <label>Type</label>
-                <input type="text" th:field="*{type}" class="form-control">
-                <div class="error" th:errors="*{type}"></div>
-            </div>
-
             <!-- DATE -->
             <div>
                 <label>Date</label>
@@ -96,10 +89,10 @@
                 <label>Responsable</label>
                 <select name="responsableId" class="form-control">
                     <option value="">-- Choisir --</option>
-                    <option th:each="s : ${soignants}"
-                            th:value="${s.idPersonne}"
-                            th:selected="${activite.responsable != null ? activite.responsable.idPersonne == s.idPersonne : false}"
-                            th:text="|${s.nom} ${s.prenom}|">
+                    <option th:each="e : ${employes}"
+                            th:value="${e.idPersonne}"
+                            th:selected="${activite.responsable != null ? activite.responsable.idPersonne == e.idPersonne : false}"
+                            th:text="|${e.nom} ${e.prenom}|">
                     </option>
                 </select>
             </div>

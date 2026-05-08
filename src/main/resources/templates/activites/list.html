@@ -61,7 +61,7 @@
             <thead>
                 <tr>
                     <th>Nom</th>
-                    <th>Type</th>
+                    <th>Catégorie</th>
                     <th>Date</th>
                     <th>Heure</th>
                     <th>Lieu</th>
@@ -74,7 +74,7 @@
 
                 <tr th:each="a : ${activites}">
                     <td th:text="${a.nom}"></td>
-                    <td th:text="${a.type}"></td>
+                    <td th:text="${a.categorie}"></td> 
 
                     <td th:text="${a.date != null ? #temporals.format(a.date, 'dd/MM/yyyy') : '—'}"></td>
 
@@ -123,7 +123,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(activites)}">
-                    <td colspan="7" class="text-center text-muted py-3">
+                    <td colspan="6" class="text-center text-muted py-3">
                         Aucune activité trouvée.
                     </td>
                 </tr>

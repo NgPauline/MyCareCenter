@@ -91,6 +91,7 @@ public class FactureController {
         }
 
         Resident resident = residentService.findById(residentId).orElseThrow();
+        facture.setStatut("EN_ATTENTE");
         facture.setResident(resident);
         factureService.save(facture);
 

@@ -149,5 +149,7 @@ public class EmployeService {
         return Optional.ofNullable(e);
     }
 
-
+    public List<Employe> findByRole(String role) {
+        return employeRepository.findByRoleApp(role);
+    }
 }

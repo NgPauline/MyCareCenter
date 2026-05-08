@@ -90,12 +90,15 @@ public DataInitializer(
         // ------------------------------------------------------------
         Chambre ch1 = chambreService.save(new Chambre(null, "Normale", 1));
         Chambre ch2 = chambreService.save(new Chambre(null, "PMR", 1));
-        Chambre ch3 = chambreService.save(new Chambre(null, "Normale", 2));
-        Chambre ch4 = chambreService.save(new Chambre(null, "PMR", 2));
-        Chambre ch5 = chambreService.save(new Chambre(null, "Normale", 3));
-        Chambre ch6 = chambreService.save(new Chambre(null, "PMR", 3));
-        Chambre ch7 = chambreService.save(new Chambre(null, "Normale", 1));
+        Chambre ch3 = chambreService.save(new Chambre(null, "PMR", 2));
+        Chambre ch4 = chambreService.save(new Chambre(null, "Normale", 2));
+        Chambre ch5 = chambreService.save(new Chambre(null, "PMR", 2));
+        Chambre ch6 = chambreService.save(new Chambre(null, "Normale", 2));
+        Chambre ch7 = chambreService.save(new Chambre(null, "Normale", 3));
         Chambre ch8 = chambreService.save(new Chambre(null, "PMR", 2));
+        Chambre ch9 = chambreService.save(new Chambre(null, "Normale", 3));
+        Chambre ch10 = chambreService.save(new Chambre(null, "Normale", 1));
+        Chambre ch11 = chambreService.save(new Chambre(null, "PMR", 2));
 
 
 
@@ -134,13 +137,13 @@ public DataInitializer(
         // ------------------------------------------------------------
         // 3. ÉQUIPEMENTS (1 par chambre)
         // ------------------------------------------------------------
-        equipementRepository.save(new Equipement(fauteuil, "BON", "fauteuil-roulant.png", ch1));
-        equipementRepository.save(new Equipement(deambulateur, "USÉ", "déambulateur.jpg", ch2));
-        equipementRepository.save(new Equipement(lit, "EXCELLENT", "lit-médicalisé.jpg", ch3));
+        equipementRepository.save(new Equipement(fauteuil, "MOYEN", "fauteuil-roulant.png", ch1));
+        equipementRepository.save(new Equipement(deambulateur, "MAUVAIS", "déambulateur.jpg", ch2));
+        equipementRepository.save(new Equipement(lit, "BON", "lit-médicalisé.jpg", ch3));
         equipementRepository.save(new Equipement(tensiometre, "BON", "tensiomètre.jpg", ch4));
-        equipementRepository.save(new Equipement(chaiseDouche, "BON", "chaise-de-douche.jpg", ch5));
-        equipementRepository.save(new Equipement(tableSoins, "MOYEN", "table-de-soins.jpg", ch6));
-        equipementRepository.save(new Equipement(ambuBag, "EXCELLENT", "ambu-bag.jpg", ch7));
+        equipementRepository.save(new Equipement(chaiseDouche, "MOYEN", "chaise-de-douche.jpg", ch5));
+        equipementRepository.save(new Equipement(tableSoins, "MAUVAIS", "table-de-soins.jpg", ch6));
+        equipementRepository.save(new Equipement(ambuBag, "BON", "ambu-bag.jpg", ch7));
         equipementRepository.save(new Equipement(lampe, "BON", "lampe-medicale.jpg", ch8));
 
         // ------------------------------------------------------------
@@ -223,42 +226,42 @@ public DataInitializer(
         Employe educ2 = new Employe(
                 "Moreau", "Louis", LocalDate.now().minusYears(29),
                 "+32488007700", "Rue École 4, 1000 Bruxelles",
-                null, "Éducateur", 2200.0,
+                null, "Éducateur", 2270.0,
                 passwordEncoder.encode("educ2"),
                 "EDUCATEUR"
         );
         employeService.save(educ2);
 
-        // 5. SOIGNANTS (3)
+        Employe educ3 = new Employe(
+                "Bamba", "André", LocalDate.now().minusYears(29),
+                "+32480007700", "Rue Bienvenue 7, 1032 Bruxelles",
+                null, "Éducateur", 2200.0,
+                passwordEncoder.encode("educ3"),
+                "EDUCATEUR"
+        );
+        employeService.save(educ3);
+
+        // 5. SOIGNANTS
+
         Soignant soi1 = new Soignant(
-                "Martin", "Claire", LocalDate.now().minusYears(32),
-                "+32499001100", "Rue Santé 1, 1000 Bruxelles",
-                null, "Infirmière", 2600.0,
+                "Leroy", "Paul", LocalDate.now().minusYears(34),
+                "+32499002200", "Rue Santé 2, 1000 Bruxelles",
+                null, "Infirmier", 2550.0,
                 passwordEncoder.encode("soi001"),
                 "SOIGNANT",
-                "Diplôme Infirmier", "Gériatrie"
+                "Diplôme Infirmier", "Urgences"
         );
         employeService.save(soi1);
 
         Soignant soi2 = new Soignant(
-                "Leroy", "Paul", LocalDate.now().minusYears(34),
-                "+32499002200", "Rue Santé 2, 1000 Bruxelles",
-                null, "Infirmier", 2550.0,
-                passwordEncoder.encode("soi002"),
-                "SOIGNANT",
-                "Diplôme Infirmier", "Urgences"
-        );
-        employeService.save(soi2);
-
-        Soignant soi3 = new Soignant(
                 "Morel", "Sarah", LocalDate.now().minusYears(29),
                 "+32499003300", "Rue Santé 3, 1000 Bruxelles",
                 null, "Aide-soignante", 2400.0,
-                passwordEncoder.encode("soi003"),
+                passwordEncoder.encode("soi002"),
                 "SOIGNANT",
                 "Certificat AS", "Gériatrie"
         );
-        employeService.save(soi3);
+        employeService.save(soi2);
 
 
 
@@ -303,7 +306,7 @@ public DataInitializer(
                 LocalDate.now().minusMonths(3),
                 "Actif"
         );
-        res2.setChambre(ch2);
+        res2.setChambre(ch5);
         res2.ajouterFamille(fam2);
 
         DossierMedical dm2 = new DossierMedical(
@@ -355,7 +358,7 @@ public DataInitializer(
                 LocalDate.now().minusMonths(4),
                 "Actif"
         );
-        res4.setChambre(ch4);
+        res4.setChambre(ch6);
         res4.ajouterFamille(fam4);
 
         DossierMedical dm4 = new DossierMedical(
@@ -381,7 +384,7 @@ public DataInitializer(
                 LocalDate.now().minusMonths(5),
                 "Actif"
         );
-        res5.setChambre(ch5);
+        res5.setChambre(ch7);
         res5.ajouterFamille(fam5);
 
         DossierMedical dm5 = new DossierMedical(
@@ -407,7 +410,7 @@ public DataInitializer(
                 LocalDate.now().minusMonths(6),
                 "Actif"
         );
-        res6.setChambre(ch6);
+        res6.setChambre(ch8);
         res6.ajouterFamille(fam6);
 
         DossierMedical dm6 = new DossierMedical(
@@ -433,7 +436,7 @@ public DataInitializer(
                 LocalDate.now().minusMonths(7),
                 "Actif"
         );
-        res7.setChambre(ch7);
+        res7.setChambre(ch10);
         res7.ajouterFamille(fam7);
 
         DossierMedical dm7 = new DossierMedical(
@@ -456,7 +459,7 @@ public DataInitializer(
                 LocalDate.now().minusMonths(8),
                 "Actif"
         );
-        res8.setChambre(ch8);
+        res8.setChambre(ch9);
         res8.ajouterFamille(fam8);
 
         DossierMedical dm8 = new DossierMedical(
@@ -526,11 +529,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(7),
                 60,
                 "Salle 1",
-                "Gym douce",
                 LocalTime.of(10, 0)
         );
         act1.setNom("Gym Senior");
-        act1.setResponsable(soi1);
+        act1.setResponsable(educ2);
         act1.setCategorie(CategorieActivite.SPORTIF);
 
         // ACTIVITÉ 2
@@ -538,11 +540,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(14),
                 45,
                 "Salle 2",
-                "Atelier mémoire",
                 LocalTime.of(14, 0)
         );
         act2.setNom("Mémoire Plus");
-        act2.setResponsable(soi2);
+        act2.setResponsable(educ1);
         act2.setCategorie(CategorieActivite.EDUCATIF);
 
         // ACTIVITÉ 3
@@ -550,11 +551,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(7),
                 90,
                 "Salle 3",
-                "Art thérapie",
                 LocalTime.of(9, 0)
         );
         act3.setNom("Peinture Relax");
-        act3.setResponsable(soi3);
+        act3.setResponsable(educ3);
         act3.setCategorie(CategorieActivite.SOCIAL);
 
         // ACTIVITÉ 4
@@ -562,11 +562,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(8),
                 60,
                 "Salle 4",
-                "Musique",
                 LocalTime.of(11, 0)
         );
         act4.setNom("Chorale");
-        act4.setResponsable(soi3);
+        act4.setResponsable(educ2);
         act4.setCategorie(CategorieActivite.SOCIAL);
 
         // ACTIVITÉ 5
@@ -574,11 +573,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(9),
                 30,
                 "Salle 5",
-                "Lecture",
                 LocalTime.of(15, 0)
         );
         act5.setNom("Lecture Zen");
-        act5.setResponsable(soi2);
+        act5.setResponsable(educ1);
         act5.setCategorie(CategorieActivite.EDUCATIF);
 
         // ACTIVITÉ 6
@@ -586,11 +584,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(8),
                 50,
                 "Salle 6",
-                "Yoga",
                 LocalTime.of(16, 0)
         );
         act6.setNom("Yoga Doux");
-        act6.setResponsable(soi1);
+        act6.setResponsable(educ1);
         act6.setCategorie(CategorieActivite.SPORTIF);
 
         // ACTIVITÉ 7
@@ -598,11 +595,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(9),
                 40,
                 "Salle 7",
-                "Jeux de société",
                 LocalTime.of(13, 0)
         );
         act7.setNom("Jeux & Sourires");
-        act7.setResponsable(soi3);
+        act7.setResponsable(educ1);
         act7.setCategorie(CategorieActivite.SOCIAL);
 
         // ACTIVITÉ 8
@@ -610,11 +606,10 @@ public DataInitializer(
                 LocalDate.now().plusDays(10),
                 70,
                 "Salle 8",
-                "Danse",
                 LocalTime.of(17, 0)
         );
         act8.setNom("Danse Senior");
-        act8.setResponsable(soi2);
+        act8.setResponsable(educ3);
         act8.setCategorie(CategorieActivite.SPORTIF);
 
 
@@ -676,7 +671,7 @@ public DataInitializer(
         dm2.getConsultations().add(c2);
         consultationRepository.save(c2);
 
-        Consultation c3 = new Consultation(LocalDateTime.now().plusDays(3), "Tension élevée", "Traitement ajusté", res3, soi3, dm3);
+        Consultation c3 = new Consultation(LocalDateTime.now().plusDays(3), "Tension élevée", "Traitement ajusté", res3, soi2, dm3);
         res3.getConsultations().add(c3);
         dm3.getConsultations().add(c3);
         consultationRepository.save(c3);
@@ -691,7 +686,7 @@ public DataInitializer(
         dm5.getConsultations().add(c5);
         consultationRepository.save(c5);
 
-        Consultation c6 = new Consultation(LocalDateTime.now().plusDays(6), "Perte de mémoire", "Suivi Alzheimer", res6, soi3, dm6);
+        Consultation c6 = new Consultation(LocalDateTime.now().plusDays(6), "Perte de mémoire", "Suivi Alzheimer", res6, soi1, dm6);
         res6.getConsultations().add(c6);
         dm6.getConsultations().add(c6);
         consultationRepository.save(c6);
@@ -707,92 +702,89 @@ public DataInitializer(
         consultationRepository.save(c8);
 
         // ------------------------------------------------------------
-        // 12. FACTURES
+        // 12. FACTURES + 13. PAIEMENTS (14 factures au total)
+        // 6 PAYÉES | 6 EN_ATTENTE | 2 PARTIELLES
         // ------------------------------------------------------------
 
-        Facture fac1 = new Facture(LocalDate.now().minusDays(5), 150.0, "EN_ATTENTE", res1);
+        // --- PAYÉE 1 ---
+        Facture fac1 = new Facture(LocalDate.now().minusMonths(3), 300.0, "EN_ATTENTE", res1);
         factureRepository.save(fac1);
-        res1.getFactures().add(fac1);
+        Paiement pay1 = new Paiement(LocalDate.now().minusMonths(3).plusDays(2), 300.0, "VIREMENT", fac1);
+        pay1.validerPaiement(); fac1.ajouterPaiement(pay1);
+        paiementRepository.save(pay1); fac1.recalculerStatut(); factureRepository.save(fac1);
 
-        Facture fac2 = new Facture(LocalDate.now().minusDays(6), 180.0, "EN_ATTENTE", res2);
+        // --- PAYÉE 2 ---
+        Facture fac2 = new Facture(LocalDate.now().minusMonths(3), 250.0, "EN_ATTENTE", res2);
         factureRepository.save(fac2);
-        res2.getFactures().add(fac2);
+        Paiement pay2 = new Paiement(LocalDate.now().minusMonths(3).plusDays(3), 250.0, "CB", fac2);
+        pay2.validerPaiement(); fac2.ajouterPaiement(pay2);
+        paiementRepository.save(pay2); fac2.recalculerStatut(); factureRepository.save(fac2);
 
-        Facture fac3 = new Facture(LocalDate.now().minusDays(7), 200.0, "EN_ATTENTE", res3);
+        // --- PAYÉE 3 ---
+        Facture fac3 = new Facture(LocalDate.now().minusMonths(2), 180.0, "EN_ATTENTE", res3);
         factureRepository.save(fac3);
-        res3.getFactures().add(fac3);
+        Paiement pay3 = new Paiement(LocalDate.now().minusMonths(2).plusDays(1), 180.0, "ESPECES", fac3);
+        pay3.validerPaiement(); fac3.ajouterPaiement(pay3);
+        paiementRepository.save(pay3); fac3.recalculerStatut(); factureRepository.save(fac3);
 
-        Facture fac4 = new Facture(LocalDate.now().minusDays(8), 170.0, "EN_ATTENTE", res4);
+        // --- PAYÉE 4 ---
+        Facture fac4 = new Facture(LocalDate.now().minusMonths(2), 420.0, "EN_ATTENTE", res4);
         factureRepository.save(fac4);
-        res4.getFactures().add(fac4);
+        Paiement pay4 = new Paiement(LocalDate.now().minusMonths(2).plusDays(5), 420.0, "VIREMENT", fac4);
+        pay4.validerPaiement(); fac4.ajouterPaiement(pay4);
+        paiementRepository.save(pay4); fac4.recalculerStatut(); factureRepository.save(fac4);
 
-        Facture fac5 = new Facture(LocalDate.now().minusDays(9), 160.0, "EN_ATTENTE", res5);
+        // --- PAYÉE 5 ---
+        Facture fac5 = new Facture(LocalDate.now().minusMonths(1), 310.0, "EN_ATTENTE", res5);
         factureRepository.save(fac5);
-        res5.getFactures().add(fac5);
+        Paiement pay5 = new Paiement(LocalDate.now().minusMonths(1).plusDays(2), 310.0, "CB", fac5);
+        pay5.validerPaiement(); fac5.ajouterPaiement(pay5);
+        paiementRepository.save(pay5); fac5.recalculerStatut(); factureRepository.save(fac5);
 
-        Facture fac6 = new Facture(LocalDate.now().minusDays(10), 210.0, "EN_ATTENTE", res6);
+        // --- PAYÉE 6 ---
+        Facture fac6 = new Facture(LocalDate.now().minusMonths(1), 275.0, "EN_ATTENTE", res6);
         factureRepository.save(fac6);
-        res6.getFactures().add(fac6);
+        Paiement pay6 = new Paiement(LocalDate.now().minusMonths(1).plusDays(4), 275.0, "VIREMENT", fac6);
+        pay6.validerPaiement(); fac6.ajouterPaiement(pay6);
+        paiementRepository.save(pay6); fac6.recalculerStatut(); factureRepository.save(fac6);
 
-        Facture fac7 = new Facture(LocalDate.now().minusDays(11), 190.0, "EN_ATTENTE", res7);
-        factureRepository.save(fac7);
-        res7.getFactures().add(fac7);
-
-        Facture fac8 = new Facture(LocalDate.now().minusDays(12), 220.0, "EN_ATTENTE", res8);
-        factureRepository.save(fac8);
-        res8.getFactures().add(fac8);
-
-        // ------------------------------------------------------------
-        // 13. PAIEMENTS
-        // ------------------------------------------------------------
-
-        Paiement pay1 = new Paiement(LocalDate.now().minusDays(3), 50.0, "CB", fac1);
-        pay1.validerPaiement();
-        fac1.ajouterPaiement(pay1);
-        paiementRepository.save(pay1);
-        factureRepository.save(fac1);
-
-        Paiement pay2 = new Paiement(LocalDate.now().minusDays(4), 60.0, "CB", fac2);
-        pay2.validerPaiement();
-        fac2.ajouterPaiement(pay2);
-        paiementRepository.save(pay2);
-        factureRepository.save(fac2);
-
-        Paiement pay3 = new Paiement(LocalDate.now().minusDays(5), 70.0, "CB", fac3);
-        pay3.validerPaiement();
-        fac3.ajouterPaiement(pay3);
-        paiementRepository.save(pay3);
-        factureRepository.save(fac3);
-
-        Paiement pay4 = new Paiement(LocalDate.now().minusDays(6), 80.0, "CB", fac4);
-        pay4.validerPaiement();
-        fac4.ajouterPaiement(pay4);
-        paiementRepository.save(pay4);
-        factureRepository.save(fac4);
-
-        Paiement pay5 = new Paiement(LocalDate.now().minusDays(7), 90.0, "CB", fac5);
-        pay5.validerPaiement();
-        fac5.ajouterPaiement(pay5);
-        paiementRepository.save(pay5);
-        factureRepository.save(fac5);
-
-        Paiement pay6 = new Paiement(LocalDate.now().minusDays(8), 100.0, "CB", fac6);
-        pay6.validerPaiement();
-        fac6.ajouterPaiement(pay6);
-        paiementRepository.save(pay6);
-        factureRepository.save(fac6);
-
-        Paiement pay7 = new Paiement(LocalDate.now().minusDays(9), 110.0, "CB", fac7);
-        pay7.validerPaiement();
-        fac7.ajouterPaiement(pay7);
-        paiementRepository.save(pay7);
+        // --- EN_ATTENTE 1 ---
+        Facture fac7 = new Facture(LocalDate.now().minusDays(5), 150.0, "EN_ATTENTE", res1);
         factureRepository.save(fac7);
 
-        Paiement pay8 = new Paiement(LocalDate.now().minusDays(10), 120.0, "CB", fac8);
-        pay8.validerPaiement();
-        fac8.ajouterPaiement(pay8);
-        paiementRepository.save(pay8);
+        // --- EN_ATTENTE 2 ---
+        Facture fac8 = new Facture(LocalDate.now().minusDays(6), 180.0, "EN_ATTENTE", res2);
         factureRepository.save(fac8);
+
+        // --- EN_ATTENTE 3 ---
+        Facture fac9 = new Facture(LocalDate.now().minusDays(7), 200.0, "EN_ATTENTE", res3);
+        factureRepository.save(fac9);
+
+        // --- EN_ATTENTE 4 ---
+        Facture fac10 = new Facture(LocalDate.now().minusDays(8), 170.0, "EN_ATTENTE", res4);
+        factureRepository.save(fac10);
+
+        // --- EN_ATTENTE 5 ---
+        Facture fac11 = new Facture(LocalDate.now().minusDays(9), 160.0, "EN_ATTENTE", res5);
+        factureRepository.save(fac11);
+
+        // --- EN_ATTENTE 6 ---
+        Facture fac12 = new Facture(LocalDate.now().minusDays(10), 210.0, "EN_ATTENTE", res6);
+        factureRepository.save(fac12);
+
+        // --- PARTIELLE 1 ---
+        Facture fac13 = new Facture(LocalDate.now().minusDays(15), 400.0, "EN_ATTENTE", res7);
+        factureRepository.save(fac13);
+        Paiement pay13 = new Paiement(LocalDate.now().minusDays(10), 150.0, "CB", fac13);
+        pay13.validerPaiement(); fac13.ajouterPaiement(pay13);
+        paiementRepository.save(pay13); fac13.recalculerStatut(); factureRepository.save(fac13);
+
+        // --- PARTIELLE 2 ---
+        Facture fac14 = new Facture(LocalDate.now().minusDays(20), 350.0, "EN_ATTENTE", res8);
+        factureRepository.save(fac14);
+        Paiement pay14 = new Paiement(LocalDate.now().minusDays(12), 100.0, "VIREMENT", fac14);
+        pay14.validerPaiement(); fac14.ajouterPaiement(pay14);
+        paiementRepository.save(pay14); fac14.recalculerStatut(); factureRepository.save(fac14);
 
 
         // ------------------------------------------------------------
@@ -806,7 +798,7 @@ public DataInitializer(
                 LocalTime.of(17, 0)
         );
         p1.ajouterActivite(act1);
-        p1.setResponsable(soi1);
+        p1.setResponsable(educ1);
         planningRepository.save(p1);
 
         // PLANNING 2
@@ -846,7 +838,7 @@ public DataInitializer(
                 LocalTime.of(17, 0)
         );
         p5.ajouterActivite(act5);
-        p5.setResponsable(soi1);
+        p5.setResponsable(educ2);
         planningRepository.save(p5);
 
         // PLANNING 6
@@ -856,7 +848,7 @@ public DataInitializer(
                 LocalTime.of(17, 0)
         );
         p6.ajouterActivite(act6);
-        p6.setResponsable(soi2);
+        p6.setResponsable(educ2);
         planningRepository.save(p6);
 
         // PLANNING 7
@@ -866,7 +858,7 @@ public DataInitializer(
                 LocalTime.of(17, 0)
         );
         p7.ajouterActivite(act7);
-        p7.setResponsable(soi3);
+        p7.setResponsable(educ3);
         planningRepository.save(p7);
 
         // PLANNING 8

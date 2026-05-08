@@ -51,7 +51,7 @@
 
             <div>
                 <label>Téléphone</label>
-                <input type="text" th:field="*{telephone}" class="form-control">
+                <input type="tel" id="telephone" th:field="*{telephone}" class="form-control">
                 <div class="error" th:errors="*{telephone}"></div>
             </div>
 
@@ -62,6 +62,8 @@
 
             <!-- Matricule généré automatiquement -->
             <input type="hidden" th:field="*{matricule}">
+            <input type="hidden" th:field="*{password}">
+            <input type="hidden" th:field="*{roleApp}">
 
 
             <div>

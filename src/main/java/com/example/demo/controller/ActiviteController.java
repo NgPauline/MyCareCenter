@@ -74,7 +74,7 @@ public class ActiviteController {
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
     public String createForm(Model model) {
         model.addAttribute("activite", new Activite());
-        model.addAttribute("soignants", soignantService.findAll());
+        model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/activites");
         model.addAttribute("activePage", "activites");
@@ -85,12 +85,12 @@ public class ActiviteController {
     @PostMapping
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
     public String create(@Valid @ModelAttribute Activite activite,
-                         BindingResult bindingResult,
-                         @RequestParam Integer responsableId,
-                         Model model) {
+                        BindingResult bindingResult,
+                        @RequestParam Integer responsableId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("soignants", soignantService.findAll());
+            model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/activites");
             model.addAttribute("activePage", "activites");
@@ -98,7 +98,7 @@ public class ActiviteController {
         }
 
         try {
-            Soignant responsable = soignantService.findById(responsableId).orElseThrow();
+            Employe responsable = employeService.findById(responsableId).orElseThrow();
             activite.setResponsable(responsable);
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -109,7 +109,7 @@ public class ActiviteController {
 
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("heureDebut", "error.activite", e.getMessage());
-            model.addAttribute("soignants", soignantService.findAll());
+            model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/activites");
             model.addAttribute("activePage", "activites");
@@ -135,7 +135,7 @@ public class ActiviteController {
     public String editForm(@PathVariable Integer id, Model model) {
         Activite activite = activiteService.findById(id).orElseThrow();
         model.addAttribute("activite", activite);
-        model.addAttribute("soignants", soignantService.findAll());
+        model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/activites/" + id);
         model.addAttribute("activePage", "activites");
@@ -146,13 +146,13 @@ public class ActiviteController {
     @PostMapping("/{id}")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
     public String update(@PathVariable Integer id,
-                         @Valid @ModelAttribute Activite activite,
-                         BindingResult bindingResult,
-                         @RequestParam(required = false) Integer responsableId,
-                         Model model) {
+                        @Valid @ModelAttribute Activite activite,
+                        BindingResult bindingResult,
+                        @RequestParam(required = false) Integer responsableId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("soignants", soignantService.findAll());
+            model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/activites/" + id);
             model.addAttribute("activePage", "activites");
@@ -165,7 +165,7 @@ public class ActiviteController {
 
         try {
             if (responsableId != null) {
-                Soignant responsable = soignantService.findById(responsableId).orElseThrow();
+                Employe responsable = employeService.findById(responsableId).orElseThrow();
                 activite.setResponsable(responsable);
             }
 
@@ -177,7 +177,7 @@ public class ActiviteController {
 
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("heureDebut", "error.activite", e.getMessage());
-            model.addAttribute("soignants", soignantService.findAll());
+            model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/activites/" + id);
             model.addAttribute("activePage", "activites");

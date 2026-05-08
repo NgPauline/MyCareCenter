@@ -1,8 +1,0 @@
-<!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/base :: layout('Paiements', 'Paiements', ~{::section})}">
-
-<th:block th:fragment="section">
-    <p>Test</p>
-</th:block>
-</html>

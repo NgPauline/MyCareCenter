@@ -72,7 +72,8 @@
                 <input type="file" name="photoFile" class="form-control">
 
                     <div th:if="${equipement.photoPath != null}" class="mt-2">
-                        <img th:src="@{|/uploads/equipements/${equipement.photoPath}|}">
+                        <img th:src="@{|/uploads/equipements/${equipement.photoPath}|}"
+                            style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
                     </div>
 
             </div>

@@ -47,4 +47,11 @@ public class TypeEquipementService {
         long utilises = countUtilises(type.getId());
         return type.getQuantiteTotale() - utilises;
     }
+
+    public long getTotalStock() {
+    return findAll()
+            .stream()
+            .mapToLong(TypeEquipement::getQuantiteTotale)
+            .sum();
+}
 }

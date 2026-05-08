@@ -19,7 +19,7 @@
 
                 <div class="equipement-photo">
              <img th:src="${t.photoPath != null} ?
-             @{|/equipements-img/equipements/${t.photoPath}|} :
+             @{|/uploads/types/${t.photoPath}|}:
              @{/images/default-equipement.png}">
 
 

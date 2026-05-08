@@ -126,8 +126,8 @@
 
                 <!-- Ajouter paiement -->
                 <div class="mt-3" sec:authorize="hasRole('FINANCE')">
-                    <a th:href="@{/paiements/new(factureId=${facture.idFacture})}"
-                       class="btn-small gold">
+                    <a th:href="@{/paiements/new(factureId=${facture.idFacture}, from='/factures/' + ${facture.idFacture})}"
+                    class="btn-small gold">
                         <img src="/images/ajouter.png" class="icon-20">
                         Ajouter un paiement
                     </a>
