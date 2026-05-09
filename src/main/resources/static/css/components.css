@@ -217,7 +217,7 @@
 
 body.login-page {
     margin: 0;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Garamond', sans-serif;
     height: 100vh;
     display: flex;
     justify-content: flex-end;
@@ -327,7 +327,7 @@ body.login-page {
     border-radius: 8px;
     font-size: 15px;
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Garamond', sans-serif;
     cursor: pointer;
     transition: 0.25s ease;
     margin-top: 8px;
@@ -372,7 +372,7 @@ body.login-page {
     border-radius: 8px;
     font-size: 15px;
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Garamond', sans-serif;
     cursor: pointer;
     transition: 0.25s ease;
     margin-top: 8px;

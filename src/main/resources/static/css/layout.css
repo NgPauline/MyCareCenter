@@ -267,3 +267,24 @@ body {
     display: block;
     font-family:'Garamond', sans-serif;
 }
+
+.navbar-toggler[data-widget="pushmenu"] {
+    border: none;
+    background: none;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.navbar-toggler[data-widget="pushmenu"] .fas.fa-bars {
+    font-size: 1.4rem;
+    color: #d4af37;
+}
+
+
+@media (max-width: 768px) {
+    .header-slogan,
+    .header-subtext {
+        display: none;
+    }
+}
+
