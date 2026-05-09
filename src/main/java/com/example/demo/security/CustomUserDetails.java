@@ -23,6 +23,10 @@ public class CustomUserDetails implements UserDetails {
         return employe.getPrenom();
     }
 
+    public String getPoste() {
+        return employe.getPoste();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(() -> "ROLE_" + employe.getRoleApp());

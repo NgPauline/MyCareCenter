@@ -29,12 +29,18 @@ public class TraitementController {
     /* ---------------- LISTE ---------------- */
     @GetMapping
     public String list(@RequestParam(required = false) Integer resident,
-                       Model model) {
+                    @RequestParam(name = "q", required = false) String q,
+                    Model model) {
 
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
-            model.addAttribute("traitements", traitementService.findByResident(r));
+            var traitements = (q != null && !q.isBlank())
+                    ? traitementService.searchByResident(r, q)
+                    : traitementService.findByResident(r);
+
+            model.addAttribute("traitements", traitements);
             model.addAttribute("residentId", resident);
+            model.addAttribute("q", q);
             return "traitements/list";
         }
 

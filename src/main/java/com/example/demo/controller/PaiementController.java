@@ -32,11 +32,17 @@ public class PaiementController {
 
     @GetMapping
     public String list(@RequestParam(required = false) Integer resident,
+                    @RequestParam(name = "q", required = false) String q,
                     Model model) {
 
         if (resident != null) {
-            model.addAttribute("paiements", paiementService.findByResidentId(resident));
+            var paiements = (q != null && !q.isBlank())
+                    ? paiementService.searchByResidentId(resident, q)
+                    : paiementService.findByResidentId(resident);
+
+            model.addAttribute("paiements", paiements);
             model.addAttribute("residentId", resident);
+            model.addAttribute("q", q);
             model.addAttribute("activePage", "residents");
             return "paiements/list";
         }

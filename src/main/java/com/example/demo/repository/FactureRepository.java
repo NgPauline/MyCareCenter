@@ -56,4 +56,16 @@ List<Facture> search(@Param("kw") String keyword);
          "FROM Facture f WHERE f.statut = 'PAYEE' AND f.dateEmission >= :start " +
          "GROUP BY FUNCTION('DATE_FORMAT', f.dateEmission, '%Y-%m')")
    List<Object[]> sumMontantPayeeGroupedByMonth(@Param("start") LocalDate start);
-}
+
+      @Query("""
+      SELECT f FROM Facture f
+      WHERE f.resident = :resident
+      AND (
+         LOWER(f.statut) LIKE %:kw%
+         OR LOWER(f.resident.nom) LIKE %:kw%
+         OR LOWER(f.resident.prenom) LIKE %:kw%
+      )
+      """)
+   List<Facture> searchByResident(@Param("resident") Resident resident,
+                                 @Param("kw") String keyword);
+   }

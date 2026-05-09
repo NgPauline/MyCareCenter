@@ -58,46 +58,6 @@
 
             </div>
 
-         <!-- ACTIVITÉS -->
-        <div>
-            <label>Activités disponibles</label>
-
-            <div th:if="${#lists.isEmpty(activites)}" class="alert alert-warning mt-2">
-                Aucune activité disponible. 
-                <a th:href="@{/activites/new}">Créer une activité d'abord</a>
-            </div>
-
-            <div th:each="a : ${activites}" class="form-check mb-2">
-                <input type="checkbox"
-                name="activiteIds"
-                th:value="${a.idActivite}"
-                th:checked="${planning.activites != null and planning.activites.contains(a)}"
-                class="form-check-input activite-checkbox"
-                th:attr="data-date=${a.date},
-                            data-heure-debut=${a.heureDebut},
-                            data-heure-fin=${a.heureFin}">
-                <label>
-                    <!-- Nom + type -->
-                    <strong th:text="${a.nom}"></strong>
-                    <span class="text-muted" th:text="'(' + ${a.categorie} + ')'"></span>
-                    —
-                    <!-- Date -->
-                    <span th:text="${#temporals.format(a.date, 'dd/MM/yyyy')}"></span>
-                    —
-                    <!-- Heure début → fin -->
-                    <span th:text="${a.heureDebut} + ' → ' + ${a.heureFin}"></span>
-                    —
-                    <!-- Lieu -->
-                    <span th:text="${a.lieu}"></span>
-                    —
-                    <!-- Responsable soignant -->
-                    <span th:if="${a.responsable != null}"
-                        th:text="${a.responsable.nom} + ' ' + ${a.responsable.prenom}">
-                    </span>
-                </label>
-            </div>
-        </div>
-
         </div>
 
         <div class="form-actions mt-3">

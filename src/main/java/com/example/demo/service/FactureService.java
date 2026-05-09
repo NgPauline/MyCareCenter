@@ -167,4 +167,8 @@ public List<Long> getMonthlyPaid(int months) {
     return new ArrayList<>(map.values());
 }    
 
+    public List<Facture> searchByResident(Resident resident, String keyword) {
+        return factureRepository.searchByResident(resident, keyword.toLowerCase());
+    }
+
 }

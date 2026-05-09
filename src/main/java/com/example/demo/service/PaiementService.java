@@ -44,4 +44,8 @@ public class PaiementService {
     return paiementRepository.findByFacture_Resident_IdPersonne(residentId);
 }
 
+    public List<Paiement> searchByResidentId(Integer residentId, String keyword) {
+        return paiementRepository.searchByResidentId(residentId, keyword.toLowerCase());
+    }
+
 }

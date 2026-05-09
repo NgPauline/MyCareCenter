@@ -54,4 +54,9 @@ public class TypeEquipementService {
             .mapToLong(TypeEquipement::getQuantiteTotale)
             .sum();
 }
+
+    public List<TypeEquipement> search(String keyword) {
+        return repo.search(keyword.toLowerCase());
+    }
+
 }

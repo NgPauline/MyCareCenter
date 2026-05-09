@@ -74,4 +74,8 @@ public class FamilleService {
     return familleRepository.findByResidents_IdPersonne(idResident);
 }
 
+    public List<Famille> searchByResidentId(Integer idResident, String keyword) {
+        return familleRepository.searchByResidentId(idResident, keyword.toLowerCase());
+    }
+
 }

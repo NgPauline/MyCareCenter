@@ -32,11 +32,17 @@ public class FamilleController {
     /* LISTE */
     @GetMapping
     public String list(@RequestParam(required = false) Integer resident,
-                       Model model) {
+                    @RequestParam(name = "q", required = false) String q,
+                    Model model) {
 
         if (resident != null) {
-            model.addAttribute("familles", familleService.findByResidentId(resident));
+            var familles = (q != null && !q.isBlank())
+                    ? familleService.searchByResidentId(resident, q)
+                    : familleService.findByResidentId(resident);
+
+            model.addAttribute("familles", familles);
             model.addAttribute("residentId", resident);
+            model.addAttribute("q", q);
             model.addAttribute("activePage", "residents");
             return "familles/list";
         }

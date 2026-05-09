@@ -87,7 +87,20 @@
             <!-- RESPONSABLE -->
             <div>
                 <label>Responsable</label>
-                <select name="responsableId" class="form-control">
+
+                <!-- ✅ Éducateur : son nom affiché en fixe + champ caché -->
+                <div th:if="${isEducateur}">
+                    <input type="text"
+                        class="form-control"
+                        th:value="|${activite.responsable.nom} ${activite.responsable.prenom}|"
+                        disabled>
+                    <input type="hidden"
+                        name="responsableId"
+                        th:value="${activite.responsable.idPersonne}">
+                </div>
+
+                <!-- ✅ Directeur / Administratif : liste déroulante normale -->
+                <select th:unless="${isEducateur}" name="responsableId" class="form-control">
                     <option value="">-- Choisir --</option>
                     <option th:each="e : ${employes}"
                             th:value="${e.idPersonne}"

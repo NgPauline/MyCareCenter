@@ -167,4 +167,8 @@ public class ConsultationService {
 
         consultationRepository.deleteById(id);
     }
+
+        public List<Consultation> searchByResident(Resident resident, String keyword) {
+        return consultationRepository.searchByResident(resident, keyword.toLowerCase());
+    }
 }

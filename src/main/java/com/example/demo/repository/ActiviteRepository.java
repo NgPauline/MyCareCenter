@@ -49,5 +49,19 @@ public interface ActiviteRepository extends JpaRepository<Activite, Integer> {
             OR LOWER(a.responsable.prenom) LIKE %:kw%
         """)
     Page<Activite> search(@Param("kw") String keyword, Pageable pageable);
+
+        @Query("""
+        SELECT a FROM Activite a
+        JOIN a.participants p
+        WHERE p.idPersonne = :idResident
+        AND (
+            LOWER(a.nom) LIKE %:kw%
+            OR LOWER(CAST(a.categorie AS string)) LIKE %:kw%
+            OR LOWER(a.lieu) LIKE %:kw%
+            OR CAST(a.date AS string) LIKE %:kw%
+        )
+        """)
+    List<Activite> searchByParticipant(@Param("idResident") Integer idResident,
+                                    @Param("kw") String keyword);
     
     }

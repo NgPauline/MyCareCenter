@@ -68,4 +68,8 @@ public class TraitementService {
         Integer idDossier = resident.getDossierMedical().getIdDossier();
         return traitementRepo.findByDossierMedical_IdDossier(idDossier);
     }
+
+    public List<Traitement> searchByResident(Resident resident, String keyword) {
+        return traitementRepo.searchByResident(resident, keyword.toLowerCase());
+    }
 }

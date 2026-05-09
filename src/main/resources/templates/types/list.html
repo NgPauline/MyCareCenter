@@ -1,18 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout/base :: layout('Types equipement', '', ~{::section})}">
 
 <section th:fragment="section">
 
     <div class="list-header d-flex justify-content-between align-items-center">
-        <h2 class="m-0">Catalogue des équipements</h2>
+
+    <h2 class="m-0 d-flex align-items-center">
+            Catalogue des équipements
+
+            <!-- ✅ Bouton recherche -->
+            <button class="btn-circle ml-2"
+                    data-search-toggle="searchBarTypes"
+                    title="Rechercher un type">
+                <img th:src="@{/images/rechercher.png}" class="icon-22">
+            </button>
+        </h2>
 
         <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
-            th:href="@{/types-equipement/new}" class="icon-btn">
+        th:href="@{/types-equipement/new}" class="icon-btn">
             <img th:src="@{/images/ajouter.png}" class="icon-26">
         </a>
+
     </div>
+
+    <!-- ✅ Barre de recherche -->
+    <form id="searchBarTypes" class="mt-3" method="get" style="display:none;">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control"
+                placeholder="Rechercher un type d'équipement..."
+                th:value="${param.q}">
+            <div class="input-group-append">
+                <button class="btn-gold" type="submit">
+                    <img th:src="@{/images/rechercher.png}" class="icon-20">
+                </button>
+            </div>
+        </div>
+    </form>
 
     <div class="equipements-grid mt-4">
 

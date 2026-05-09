@@ -42,9 +42,13 @@
     <!-- BARRE DE RECHERCHE -->
     <form id="searchBarActivites" class="mt-3" method="get" style="display:none;">
         <div class="input-group">
+
+            <!-- ✅ Conserver le résident si on est dans son contexte -->
+            <input type="hidden" name="resident" th:if="${resident != null}" th:value="${resident}">
+
             <input type="text" name="q" class="form-control"
-                   placeholder="Rechercher une activité..."
-                   th:value="${param.q}">
+                placeholder="Rechercher une activité..."
+                th:value="${param.q}">
             <div class="input-group-append">
                 <button class="btn-gold" type="submit">
                     <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">

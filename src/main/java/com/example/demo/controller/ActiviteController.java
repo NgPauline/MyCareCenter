@@ -45,16 +45,23 @@ public class ActiviteController {
     /* LISTE */
     @GetMapping
     public String list(@RequestParam(required = false) Integer resident,
-                       @RequestParam(name = "q", required = false) String q,
-                       @RequestParam(value = "page", defaultValue = "0") int page,
-                       Model model) {
+                    @RequestParam(name = "q", required = false) String q,
+                    @RequestParam(value = "page", defaultValue = "0") int page,
+                    Model model) {
 
+        // ✅ Contexte résident
         if (resident != null) {
-            model.addAttribute("activites", activiteService.findByParticipant(resident));
+            var activites = (q != null && !q.isBlank())
+                    ? activiteService.searchByParticipant(resident, q)  // ✅ recherche filtrée
+                    : activiteService.findByParticipant(resident);       // liste normale
+
+            model.addAttribute("activites", activites);
+            model.addAttribute("resident", resident); // ✅ pour le formulaire de recherche
             model.addAttribute("activePage", "residents");
             return "activites/list";
         }
 
+        // Liste globale (inchangée)
         int size = 4;
         Pageable pageable = PageRequest.of(page, size);
         var pageResult = (q != null && !q.isBlank())
@@ -72,12 +79,27 @@ public class ActiviteController {
     /* FORMULAIRE CRÉATION */
     @GetMapping("/new")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
-    public String createForm(Model model) {
-        model.addAttribute("activite", new Activite());
+    public String createForm(Model model, Authentication auth) {
+
+        Activite activite = new Activite();
+
+        employeService.findByMatricule(auth.getName()).ifPresent(employe -> {
+            if ("EDUCATEUR".equals(employe.getRoleApp())) {
+                activite.setResponsable(employe);
+            }
+        });
+
+        model.addAttribute("activite", activite);
         model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/activites");
         model.addAttribute("activePage", "activites");
+
+        // ✅ Passer le rôle au modèle
+        boolean isEducateur = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_EDUCATEUR"));
+        model.addAttribute("isEducateur", isEducateur);
+
         return "activites/form";
     }
 

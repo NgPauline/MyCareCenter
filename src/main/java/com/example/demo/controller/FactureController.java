@@ -36,21 +36,27 @@ public class FactureController {
     /* LISTE */
     @GetMapping
     public String list(@RequestParam(required = false) Integer resident,
-                       @RequestParam(name = "q", required = false) String q,
-                       @RequestParam(value = "page", defaultValue = "0") int page,
-                       Model model) {
+                    @RequestParam(name = "q", required = false) String q,
+                    @RequestParam(value = "page", defaultValue = "0") int page,
+                    Model model) {
 
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
-            model.addAttribute("factures", factureService.findByResident(r));
-            model.addAttribute("residentId", resident); 
+
+            // ✅ Recherche filtrée par résident
+            var factures = (q != null && !q.isBlank())
+                    ? factureService.searchByResident(r, q)
+                    : factureService.findByResident(r);
+
+            model.addAttribute("factures", factures);
+            model.addAttribute("residentId", resident);
+            model.addAttribute("q", q);
             model.addAttribute("activePage", "residents");
             return "factures/list";
         }
 
         int size = 4;
         Pageable pageable = PageRequest.of(page, size);
-
         var pageResult = (q != null && !q.isBlank())
                 ? factureService.search(q, pageable)
                 : factureService.findAll(pageable);

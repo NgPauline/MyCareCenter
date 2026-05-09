@@ -33,24 +33,25 @@ public class TypeEquipementController {
     // LISTE + STOCK UTILISÉ / RESTANT
     // ---------------------------------------------------------
     @GetMapping
-    public String list(Model model) {
+    public String list(@RequestParam(name = "q", required = false) String q,
+                    Model model) {
 
-        List<TypeEquipement> types = typeService.findAll();
+        List<TypeEquipement> types = (q != null && !q.isBlank())
+                ? typeService.search(q)
+                : typeService.findAll();
 
         Map<Integer, Long> utilisesMap = new HashMap<>();
         Map<Integer, Long> restantsMap = new HashMap<>();
 
         for (TypeEquipement t : types) {
-            long utilises = typeService.countUtilises(t.getId());
-            long restants = typeService.countRestants(t);
-
-            utilisesMap.put(t.getId(), utilises);
-            restantsMap.put(t.getId(), restants);
+            utilisesMap.put(t.getId(), typeService.countUtilises(t.getId()));
+            restantsMap.put(t.getId(), typeService.countRestants(t));
         }
 
         model.addAttribute("types", types);
         model.addAttribute("utilisesMap", utilisesMap);
         model.addAttribute("restantsMap", restantsMap);
+        model.addAttribute("q", q);
         model.addAttribute("activePage", "types-equipement");
 
         return "types/list";

@@ -39,13 +39,20 @@ public class ConsultationController {
     /* ---------------- LISTE ---------------- */
     @GetMapping
     public String list(@RequestParam(required = false) Integer resident,
-                       @RequestParam(required = false) Integer soignant,
-                       Model model) {
+                    @RequestParam(required = false) Integer soignant,
+                    @RequestParam(name = "q", required = false) String q,
+                    Model model) {
 
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
-            model.addAttribute("consultations", consultationService.findByResident(r));
+            var consultations = (q != null && !q.isBlank())
+                    ? consultationService.searchByResident(r, q)
+                    : consultationService.findByResident(r);
+
+            model.addAttribute("consultations", consultations);
             model.addAttribute("residentId", resident);
+            model.addAttribute("q", q);
+            model.addAttribute("activePage", "residents");
             return "consultations/list";
         }
 

@@ -180,6 +180,10 @@ public class ActiviteService {
         return activiteRepository.findByParticipants_IdPersonne(idResident);
     }
 
+    public List<Activite> searchByParticipant(Integer idResident, String keyword) {
+        return activiteRepository.searchByParticipant(idResident, keyword.toLowerCase());
+    }
+
     public List<Activite> search(String keyword) {
         return activiteRepository.search(keyword.toLowerCase());
     }
