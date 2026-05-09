@@ -62,6 +62,19 @@
                 <div class="error" th:errors="*{adresse}"></div>
             </div>
 
+            <!-- Résident pré-rempli (venant d'une fiche résident) -->
+            <div th:if="${!isEdit and residentId != null}">
+                <label>Résident associé</label>
+                <input type="text"
+                    class="form-control"
+                    th:value="${residentPreRempli != null
+                        ? residentPreRempli.nom + ' ' + residentPreRempli.prenom
+                        : ''}"
+                    readonly>
+                <!-- residentId déjà transmis par le hidden en haut du form -->
+            </div>
+
+            <!-- Sélection libre (accès direct à /familles/new) -->
             <div th:if="${!isEdit and residentId == null}">
                 <label>Associer un résident</label>
                 <select name="residentId" class="form-control">

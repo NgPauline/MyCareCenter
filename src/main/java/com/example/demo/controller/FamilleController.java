@@ -59,6 +59,11 @@ public class FamilleController {
         model.addAttribute("submitUrl", "/familles");
         model.addAttribute("activePage", "familles");
 
+         if (residentId != null) {
+            residentService.findById(residentId)
+                .ifPresent(r -> model.addAttribute("residentPreRempli", r));
+        }
+        
         return "familles/form";
     }
 

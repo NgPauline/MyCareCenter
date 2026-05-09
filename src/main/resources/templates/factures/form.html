@@ -31,29 +31,30 @@
 
         <div class="form-grid">
 
-            <!-- Résident -->
+
+            <!-- RÉSIDENT -->
             <div>
                 <label>Résident</label>
 
-                <!-- Mode création -->
-                <select name="residentId" class="form-select" th:if="${!isEdit}">
+                <!-- Résident pré-rempli (venant d'une fiche résident) -->
+                <div th:if="${residentId != null}">
+                    <input type="text"
+                        class="form-control"
+                        th:value="${residentPreRempli != null
+                            ? residentPreRempli.nom + ' ' + residentPreRempli.prenom
+                            : ''}"
+                        readonly>
+                    <input type="hidden" name="residentId" th:value="${residentId}">
+                </div>
+
+                <!-- Sélection libre (accès direct à /factures/new) -->
+                <select th:if="${residentId == null}" name="residentId" class="form-select">
                     <option th:each="r : ${residents}"
                             th:value="${r.idPersonne}"
                             th:selected="${facture.resident != null and facture.resident.idPersonne == r.idPersonne}"
                             th:text="|${r.nom} ${r.prenom}|">
                     </option>
                 </select>
-
-                <!-- Mode édition -->
-                <div th:if="${isEdit}">
-                    <input type="text"
-                           class="form-control"
-                           th:value="|${facture.resident.nom} ${facture.resident.prenom}|"
-                           readonly>
-
-                    <input type="hidden" name="residentId"
-                           th:value="${facture.resident.idPersonne}">
-                </div>
 
                 <div class="error" th:errors="*{resident}"></div>
             </div>

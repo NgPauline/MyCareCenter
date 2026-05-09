@@ -68,7 +68,19 @@
 
             </div>
 
-            <div>
+            <!-- RÉSIDENT pré-rempli (venant d'une fiche résident) -->
+            <div th:if="${residentId != null}">
+                <label>Résident</label>
+                <input type="text"
+                    class="form-control"
+                    th:value="${residentPreRempli != null
+                        ? residentPreRempli.nom + ' ' + residentPreRempli.prenom : ''}"
+                    readonly>
+                <input type="hidden" name="residentId" th:value="${residentId}">
+            </div>
+
+            <!-- RÉSIDENT sélection libre -->
+            <div th:if="${residentId == null}">
                 <label>Résident</label>
                 <select name="residentId" class="form-control">
                     <option th:each="r : ${residents}"

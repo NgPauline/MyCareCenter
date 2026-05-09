@@ -31,7 +31,7 @@
 
         <!-- Ajouter -->
         <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
-           th:href="@{/traitements/new}"
+        th:href="${residentId != null} ? @{/traitements/new(residentId=${residentId})} : @{/traitements/new}"
            class="btn-circle"
            title="Ajouter un traitement">
             <img th:src="@{/images/ajouter.png}" class="icon-26">

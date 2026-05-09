@@ -34,6 +34,7 @@ public class TraitementController {
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
             model.addAttribute("traitements", traitementService.findByResident(r));
+            model.addAttribute("residentId", resident);
             return "traitements/list";
         }
 
@@ -43,11 +44,18 @@ public class TraitementController {
 
     /* ---------------- FORMULAIRE CREATION ---------------- */
     @GetMapping("/new")
-    public String createForm(Model model) {
+    public String createForm(@RequestParam(required = false) Integer residentId, Model model) {
         model.addAttribute("traitement", new Traitement());
         model.addAttribute("residents", residentService.findAll());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/traitements");
+        model.addAttribute("residentId", residentId);
+
+        if (residentId != null) {
+        residentService.findById(residentId)
+            .ifPresent(r -> model.addAttribute("residentPreRempli", r)); 
+        }
+
         return "traitements/form";
     }
 

@@ -31,7 +31,7 @@
 
         <!-- Ajouter -->
         <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
-           th:href="@{/consultations/new}"
+           th:href="${residentId != null} ? @{/consultations/new(residentId=${residentId})} : @{/consultations/new}"
            class="btn-circle"
            title="Ajouter une consultation">
             <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">

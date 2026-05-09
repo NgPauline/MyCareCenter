@@ -43,6 +43,7 @@ public class FactureController {
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
             model.addAttribute("factures", factureService.findByResident(r));
+            model.addAttribute("residentId", resident); 
             model.addAttribute("activePage", "residents");
             return "factures/list";
         }
@@ -64,10 +65,20 @@ public class FactureController {
 
     /* FORMULAIRE CREATION */
     @GetMapping("/new")
-    public String createForm(Model model) {
+    public String createForm(@RequestParam(required = false) Integer residentId, Model model) {
+
+    Facture facture = new Facture();
+
+    if (residentId != null) {
+        residentService.findById(residentId).ifPresent(r -> {
+            facture.setResident(r);
+            model.addAttribute("residentPreRempli", r); // ← ajouter
+        });
+    }
 
         model.addAttribute("facture", new Facture());
         model.addAttribute("residents", residentService.findAll());
+        model.addAttribute("residentId", residentId);
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/factures");
         model.addAttribute("activePage", "factures");

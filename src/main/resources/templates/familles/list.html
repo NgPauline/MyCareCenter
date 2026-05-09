@@ -29,7 +29,7 @@
         </h2>
 
         <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
-           th:href="@{/familles/new}"
+           th:href="${residentId != null} ? @{/familles/new(residentId=${residentId})} : @{/familles/new}"
            class="btn-circle"
            title="Ajouter une famille">
             <img th:src="@{/images/ajouter.png}" class="icon-26">

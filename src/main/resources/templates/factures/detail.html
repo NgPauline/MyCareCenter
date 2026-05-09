@@ -29,7 +29,8 @@
 
             <!-- Modifier -->
             <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-               th:href="@{/factures/{id}/edit(id=${facture.idFacture})}"
+            th:if="${facture.statut != 'PAYEE'}"
+            th:href="@{/factures/{id}/edit(id=${facture.idFacture})}"
                class="btn-circle" title="Modifier">
                 <img src="/images/modifier.png" class="icon-26">
             </a>

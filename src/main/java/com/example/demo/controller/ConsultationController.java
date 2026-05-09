@@ -45,6 +45,7 @@ public class ConsultationController {
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
             model.addAttribute("consultations", consultationService.findByResident(r));
+            model.addAttribute("residentId", resident);
             return "consultations/list";
         }
 
@@ -60,12 +61,20 @@ public class ConsultationController {
 
     /* ---------------- FORMULAIRE CREATION ---------------- */
     @GetMapping("/new")
-    public String createForm(Model model) {
+    public String createForm(@RequestParam(required = false) Integer residentId, Model model) {
+
         model.addAttribute("consultation", new Consultation());
         model.addAttribute("residents", residentService.findAll());
         model.addAttribute("soignants", soignantService.findAll());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/consultations");
+        model.addAttribute("residentId", residentId);
+
+        // Résident pré-rempli
+        if (residentId != null) {
+            residentService.findById(residentId)
+                .ifPresent(r -> model.addAttribute("residentPreRempli", r)); 
+        }
 
             // Passer le soignant connecté si rôle SOIGNANT
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();

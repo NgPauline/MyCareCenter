@@ -21,7 +21,7 @@
         <h2 class="m-0 d-flex align-items-center">
             Équipements
 
-            <button class="icon-btn ml-2"
+            <button class="btn-circle ml-2"
                     data-search-toggle="searchBarEquipements"
                     title="Rechercher un équipement">
                 <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-22">
@@ -41,13 +41,15 @@
     <form id="searchBarEquipements" class="mt-3" method="get" style="display:none;">
         <div class="input-group">
             <input type="text" name="q" class="form-control"
-                   placeholder="Rechercher un équipement..."
-                   th:value="${param.q}">
+                placeholder="Rechercher un équipement..."
+                th:value="${param.q}">
+
             <div class="input-group-append">
-                <button class="btn btn-secondary" type="submit">
+                <button class="btn-gold" type="submit" title="Lancer la recherche">
                     <img th:src="@{/images/rechercher.png}" alt="Rechercher" class="icon-20">
                 </button>
             </div>
+
         </div>
     </form>
 

@@ -31,7 +31,7 @@
         </h2>
 
         <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-           th:href="@{/paiements/new}"
+           th:href="${residentId != null} ? @{/paiements/new(residentId=${residentId})} : @{/paiements/new}"
            class="btn-circle"
            title="Ajouter un paiement">
             <img th:src="@{/images/ajouter.png}" class="icon-26">
@@ -73,7 +73,7 @@
                 <tbody>
 
                 <tr th:each="p : ${paiements}">
-                    <td th:text="'#' + p.facture.idFacture"></td>
+                    <td th:text="|Facture #${p.facture.idFacture} — ${p.facture.resident.nom} ${p.facture.resident.prenom}|"></td>
                     <td th:text="${p.facture.resident.nom + ' ' + p.facture.resident.prenom}"></td>
                     <td th:text="${p.montant + ' €'}"></td>
                     <td th:text="${p.datePaiement != null ? #temporals.format(p.datePaiement, 'dd/MM/yyyy') : '—'}"></td>
