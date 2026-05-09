@@ -22,8 +22,15 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-search-toggle]").forEach(button => {
         button.addEventListener("click", () => {
             const target = document.getElementById(button.dataset.searchToggle);
-            if (target) {
-                target.style.display = target.style.display === "none" ? "block" : "none";
+            if (!target) return;
+
+            const isVisible = target.style.display !== "none";
+            target.style.display = isVisible ? "none" : "block";
+
+            // ✅ Focus sur l'input quand la barre s'ouvre
+            if (!isVisible) {
+                const input = target.querySelector('input[type="text"]');
+                if (input) input.focus();
             }
         });
     });
