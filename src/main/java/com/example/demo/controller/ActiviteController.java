@@ -200,7 +200,7 @@ public class ActiviteController {
 
     /* INSCRIPTION */
     @PostMapping("/{id}/inscrire")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
     public String inscrire(@PathVariable Integer id,
                            @RequestParam Integer residentId) {
         Activite activite = activiteService.findById(id).orElseThrow();
@@ -211,7 +211,7 @@ public class ActiviteController {
 
     /* DÉSINSCRIPTION */
     @PostMapping("/{id}/desinscrire")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
     public String desinscrire(@PathVariable Integer id,
                               @RequestParam Integer residentId) {
         Activite activite = activiteService.findById(id).orElseThrow();

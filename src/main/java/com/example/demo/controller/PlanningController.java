@@ -71,7 +71,7 @@ public class PlanningController {
 
     /* CRÉATION */
     @GetMapping("/new")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String createForm(@RequestParam(required = false) String date, Model model) {
 
         Planning planning = new Planning();
@@ -91,7 +91,7 @@ public class PlanningController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String create(@Valid @ModelAttribute Planning planning,
                         BindingResult bindingResult,
                         @RequestParam(required = false) List<Integer> activiteIds,
@@ -133,7 +133,7 @@ public class PlanningController {
 
     /* MODIFICATION */
     @GetMapping("/{id}/edit")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String editForm(@PathVariable Integer id, Model model) {
 
         Planning planning = planningService.findById(id).orElseThrow();
@@ -149,7 +149,7 @@ public class PlanningController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'EDUCATEUR')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String update(@PathVariable Integer id,
                         @Valid @ModelAttribute Planning planning,
                         BindingResult bindingResult,

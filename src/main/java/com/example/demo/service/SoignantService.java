@@ -35,6 +35,10 @@ public class SoignantService {
         return soignantRepository.findById(id);
     }
 
+    public Optional<Soignant> findByMatricule(String matricule) {
+        return Optional.ofNullable(soignantRepository.findByMatricule(matricule));
+    }
+
     public boolean existsByMatricule(String matricule) {
         return soignantRepository.existsByMatricule(matricule);
     }

@@ -80,7 +80,7 @@
                     <td class="text-right">
 
                         <!-- Voir -->
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'FINANCE')"
                            th:href="@{|/employes/${e.idPersonne}|}"
                            class="btn-circle mr-2"
                            title="Voir le profil">

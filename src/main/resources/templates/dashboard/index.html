@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
+ 
 <body th:replace="~{layout/base :: layout('Dashboard', 'Tableau de bord', ~{::content})}">
 <section th:fragment="content">
-
+ 
+  <!-- ═══════════════════════════════════════════
+       KPI BAR  (visible selon rôle)
+  ═══════════════════════════════════════════ -->
   <div class="kpi-bar">
-
+ 
     <div class="kpi-item"
          sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')">
       <span class="kpi-value" th:text="${nbResidents} ?: 0">0</span>
       <span class="kpi-label">Résidents</span>
     </div>
-
+ 
     <div class="kpi-item"
          sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
       <span class="kpi-value" th:text="${nbEmployes} ?: 0">0</span>
       <span class="kpi-label">Employés</span>
     </div>
-
+ 
     <div class="kpi-item kpi-warning"
          sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')">
       <span class="kpi-value" th:text="${nbFacturesEnAttente} ?: 0">0</span>
       <span class="kpi-label">Factures en attente</span>
     </div>
-
+ 
     <div class="kpi-item kpi-success"
-         sec:authorize="hasAnyRole('DIRECTEUR','EDUCATEUR','SOIGNANT')">
+         sec:authorize="hasAnyRole('DIRECTEUR','EDUCATEUR','SOIGNANT','ADMINISTRATIF')">
       <span class="kpi-value" th:text="${nbActivitesDuJour} ?: 0">0</span>
       <span class="kpi-label">Activités aujourd'hui</span>
     </div>
-
+ 
   </div>
-
-  <div class="dash-grid">
-
-    <div class="card chart-card"
-         sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')">
+ 
+  <!-- ═══════════════════════════════════════════
+       DASHBOARD — DIRECTEUR
+       Gauche : graphique factures
+       Droite : résidents + équipements
+  ═══════════════════════════════════════════ -->
+  <div class="dash-grid" sec:authorize="hasRole('DIRECTEUR')">
+ 
+    <div class="card chart-card">
       <div class="card-header">
         <h3>Factures — 6 derniers mois</h3>
         <div class="chart-legend">
@@ -50,11 +57,10 @@
         </div>
       </div>
     </div>
-
+ 
     <div class="dash-side">
-
-      <div class="card chart-card"
-           sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR','ADMINISTRATIF')">
+ 
+      <div class="card chart-card">
         <div class="card-header">
           <h3>Résidents — évolution</h3>
           <strong th:text="${nbResidents} ?: 0" class="chart-big-num">0</strong>
@@ -65,14 +71,12 @@
           </div>
         </div>
       </div>
-
-      <div class="card equip-card"
-           sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
+ 
+      <div class="card equip-card">
         <div class="card-header">
           <h3>Équipements en chambre</h3>
         </div>
         <div class="card-body equip-body">
-
           <div class="equip-gauge">
             <svg viewBox="0 0 36 36">
               <path class="gauge-track"
@@ -87,21 +91,199 @@
                     th:text="${nbEquipementsEnChambre} + '/' + ${nbEquipementsTotal}">0/0</text>
             </svg>
           </div>
-
           <div class="equip-info">
-            <span class="equip-main"
-                  th:text="${nbEquipementsEnChambre} + ' assignés'">0 assignés</span>
-            <span class="equip-sub"
-                  th:text="${nbEquipementsTotal - nbEquipementsEnChambre} + ' non assignés'">0 non assignés</span>
+            <span class="equip-main" th:text="${nbEquipementsEnChambre} + ' assignés'">0 assignés</span>
+            <span class="equip-sub"  th:text="${nbEquipementsTotal - nbEquipementsEnChambre} + ' non assignés'">0 non assignés</span>
             <a th:href="@{/equipements}" class="btn-small gold" style="margin-top:.5rem">Gérer</a>
           </div>
-
         </div>
       </div>
-
+ 
     </div>
-  </div>
-
+  </div><!-- /dash-grid DIRECTEUR -->
+ 
+ 
+  <!-- ═══════════════════════════════════════════
+       DASHBOARD — ADMINISTRATIF
+       Gauche : graphique résidents
+       Droite : équipements + raccourcis
+  ═══════════════════════════════════════════ -->
+  <div class="dash-grid" sec:authorize="hasRole('ADMINISTRATIF')">
+ 
+    <div class="card chart-card">
+      <div class="card-header">
+        <h3>Résidents — évolution</h3>
+        <strong th:text="${nbResidents} ?: 0" class="chart-big-num">0</strong>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chartResidents"></canvas>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="dash-side">
+ 
+      <div class="card equip-card">
+        <div class="card-header">
+          <h3>Équipements en chambre</h3>
+        </div>
+        <div class="card-body equip-body">
+          <div class="equip-gauge">
+            <svg viewBox="0 0 36 36">
+              <path class="gauge-track"
+                    d="M18 2.0845 a15.9155 15.9155 0 0 1 0 31.831 a15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="gauge-fill"
+                    th:attr="stroke-dasharray=${nbEquipementsTotal > 0}
+                        ? ${#numbers.formatDecimal(nbEquipementsEnChambre * 100.0 / nbEquipementsTotal, 1, 'POINT', 0, 'POINT')} + ' 100'
+                        : '0 100'"
+                    d="M18 2.0845 a15.9155 15.9155 0 0 1 0 31.831 a15.9155 15.9155 0 0 1 0 -31.831"
+                    transform="rotate(-90 18 18)"/>
+              <text x="18" y="21" class="gauge-text"
+                    th:text="${nbEquipementsEnChambre} + '/' + ${nbEquipementsTotal}">0/0</text>
+            </svg>
+          </div>
+          <div class="equip-info">
+            <span class="equip-main" th:text="${nbEquipementsEnChambre} + ' assignés'">0 assignés</span>
+            <span class="equip-sub"  th:text="${nbEquipementsTotal - nbEquipementsEnChambre} + ' non assignés'">0 non assignés</span>
+            <a th:href="@{/equipements}" class="btn-small gold" style="margin-top:.5rem">Gérer</a>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="card chart-card">
+        <div class="card-header">
+          <h3>Accès rapides</h3>
+        </div>
+        <div class="card-body d-flex flex-column" style="gap:.75rem">
+          <a th:href="@{/employes}"    class="btn-small gold">Voir les employés</a>
+          <a th:href="@{/chambres}"    class="btn-small gold">Voir les chambres</a>
+          <a th:href="@{/plannings}"    class="btn-small gold">Voir le planning</a>
+          <a th:href="@{/residents}"    class="btn-small gold">Voir les résidents</a>
+        </div>
+      </div>
+ 
+    </div>
+  </div><!-- /dash-grid ADMINISTRATIF -->
+ 
+ 
+  <!-- ═══════════════════════════════════════════
+       DASHBOARD — SOIGNANT
+       Gauche : graphique résidents
+       Droite : activités du jour + équipements
+  ═══════════════════════════════════════════ -->
+  <div class="dash-grid" sec:authorize="hasRole('SOIGNANT')">
+ 
+    <div class="card chart-card">
+      <div class="card-header">
+        <h3>Résidents — évolution</h3>
+        <strong th:text="${nbResidents} ?: 0" class="chart-big-num">0</strong>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chartResidents"></canvas>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="dash-side">
+ 
+      <div class="card chart-card">
+        <div class="card-header">
+          <h3>Accès rapides</h3>
+        </div>
+        <div class="card-body d-flex flex-column" style="gap:.75rem">
+          <a th:href="@{/residents}"     class="btn-small gold">Voir les résidents</a>
+          <a th:href="@{/activites}"       class="btn-small gold">Voir les activités</a>
+          <a th:href="@{/traitements}"     class="btn-small gold">Traitements en cours</a>
+          <a th:href="@{/equipements}"     class="btn-small gold">Voir les équipements</a>
+        </div>
+      </div>
+ 
+    </div>
+  </div><!-- /dash-grid SOIGNANT -->
+ 
+ 
+  <!-- ═══════════════════════════════════════════
+       DASHBOARD — EDUCATEUR
+       Gauche : graphique résidents
+       Droite : activités du jour + équipements
+  ═══════════════════════════════════════════ -->
+  <div class="dash-grid" sec:authorize="hasRole('EDUCATEUR')">
+ 
+    <div class="card chart-card">
+      <div class="card-header">
+        <h3>Résidents — évolution</h3>
+        <strong th:text="${nbResidents} ?: 0" class="chart-big-num">0</strong>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chartResidents"></canvas>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="dash-side">
+ 
+      <div class="card chart-card">
+        <div class="card-header">
+          <h3>Accès rapides</h3>
+        </div>
+        <div class="card-body d-flex flex-column" style="gap:.75rem">
+          <a th:href="@{/activites}"   class="btn-small gold">Voir les activités</a>
+          <a th:href="@{/plannings}"   class="btn-small gold">Voir le planning</a>
+          <a th:href="@{/residents}"   class="btn-small gold">Voir les résidents</a>
+          <a th:href="@{/chambres}"   class="btn-small gold">Voir les chambres</a>
+          <a th:href="@{/equipements}"   class="btn-small gold">Voir les équipements</a>
+        </div>
+      </div>
+ 
+ 
+    </div>
+  </div><!-- /dash-grid EDUCATEUR -->
+ 
+ 
+  <!-- ═══════════════════════════════════════════
+       DASHBOARD — FINANCE
+       Gauche : graphique factures
+       Droite : résumé financier + accès rapides
+  ═══════════════════════════════════════════ -->
+  <div class="dash-grid" sec:authorize="hasRole('FINANCE')">
+ 
+    <div class="card chart-card">
+      <div class="card-header">
+        <h3>Factures — 6 derniers mois</h3>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#C9973A"></span>Total</span>
+          <span><span class="legend-dot" style="background:#22c55e"></span>Payées</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap">
+          <canvas id="chartFactures"></canvas>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="dash-side">
+ 
+      <div class="card chart-card">
+        <div class="card-header">
+          <h3>Accès rapides</h3>
+        </div>
+        <div class="card-body d-flex flex-column" style="gap:.75rem">
+          <a th:href="@{/factures}"          class="btn-small gold">Gérer les factures</a>
+          <a th:href="@{/paiements}"         class="btn-small gold">Voir les paiements</a>
+        </div>
+      </div>
+ 
+    </div>
+  </div><!-- /dash-grid FINANCE -->
+ 
+ 
+  <!-- ═══════════════════════════════════════════
+       DONNÉES JS (communes à tous les rôles)
+  ═══════════════════════════════════════════ -->
   <script th:inline="javascript">
     /*<![CDATA[*/
     window.dashboardData = {
@@ -112,7 +294,7 @@
     };
     /*]]>*/
   </script>
-
+ 
 </section>
 </body>
 </html>

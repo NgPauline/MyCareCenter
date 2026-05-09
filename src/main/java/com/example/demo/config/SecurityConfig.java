@@ -29,7 +29,7 @@ public class SecurityConfig {
 
                 // EMPLOYES (directeur + administratif)
                 .requestMatchers("/employes/**")
-                    .hasAnyRole("DIRECTEUR", "ADMINISTRATIF")
+                    .hasAnyRole("DIRECTEUR", "ADMINISTRATIF", "FINANCE")
 
                 // RESIDENTS
                 // Lecture pour soignant + éducateur

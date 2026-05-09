@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout('Consultation', 'Formulaire consultation', ~{::section})}">
-
+ 
 <section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
+ 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
         <span th:switch="${param.error}">
@@ -12,27 +12,27 @@
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
-
+ 
     <div class="form-header d-flex justify-content-between align-items-center">
         <h2 class="m-0" th:text="${isEdit} ? 'Modifier la consultation' : 'Ajouter une consultation'"></h2>
         <div></div>
     </div>
-
+ 
     <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
           th:action="@{${submitUrl}}"
           th:object="${consultation}"
           method="post"
           class="form-card">
-
+ 
         <div class="form-grid">
-
+ 
             <!-- DATE -->
             <div>
                 <label>Date</label>
                 <input type="datetime-local" th:field="*{date}" class="form-control">
                 <div class="error" th:errors="*{date}"></div>
             </div>
-
+ 
             <!-- RÉSIDENT -->
             <div>
                 <label>Résident</label>
@@ -44,11 +44,10 @@
                     </option>
                 </select>
                 <div class="error" th:errors="*{resident}"></div>
-
             </div>
-
-            <!-- SOIGNANT -->
-            <div>
+ 
+            <!-- SOIGNANT : dropdown pour DIRECTEUR -->
+            <div sec:authorize="hasRole('DIRECTEUR')">
                 <label>Soignant</label>
                 <select name="soignantId" class="form-control">
                     <option th:each="s : ${soignants}"
@@ -58,30 +57,46 @@
                     </option>
                 </select>
                 <div class="error" th:errors="*{soignant}"></div>
-
             </div>
-
+ 
+            <!-- SOIGNANT : champ pré-rempli pour SOIGNANT connecté -->
+            <div sec:authorize="hasRole('SOIGNANT')">
+                <label>Soignant</label>
+                <input type="text"
+                       class="form-control"
+                       th:value="${soignantConnecte != null
+                           ? soignantConnecte.nom + ' ' + soignantConnecte.prenom
+                           : (consultation.soignant != null ? consultation.soignant.nom + ' ' + consultation.soignant.prenom : '')}"
+                       readonly>
+                <input type="hidden"
+                       name="soignantId"
+                       th:value="${soignantConnecte != null
+                           ? soignantConnecte.idPersonne
+                           : (consultation.soignant != null ? consultation.soignant.idPersonne : '')}">
+                <div class="error" th:errors="*{soignant}"></div>
+            </div>
+ 
             <!-- DIAGNOSTIC -->
             <div>
                 <label>Diagnostic</label>
                 <textarea th:field="*{diagnostic}" rows="3" class="form-control"></textarea>
                 <div class="error" th:errors="*{diagnostic}"></div>
             </div>
-
+ 
             <!-- OBSERVATIONS -->
             <div>
                 <label>Observations</label>
                 <textarea th:field="*{observations}" rows="4" class="form-control"></textarea>
             </div>
-
+ 
         </div>
-
+ 
         <div class="form-actions mt-3">
             <button class="btn-gold">Enregistrer</button>
             <a th:href="@{/consultations}" class="btn-ghost">Annuler</a>
         </div>
-
+ 
     </form>
-
+ 
 </section>
 </html>

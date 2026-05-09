@@ -36,7 +36,7 @@
                 </li>
 
                 <!-- EMPLOYÉS -->
-                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
+                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'FINANCE')">
                     <a th:href="@{/employes}" class="nav-link"
                     th:classappend="${activePage=='employes'} ? ' active'">
                         <img th:src="@{/images/icones/employe.png}" alt="" class="nav-icon-img">

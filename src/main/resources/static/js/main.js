@@ -38,9 +38,8 @@ function showImage(src) {
 
 
 /* ── Dashboard charts ────────────────────────────────── */
-
 (function () {
-  if (!document.getElementById('chartFactures')) return;
+  if (!window.dashboardData) return;
 
   const { labels, facturesMontants, facturesPayees, residentsData } = window.dashboardData;
 
@@ -49,52 +48,59 @@ function showImage(src) {
   const green   = '#22c55e';
   const greenBg = 'rgba(34,197,94,0.15)';
 
-  new Chart(document.getElementById('chartFactures'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: 'Total (€)',  data: facturesMontants, backgroundColor: goldBg,  borderColor: gold,  borderWidth: 1.5, borderRadius: 4 },
-        { label: 'Payées (€)', data: facturesPayees,   backgroundColor: greenBg, borderColor: green, borderWidth: 1.5, borderRadius: 4 }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { beginAtZero: true, ticks: { callback: v => v + ' €' } }
+  // Graphique factures — uniquement si le canvas existe (DIRECTEUR, FINANCE)
+  const ctxFactures = document.getElementById('chartFactures');
+  if (ctxFactures) {
+    new Chart(ctxFactures, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Total (€)',  data: facturesMontants, backgroundColor: goldBg,  borderColor: gold,  borderWidth: 1.5, borderRadius: 4 },
+          { label: 'Payées (€)', data: facturesPayees,   backgroundColor: greenBg, borderColor: green, borderWidth: 1.5, borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, ticks: { callback: v => v + ' €' } }
+        }
       }
-    }
-  });
+    });
+  }
 
-  new Chart(document.getElementById('chartResidents'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data: residentsData,
-        fill: true,
-        backgroundColor: goldBg,
-        borderColor: gold,
-        borderWidth: 2,
-        tension: 0.4,
-        pointRadius: 3
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { beginAtZero: false, precision: 0 }
+  // Graphique résidents — uniquement si le canvas existe (tous sauf FINANCE)
+  const ctxResidents = document.getElementById('chartResidents');
+  if (ctxResidents) {
+    new Chart(ctxResidents, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: residentsData,
+          fill: true,
+          backgroundColor: goldBg,
+          borderColor: gold,
+          borderWidth: 2,
+          tension: 0.4,
+          pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: false, precision: 0 }
+        }
       }
-    }
-  });
+    });
+  }
 }());
-
 
 document.addEventListener('DOMContentLoaded', function () {
 

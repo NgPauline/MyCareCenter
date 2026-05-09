@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/employes")
-@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'FINANCE')")
 public class EmployeController {
 
     private final EmployeService employeService;
@@ -48,6 +48,7 @@ public class EmployeController {
     }
 
     @GetMapping("/new")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String createForm(Model model) {
 
         model.addAttribute("employe", new Employe());
@@ -59,6 +60,7 @@ public class EmployeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String create(@Valid @ModelAttribute Employe employe,
                          BindingResult bindingResult,
                          Model model) {
@@ -75,6 +77,7 @@ public class EmployeController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF', 'FINANCE')")
     public String detail(@PathVariable Integer id, Model model) {
         Employe employe = employeService.findById(id).orElseThrow();
         model.addAttribute("employe", employe);
@@ -83,6 +86,7 @@ public class EmployeController {
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String editForm(@PathVariable Integer id, Model model) {
 
         Employe employe = employeService.findById(id).orElseThrow();
@@ -95,6 +99,7 @@ public class EmployeController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String update(@PathVariable Integer id,
                          @Valid @ModelAttribute Employe employe,
                          BindingResult bindingResult,
@@ -115,6 +120,7 @@ public class EmployeController {
     }
 
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String delete(@PathVariable Integer id) {
 
         if (employeService.hasPlanningResponsable(id)) {

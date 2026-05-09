@@ -100,7 +100,7 @@
 
                         <span th:text="|${p.nom} ${p.prenom}|"></span>
 
-                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
                               th:action="@{/activites/{id}/desinscrire(id=${activite.idActivite})}"
                               method="post"
                               class="inline-form ml-2">
@@ -120,7 +120,7 @@
                 </div>
 
                 <!-- INSCRIPTION -->
-                <div sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
+                <div sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')">
 
                     <h4 class="mb-2">Inscrire un résident</h4>
 

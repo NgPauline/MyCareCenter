@@ -40,7 +40,7 @@
             </a>
 
             <!-- Ajouter -->
-            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                th:href="@{/plannings/new}"
                class="btn-circle"
                title="Ajouter un créneau">
@@ -108,7 +108,7 @@
                         </a>
 
                         <!-- Modifier -->
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
+                        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
                            th:href="@{|/plannings/${p.idPlanning}/edit|}"
                            class="btn-circle mr-2"
                            title="Modifier ce créneau">

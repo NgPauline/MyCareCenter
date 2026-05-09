@@ -8,7 +8,10 @@ import com.example.demo.service.ResidentService;
 import com.example.demo.service.SoignantService;
 
 import jakarta.validation.Valid;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,6 +66,12 @@ public class ConsultationController {
         model.addAttribute("soignants", soignantService.findAll());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/consultations");
+
+            // Passer le soignant connecté si rôle SOIGNANT
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            soignantService.findByMatricule(auth.getName())
+                .ifPresent(s -> model.addAttribute("soignantConnecte", s));
+        
         return "consultations/form";
     }
 
