@@ -273,10 +273,10 @@ public DataInitializer(
         //   RÉSIDENT 1
         // =========================
         Resident res1 = new Resident(
-                "Leroy", "Marie",
+                "Gabrielle", "Marie",
                 LocalDate.now().minusYears(30),
-                "Diabète",
-                "Autonome",
+                "Autisme",
+                "Faible",
                 LocalDate.now().minusMonths(2),
                 "Actif"
         );
@@ -301,8 +301,8 @@ public DataInitializer(
         Resident res2 = new Resident(
                 "Morel", "Jean",
                 LocalDate.now().minusYears(40),
-                "Hypertension",
-                "Semi-autonome",
+                "Trisomie 21",
+                "Faible",
                 LocalDate.now().minusMonths(3),
                 "Actif"
         );
@@ -327,8 +327,8 @@ public DataInitializer(
         Resident res3 = new Resident(
                 "Bernard", "Lucie",
                 LocalDate.now().minusYears(27),
-                "Arthrose",
-                "Autonome",
+                "Autisme",
+                "Moyen",
                 LocalDate.now().minusMonths(1),
                 "Actif"
         );
@@ -353,8 +353,8 @@ public DataInitializer(
         Resident res4 = new Resident(
                 "Petit", "Hélène",
                 LocalDate.now().minusYears(34),
-                "Insuffisance cardiaque",
-                "Dépendant",
+                "Déficience intellectuelle",
+                "Elevé",
                 LocalDate.now().minusMonths(4),
                 "Actif"
         );
@@ -364,8 +364,8 @@ public DataInitializer(
         DossierMedical dm4 = new DossierMedical(
                 LocalDate.now().minusMonths(4),
                 "AB-",
-                "Pénicilline",
-                "Fragile"
+                "Pollen, cacahuètes",
+                "Essouflement"
         );
         res4.setDossierMedical(dm4);
         dm4.setResident(res4);
@@ -379,8 +379,8 @@ public DataInitializer(
         Resident res5 = new Resident(
                 "Robert", "Paul",
                 LocalDate.now().minusYears(38),
-                "Parkinson",
-                "Semi-autonome",
+                "Retard du dévelopement",
+                "Moyen",
                 LocalDate.now().minusMonths(5),
                 "Actif"
         );
@@ -405,8 +405,8 @@ public DataInitializer(
         Resident res6 = new Resident(
                 "Moreau", "Alice",
                 LocalDate.now().minusYears(50),
-                "Alzheimer",
-                "Dépendant",
+                "Syndrome de Down",
+                "Faible",
                 LocalDate.now().minusMonths(6),
                 "Actif"
         );
@@ -431,8 +431,8 @@ public DataInitializer(
         Resident res7 = new Resident(
                 "Fabre", "Louis",
                 LocalDate.now().minusYears(47),
-                "Insuffisance rénale",
-                "Semi-autonome",
+                "Autisme",
+                "Faible",
                 LocalDate.now().minusMonths(7),
                 "Actif"
         );
@@ -454,8 +454,8 @@ public DataInitializer(
         // =========================
         //   RÉSIDENT 8
         // =========================
-        Resident res8 = new Resident("Germain", "Emma",LocalDate.now().minusYears(32),"Asthme sévère",
-                "Autonome",
+        Resident res8 = new Resident("Germain", "Emma",LocalDate.now().minusYears(32),"Retard du dévelopement",
+                "Moyen",
                 LocalDate.now().minusMonths(8),
                 "Actif"
         );

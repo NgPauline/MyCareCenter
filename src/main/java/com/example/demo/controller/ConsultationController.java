@@ -138,69 +138,13 @@ public class ConsultationController {
         Consultation consultation = consultationService.findById(idConsultation).orElseThrow();
 
         model.addAttribute("consultation", consultation);
-        model.addAttribute("historique", consultationService.findHistorique(consultation));
 
         return "consultations/detail";
     }
 
-    /* ---------------- FORMULAIRE EDITION ---------------- */
-    @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
-
-        Consultation consultation = consultationService.findById(id).orElseThrow();
-
-        if (consultation.getDate().isBefore(LocalDateTime.now())) {
-            return "redirect:/consultations/" + id + "?error=nonModifiable";
-        }
-
-        model.addAttribute("consultation", consultation);
-        model.addAttribute("residents", residentService.findAll());
-        model.addAttribute("soignants", soignantService.findAll());
-        model.addAttribute("isEdit", true);
-        model.addAttribute("submitUrl", "/consultations/" + id);
-
-        return "consultations/form";
-    }
-
-
-    /* ---------------- EDITION ---------------- */
-    @PostMapping("/{id}")
-    public String update(@PathVariable Integer id,
-                         @Valid @ModelAttribute Consultation consultation,
-                         BindingResult bindingResult,
-                         @RequestParam Integer residentId,
-                         @RequestParam Integer soignantId,
-                         Model model) {
-
-        Consultation original = consultationService.findById(id).orElseThrow();
-
-        /* Règle métier : consultation passée non modifiable */
-        if (original.getDate().isBefore(LocalDateTime.now())) {
-            return "redirect:/consultations/" + id + "?error=nonModifiable";
-        }
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("soignants", soignantService.findAll());
-            return "consultations/form";
-        }
-
-        Resident resident = residentService.findById(residentId).orElseThrow();
-        Soignant soignant = soignantService.findById(soignantId).orElseThrow();
-
-        /* Règle métier : on ne change PAS le résident */
-        consultation.setResident(original.getResident());
-        consultation.setDossierMedical(original.getDossierMedical());
-
-        /* Règle métier : on peut changer le soignant (optionnel) */
-        consultation.setSoignant(soignant);
-
-        consultationService.update(id, consultation);
-        return "redirect:/consultations/" + id;
-    }
-
     /* ---------------- SUPPRESSION ---------------- */
     @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('DIRECTEUR')")
     public String delete(@PathVariable Integer id) {
 
         Consultation consultation = consultationService.findById(id).orElseThrow();

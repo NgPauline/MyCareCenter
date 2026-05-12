@@ -96,9 +96,8 @@
 
                         <!-- Modifier -->
                         <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
-                           th:href="@{/familles/{id}/edit(id=${f.idFamille})}"
-                           class="btn-circle mr-2"
-                           title="Modifier">
+                        th:href="@{/familles/{id}/edit(id=${f.idFamille}, residentId=${residentId})}"
+                        class="btn-circle mr-2" title="Modifier">
                             <img th:src="@{/images/modifier.png}" class="icon-24">
                         </a>
 

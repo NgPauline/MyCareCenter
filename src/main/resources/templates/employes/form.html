@@ -38,16 +38,19 @@
                 <div class="error" th:errors="*{prenom}"></div>
             </div>
 
-            <div>
-                <label>Date de naissance</label>
-                <input type="date" th:field="*{dateNaissance}" class="form-control">
-                <div class="error" th:errors="*{dateNaissance}"></div>
+            <!-- Date de naissance -->
+                <div>
+                    <label>Date de naissance</label>
+                    <input type="text" th:field="*{dateNaissance}"
+                        class="form-control datepicker"
+                        placeholder="JJ/MM/AAAA">
+                    <div class="error" th:errors="*{dateNaissance}"></div>
 
-                <div class="error"
-                    th:if="${#fields.hasErrors('trancheAgeValide')}"
-                    th:errors="*{trancheAgeValide}">
+                    <div class="error"
+                        th:if="${#fields.hasErrors('trancheAgeValide')}"
+                        th:errors="*{trancheAgeValide}">
+                    </div>
                 </div>
-            </div>
 
             <div>
                 <label>Téléphone</label>
@@ -89,6 +92,16 @@
         </div>
 
     </form>
+
+    <script>
+    flatpickr(".datepicker", {
+        locale: "fr",
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+</script>
 
 </section>
 </html>

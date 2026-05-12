@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "residents")
 public class Resident extends Personne {
 
     @Column(name = "id_resident", unique = true, nullable = false)

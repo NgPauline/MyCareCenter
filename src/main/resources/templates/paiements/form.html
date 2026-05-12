@@ -65,7 +65,9 @@
             <!-- DATE -->
             <div>
                 <label>Date du paiement</label>
-                <input type="date" th:field="*{datePaiement}" class="form-control">
+                <input type="text" th:field="*{datePaiement}"
+                    class="form-control datepicker"
+                    placeholder="JJ/MM/AAAA">
                 <div class="error" th:errors="*{datePaiement}"></div>
             </div>
 
@@ -88,6 +90,16 @@
         </div>
 
     </form>
+
+    <script>
+    flatpickr(".datepicker", {
+        locale: "fr",
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+</script>
 
 </section>
 </html>

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "consultations")
 public class Consultation {
 
     @Id
@@ -106,8 +107,4 @@ public class Consultation {
         }
     }
 
-    // UML : modifierDiagnostic
-    public void modifierDiagnostic(String diagnostic) {
-        this.diagnostic = diagnostic;
-    }
 }

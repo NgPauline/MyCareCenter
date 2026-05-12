@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "factures")
 public class Facture {
 
     @Id

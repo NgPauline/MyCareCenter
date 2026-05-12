@@ -32,11 +32,11 @@ public class EquipementService {
     // FIND ALL
     // -----------------------------
     public List<Equipement> findAll() {
-        return equipementRepository.findAll();
+        return equipementRepository.findAllByOrderByType_NomAsc();
     }
 
     public Page<Equipement> findAll(Pageable pageable) {
-        return equipementRepository.findAll(pageable);
+        return equipementRepository.findAllByOrderByType_NomAsc(pageable);
     }
 
     // -----------------------------

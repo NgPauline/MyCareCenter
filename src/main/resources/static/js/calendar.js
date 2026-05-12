@@ -20,7 +20,7 @@ function initPlanningCalendar(elementId, events) {
 
         events: events.map(e => ({
             id: e.id,
-            title: e.title + (e.activite ? " — " + e.activite : ""),
+            title: e.title,
             start: e.start,
             end: e.end,
             color: e.color,

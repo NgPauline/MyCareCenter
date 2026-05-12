@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "activites")
 public class Activite {
 
     @Id
@@ -91,6 +92,9 @@ public class Activite {
     }
 
     public void ajouterParticipant(Resident resident) {
+        if (participants.size() >= 3) {
+            throw new IllegalArgumentException("Cette activité est complète (3 participants maximum).");
+        }
         if (!participants.contains(resident)) {
             participants.add(resident);
             resident.getActivites().add(this);

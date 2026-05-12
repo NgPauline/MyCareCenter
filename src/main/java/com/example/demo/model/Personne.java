@@ -11,7 +11,9 @@ import java.time.Period;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-@MappedSuperclass
+@Entity
+@Table(name = "personnes")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Personne {
 
     @Id

@@ -69,7 +69,9 @@
             <!-- Date émission -->
             <div>
                 <label>Date émission</label>
-                <input type="date" th:field="*{dateEmission}" class="form-control">
+                <input type="text" th:field="*{dateEmission}"
+                    class="form-control datepicker"
+                    placeholder="JJ/MM/AAAA">
                 <div class="error" th:errors="*{dateEmission}"></div>
             </div>
 
@@ -81,6 +83,16 @@
         </div>
 
     </form>
+
+    <script>
+    flatpickr(".datepicker", {
+        locale: "fr",
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+</script>
 
 </section>
 </html>

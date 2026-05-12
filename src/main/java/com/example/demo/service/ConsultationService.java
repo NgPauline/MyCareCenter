@@ -4,10 +4,8 @@ import com.example.demo.model.Consultation;
 import com.example.demo.model.Resident;
 import com.example.demo.model.Soignant;
 import com.example.demo.model.Activite;
-import com.example.demo.model.HistoriqueConsultation;
 import com.example.demo.repository.ConsultationRepository;
 import com.example.demo.repository.ActiviteRepository;
-import com.example.demo.repository.HistoriqueConsultationRepository;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -22,14 +20,11 @@ public class ConsultationService {
 
     private final ConsultationRepository consultationRepository;
     private final ActiviteRepository activiteRepository;
-    private final HistoriqueConsultationRepository historiqueRepository;
 
     public ConsultationService(ConsultationRepository consultationRepository,
-                               ActiviteRepository activiteRepository,
-                               HistoriqueConsultationRepository historiqueRepository) {
+                               ActiviteRepository activiteRepository) {
         this.consultationRepository = consultationRepository;
         this.activiteRepository = activiteRepository;
-        this.historiqueRepository = historiqueRepository;
     }
 
     /* ------------------- FIND ------------------- */
@@ -48,10 +43,6 @@ public class ConsultationService {
 
     public List<Consultation> findBySoignant(Soignant soignant) {
         return consultationRepository.findBySoignant(soignant);
-    }
-
-    public List<HistoriqueConsultation> findHistorique(Consultation consultation) {
-        return historiqueRepository.findByConsultationOrderByDateModificationDesc(consultation);
     }
 
     /* ------------------- SAVE ------------------- */
@@ -99,58 +90,6 @@ public class ConsultationService {
         }
 
         return consultationRepository.save(consultation);
-    }
-
-    /* ------------------- UPDATE ------------------- */
-
-    public void update(Integer id, Consultation updated) {
-
-        Consultation original = consultationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Consultation introuvable"));
-
-        /* Règle métier : consultation passée non modifiable */
-        if (original.getDate().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Une consultation passée ne peut pas être modifiée.");
-        }
-
-        /* Règle métier : on ne change PAS le résident */
-        updated.setResident(original.getResident());
-
-        /* Règle métier : on ne change PAS le dossier médical */
-        updated.setDossierMedical(original.getDossierMedical());
-
-        /* Vérification disponibilité du soignant */
-        Soignant soignant = updated.getSoignant();
-        LocalDateTime date = updated.getDate();
-
-        List<Activite> activitesSoignant = activiteRepository.findByResponsable(soignant);
-
-        boolean chevaucheSoignant = activitesSoignant.stream().anyMatch(a -> {
-            LocalDateTime debutAct = LocalDateTime.of(a.getDate(), a.getHeureDebut());
-            LocalDateTime finAct = debutAct.plusMinutes(a.getDuree());
-            return !date.isBefore(debutAct) && !date.isAfter(finAct);
-        });
-
-        if (chevaucheSoignant) {
-            throw new IllegalArgumentException("Le soignant n'est pas disponible à cette date.");
-        }
-
-        /* Historique AVANT modification */
-        HistoriqueConsultation hist = new HistoriqueConsultation(
-                original,
-                original.getDiagnostic(),
-                original.getObservations(),
-                updated.getSoignant() // idéalement : utilisateur connecté
-        );
-        historiqueRepository.save(hist);
-
-        /* Mise à jour */
-        original.setDate(updated.getDate());
-        original.setDiagnostic(updated.getDiagnostic());
-        original.setObservations(updated.getObservations());
-        original.setSoignant(updated.getSoignant());
-
-        consultationRepository.save(original);
     }
 
     /* ------------------- DELETE ------------------- */

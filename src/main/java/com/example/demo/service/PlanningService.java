@@ -68,6 +68,24 @@ public class PlanningService {
     }
 
     public Planning save(Planning planning) {
+
+    // ✅ Vérifier qu'un employé n'a pas déjà un créneau qui chevauche
+        List<Planning> existants = planningRepository.findByDate(planning.getDate());
+
+        boolean chevauche = existants.stream()
+            .filter(p -> p.getResponsable().getIdPersonne()
+                        .equals(planning.getResponsable().getIdPersonne()))
+            .anyMatch(p ->
+                planning.getHeureDebut().isBefore(p.getHeureFin()) &&
+                planning.getHeureFin().isAfter(p.getHeureDebut())
+            );
+
+        if (chevauche) {
+            throw new IllegalArgumentException(
+                "Cet employé a déjà un créneau qui chevauche cet horaire."
+            );
+        }
+
         return planningRepository.save(planning);
     }
 
@@ -130,13 +148,16 @@ public class PlanningService {
     }
 
     public List<Activite> findActivitesSansPlanning() {
-    List<Activite> toutes = activiteRepository.findAll();
-    List<Activite> dejaAssignees = planningRepository.findAll()
-        .stream()
-        .flatMap(p -> p.getActivites().stream())
-        .collect(Collectors.toList());
-    
-    toutes.removeAll(dejaAssignees);
-    return toutes;
-}
+        List<Activite> toutes = activiteRepository.findAll();
+
+        List<Integer> dejaAssigneesIds = planningRepository.findAll()
+            .stream()
+            .flatMap(p -> p.getActivites().stream())
+            .map(Activite::getIdActivite)
+            .collect(Collectors.toList());
+
+        return toutes.stream()
+            .filter(a -> !dejaAssigneesIds.contains(a.getIdActivite()))
+            .collect(Collectors.toList());
+    }
 }

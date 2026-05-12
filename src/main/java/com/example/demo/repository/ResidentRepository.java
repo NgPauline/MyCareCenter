@@ -52,5 +52,8 @@ Page<Resident> search(@Param("kw") String keyword, Pageable pageable);
    @Query("SELECT COALESCE(MAX(r.idResident), 001) FROM Resident r")
    Integer findMaxIdResident();
 
+   List<Resident> findAllByOrderByNomAscPrenomAsc();
+   Page<Resident> findAllByOrderByNomAscPrenomAsc(Pageable pageable);
+
 
 }

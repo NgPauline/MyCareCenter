@@ -31,8 +31,8 @@ public class EmployeService {
         return employeRepository.findAll();
     }
 
-    public Page<Employe> findAll(Pageable pageable) {
-        return employeRepository.findAll(pageable);
+   public Page<Employe> findAll(Pageable pageable) {
+        return employeRepository.findAllByOrderByNomAscPrenomAsc(pageable);
     }
 
     public Optional<Employe> findById(Integer id) {

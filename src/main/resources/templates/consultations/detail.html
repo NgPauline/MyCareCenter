@@ -8,35 +8,27 @@
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
         <span th:switch="${param.error}">
-            <span th:case="'nonModifiable'">Cette consultation est passée : modification impossible.</span>
-            <span th:case="'nonSupprimable'">Cette consultation est passée : suppression impossible.</span>
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
 
 
     <!-- BARRE HAUTE : RETOUR + ACTIONS -->
-        <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+            <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+                <div class="detail-actions d-flex gap-3">
 
-            <div class="detail-actions d-flex gap-3">
+                    <!-- ✅ Uniquement la suppression, réservée au DIRECTEUR -->
+                    <form sec:authorize="hasRole('DIRECTEUR')"
+                        th:action="@{|/consultations/${consultation.idConsultation}/delete|}"
+                        method="post"
+                        onsubmit="return confirm('Supprimer cette consultation ?');">
+                        <button class="btn-circle">
+                            <img src="/images/supprimer.png" class="icon-26">
+                        </button>
+                    </form>
 
-                <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
-                th:href="@{|/consultations/${consultation.idConsultation}/edit|}"
-                class="btn-circle">
-                    <img src="/images/modifier.png" class="icon-26">
-                </a>
-
-                <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
-                    th:action="@{|/consultations/${consultation.idConsultation}/delete|}"
-                    method="post"
-                    onsubmit="return confirm('Supprimer cette consultation ?');">
-                    <button class="btn-circle">
-                        <img src="/images/supprimer.png" class="icon-26">
-                    </button>
-                </form>
-
+                </div>
             </div>
-        </div>
 
     <!-- TITRE CENTRÉ -->
     <div class="text-center mb-1">
@@ -91,26 +83,6 @@
                             <td th:text="${consultation.observations}"></td>
                         </tr>
 
-                        <tr>
-                            <th>Dossier médical</th>
-                            <td>
-                                <a th:href="@{|/dossiers/${consultation.resident.idPersonne}|}"
-                                   class="btn-small gold d-inline-flex align-items-center">
-                                    Voir dossier médical
-                                </a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>Consultations du résident</th>
-                            <td>
-                                <a th:href="@{|/consultations?resident=${consultation.resident.idPersonne}|}"
-                                   class="btn-small gold d-inline-flex align-items-center">
-                                    toutes ses consultations
-                                </a>
-                            </td>
-                        </tr>
-
                     </tbody>
                 </table>
                 </div>
@@ -121,38 +93,6 @@
         <!-- COLONNE DROITE (vide pour harmonie) -->
         <div class="col-12 col-md-6"></div>
 
-    </div>
-
-    <!-- HISTORIQUE -->
-    <div class="card detail-card mt-4">
-
-        <h3 class="mb-3">Historique des modifications</h3>
-
-        <div th:if="${#lists.isEmpty(historique)}" class="text-muted">
-            Aucune modification enregistrée.
-        </div>
-
-        <div class="table-responsive"> 
-
-        <table th:if="${!#lists.isEmpty(historique)}" class="detail-table">
-            <thead>
-                <tr>
-                    <th>Date modification</th>
-                    <th>Ancien diagnostic</th>
-                    <th>Anciennes observations</th>
-                    <th>Modifié par</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="h : ${historique}">
-                    <td th:text="${#temporals.format(h.dateModification,'dd/MM/yyyy HH:mm')}"></td>
-                    <td th:text="${h.ancienDiagnostic}"></td>
-                    <td th:text="${h.anciennesObservations}"></td>
-                    <td th:text="|${h.modifiePar.nom} ${h.modifiePar.prenom}|"></td>
-                </tr>
-            </tbody>
-        </table>
-        </div>
     </div>
 
 </th:block>

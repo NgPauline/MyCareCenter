@@ -323,3 +323,7 @@ h1, h2, h3, h4 {
     width: 18px;
     height: 18px;
 }
+
+.table-modern tbody tr:nth-child(even) {
+    background-color: #f7f7f7;
+}

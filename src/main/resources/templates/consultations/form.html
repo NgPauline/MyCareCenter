@@ -27,13 +27,14 @@
         <div class="form-grid">
  
             <!-- DATE -->
-            <div>
-                <label>Date</label>
-                <input type="datetime-local" th:field="*{date}" class="form-control">
-                <div class="error" th:errors="*{date}"></div>
-            </div>
- 
-            <!-- RÉSIDENT pré-rempli (venant d'une fiche résident) -->
+                <div>
+                    <label>Date et heure</label>
+                    <input type="text" th:field="*{date}"
+                        class="form-control datetimepicker"
+                        placeholder="JJ/MM/AAAA HH:MM">
+                    <div class="error" th:errors="*{date}"></div>
+                </div>
+                            <!-- RÉSIDENT pré-rempli (venant d'une fiche résident) -->
             <div th:if="${residentId != null}">
                 <label>Résident</label>
                 <input type="text"
@@ -113,5 +114,17 @@
  
     </form>
  
+    <script>
+    flatpickr(".datetimepicker", {
+        locale: "fr",
+        enableTime: true,
+        time_24hr: true,
+        altInput: true,
+        altFormat: "d/m/Y H:i",   // ✅ Affiché à l'utilisateur
+        dateFormat: "Y-m-d\\TH:i", // ✅ Envoyé au serveur (format LocalDateTime)
+        allowInput: true
+    });
+</script>
+
 </section>
 </html>

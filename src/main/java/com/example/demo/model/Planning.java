@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
+@Table(name = "plannings")
 public class Planning {
 
     @Id
@@ -117,12 +118,6 @@ public class Planning {
             return activites;
         }
         return List.of();
-    }
-
-    // UML : verifierDisponibilite
-    public boolean verifierDisponibilite(LocalTime heureDebut, LocalTime heureFin) {
-        // Ici on pourrait vérifier les chevauchements avec d'autres plannings
-        return true;
     }
 
     // UML : calculerNombreHeures

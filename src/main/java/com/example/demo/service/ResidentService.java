@@ -44,13 +44,12 @@ public class ResidentService {
        3. Trouver tous les résidents
        ----------------------------- */
     public List<Resident> findAll() {
-        return residentRepository.findAll();
+        return residentRepository.findAllByOrderByNomAscPrenomAsc();
     }
 
     public Page<Resident> findAll(Pageable pageable) {
-        return residentRepository.findAll(pageable);
+        return residentRepository.findAllByOrderByNomAscPrenomAsc(pageable);
     }
-
     /* -----------------------------
        4. Trouver par ID
        ----------------------------- */

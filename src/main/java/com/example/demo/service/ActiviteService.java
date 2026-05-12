@@ -141,16 +141,16 @@ public class ActiviteService {
 
     public void inscrireResident(Activite activite, Resident resident) {
 
-        LocalDateTime debutAct = LocalDateTime.of(
-                activite.getDate(),
-                activite.getHeureDebut()
-        );
+        // ✅ Limite participants
+        if (activite.getParticipants().size() >= 3) {
+            throw new IllegalArgumentException("Cette activité est complète (3 participants maximum).");
+        }
+
+        LocalDateTime debutAct = LocalDateTime.of(activite.getDate(), activite.getHeureDebut());
         LocalDateTime finAct = debutAct.plusMinutes(activite.getDuree());
 
         List<Consultation> consults = consultationRepository
-                .findByResidentAndDateBetween(resident,
-                        debutAct.minusHours(4),
-                        finAct.plusHours(4));
+                .findByResidentAndDateBetween(resident, debutAct.minusHours(4), finAct.plusHours(4));
 
         boolean chevauche = consults.stream().anyMatch(c ->
                 !c.getDate().isBefore(debutAct) && !c.getDate().isAfter(finAct));

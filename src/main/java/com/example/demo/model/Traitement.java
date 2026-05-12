@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
+@Table(name = "traitements")
 public class Traitement {
 
     @Id

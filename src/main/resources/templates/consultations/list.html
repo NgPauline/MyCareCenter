@@ -8,8 +8,6 @@
 
     <div th:if="${param.error}" class="alert alert-danger mb-3">
         <span th:switch="${param.error}">
-            <span th:case="'nonSupprimable'">Impossible de supprimer une consultation passée.</span>
-            <span th:case="'nonModifiable'">Impossible de modifier une consultation passée.</span>
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
@@ -90,16 +88,8 @@
                             <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
                         </a>
 
-                        <!-- Modifier -->
-                        <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
-                           th:href="@{|/consultations/${c.idConsultation}/edit|}"
-                           class="btn-circle mr-2"
-                           title="Modifier cette consultation">
-                            <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
-                        </a>
-
                         <!-- Supprimer -->
-                        <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
+                        <form sec:authorize="hasAnyRole('DIRECTEUR')"
                               th:action="@{|/consultations/${c.idConsultation}/delete|}"
                               method="post" class="d-inline"
                               onsubmit="return confirm('Supprimer cette consultation ?');">

@@ -45,28 +45,30 @@
                 <div class="error" th:errors="*{frequence}"></div>
             </div>
 
-            <div>
-                <label>Date début</label>
-                <input type="date" th:field="*{dateDebut}" class="form-control">
-                <div class="error" th:errors="*{dateDebut}"></div>
-            </div>
-
-            <div>
-                <label>Date fin</label>
-                <input type="date" th:field="*{dateFin}" class="form-control">
-
-                <!-- Erreur logique -->
-                <div th:if="${traitement.dateDebut != null 
-                            and traitement.dateFin != null 
-                            and traitement.dateFin.isBefore(traitement.dateDebut)}"
-                     class="alert alert-danger mt-2">
-                    ⚠ La date de fin doit être postérieure à la date de début.
+                <div>
+                    <label>Date début</label>
+                    <input type="text" th:field="*{dateDebut}"
+                        class="form-control datepicker"
+                        placeholder="JJ/MM/AAAA">
+                    <div class="error" th:errors="*{dateDebut}"></div>
                 </div>
 
-                <div class="error" th:errors="*{dateFin}"></div>
-                <div class="error" th:errors="*{datesValides}"></div>
+                <div>
+                    <label>Date fin</label>
+                    <input type="text" th:field="*{dateFin}"
+                        class="form-control datepicker"
+                        placeholder="JJ/MM/AAAA">
 
-            </div>
+                    <div th:if="${traitement.dateDebut != null
+                                and traitement.dateFin != null
+                                and traitement.dateFin.isBefore(traitement.dateDebut)}"
+                        class="alert alert-danger mt-2">
+                        ⚠ La date de fin doit être postérieure à la date de début.
+                    </div>
+
+                    <div class="error" th:errors="*{dateFin}"></div>
+                    <div class="error" th:errors="*{datesValides}"></div>
+                </div>
 
             <!-- RÉSIDENT pré-rempli (venant d'une fiche résident) -->
             <div th:if="${residentId != null}">
@@ -98,6 +100,16 @@
         </div>
 
     </form>
+
+    <script>
+    flatpickr(".datepicker", {
+        locale: "fr",
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+</script>
 
 </section>
 </html>

@@ -13,6 +13,9 @@
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
+    <div th:if="${chevauchementError}" class="alert alert-danger mb-3">
+    <span th:text="${chevauchementError}"></span>
+    </div>
 
     <div class="form-header d-flex justify-content-between align-items-center">
         <h2 class="m-0" th:text="${isEdit} ? 'Modifier le créneau' : 'Ajouter un créneau'"></h2>
@@ -26,24 +29,28 @@
         <div class="form-grid">
 
             <div>
-                <label>Date</label>
-                <input type="date" th:field="*{date}" class="form-control">
-                <div class="error" th:errors="*{date}"></div>
-            </div>
+            <label>Date</label>
+            <input type="text" th:field="*{date}"
+                class="form-control datepicker"
+                placeholder="JJ/MM/AAAA">
+            <div class="error" th:errors="*{date}"></div>
+        </div>
 
-            <div>
-                <label>Heure début</label>
-                <input type="time" th:field="*{heureDebut}" class="form-control">
-                <div class="error" th:errors="*{heureDebut}"></div>
-            </div>
+        <div>
+            <label>Heure début</label>
+            <input type="text" th:field="*{heureDebut}"
+                class="form-control timepicker"
+                placeholder="HH:MM">
+            <div class="error" th:errors="*{heureDebut}"></div>
+        </div>
 
-            <div>
-                <label>Heure fin</label>
-                <input type="time" th:field="*{heureFin}" class="form-control">
-                <div class="error" th:errors="*{heureFin}"></div>
-            <!--    <div class="error" th:if="${#fields.hasErrors('heureValide')}" th:errors="*{heureValide}"></div>  -->
-            </div>
-
+        <div>
+            <label>Heure fin</label>
+            <input type="text" th:field="*{heureFin}"
+                class="form-control timepicker"
+                placeholder="HH:MM">
+            <div class="error" th:errors="*{heureFin}"></div>
+        </div>
             <div>
                 <label>Employé</label>
                 <select name="employeId" class="form-control">
@@ -66,6 +73,24 @@
         </div>
 
     </form>
+
+    <script>
+    flatpickr(".datepicker", {
+        locale: "fr",
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+
+    flatpickr(".timepicker", {
+        locale: "fr",
+        enableTime: true,
+        noCalendar: true,
+        time_24hr: true,
+        dateFormat: "H:i",
+    });
+</script>
 
 </section>
 </html>

@@ -39,4 +39,7 @@ public interface EmployeRepository extends JpaRepository<Employe, Integer> {
             OR LOWER(e.matricule) LIKE %:kw%
         """)
     Page<Employe> search(@Param("kw") String keyword, Pageable pageable);
+
+    List<Employe> findAllByOrderByNomAscPrenomAsc();
+    Page<Employe> findAllByOrderByNomAscPrenomAsc(Pageable pageable);
 }

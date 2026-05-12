@@ -277,9 +277,8 @@ body {
 
 .navbar-toggler[data-widget="pushmenu"] .fas.fa-bars {
     font-size: 1.4rem;
-    color: #d4af37;
+    color: #141413;
 }
-
 
 @media (max-width: 768px) {
     .header-slogan,

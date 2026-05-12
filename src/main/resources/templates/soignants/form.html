@@ -14,7 +14,7 @@
         <div></div>
     </div>
 
-    <form sec:authorize="hasRole('DIRECTEUR','ADMINISTRATIF')"
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${soignant}"
           method="post" class="form-card">
 
@@ -34,7 +34,9 @@
 
             <div>
                 <label>Date de naissance</label>
-                <input type="date" th:field="*{dateNaissance}" class="form-control">
+                <input type="text" th:field="*{dateNaissance}"
+                    class="form-control datepicker"
+                    placeholder="JJ/MM/AAAA">
                 <div class="error" th:errors="*{dateNaissance}"></div>
             </div>
 
@@ -88,6 +90,16 @@
         </div>
 
     </form>
+
+    <script>
+    flatpickr(".datepicker", {
+        locale: "fr",
+        altInput: true,
+        altFormat: "d/m/Y",
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+</script>
 
 </section>
 </html>

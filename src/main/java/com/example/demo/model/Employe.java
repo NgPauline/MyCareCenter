@@ -8,8 +8,9 @@ import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
+
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "employes")
 public class Employe extends Personne {
 
     @Pattern(

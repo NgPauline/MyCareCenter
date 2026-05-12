@@ -90,37 +90,48 @@ public class PlanningController {
         return "plannings/form";
     }
 
-    @PostMapping
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
-    public String create(@Valid @ModelAttribute Planning planning,
-                        BindingResult bindingResult,
-                        @RequestParam(required = false) List<Integer> activiteIds,
-                        @RequestParam Integer employeId,
-                        Model model) {
+@PostMapping
+@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+public String create(@Valid @ModelAttribute Planning planning,
+                    BindingResult bindingResult,
+                    @RequestParam(required = false) List<Integer> activiteIds,
+                    @RequestParam Integer employeId,
+                    Model model) {
 
-        // ← déplacé AVANT le check des erreurs
-        Employe responsable = employeService.findById(employeId).orElseThrow();
-        planning.setResponsable(responsable);
+    Employe responsable = employeService.findById(employeId).orElseThrow();
+    planning.setResponsable(responsable);
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("isEdit", false);
-            model.addAttribute("submitUrl", "/plannings");
-            model.addAttribute("activites", planningService.findActivitesSansPlanning());
-            model.addAttribute("employes", employeService.findAll());
-            model.addAttribute("activePage", "planning");
-            return "plannings/form";
-        }
-
-        if (activiteIds != null) {
-            for (Integer activiteId : activiteIds) {
-                Activite activite = activiteService.findById(activiteId).orElseThrow();
-                planning.ajouterActivite(activite);
-            }
-        }
-
-        planningService.save(planning);
-        return "redirect:/plannings";
+    if (bindingResult.hasErrors()) {
+        model.addAttribute("isEdit", false);
+        model.addAttribute("submitUrl", "/plannings");
+        model.addAttribute("activites", planningService.findActivitesSansPlanning());
+        model.addAttribute("employes", employeService.findAll());
+        model.addAttribute("activePage", "planning");
+        return "plannings/form";
     }
+
+    if (activiteIds != null) {
+        for (Integer activiteId : activiteIds) {
+            Activite activite = activiteService.findById(activiteId).orElseThrow();
+            planning.ajouterActivite(activite);
+        }
+    }
+
+    try {
+        planningService.save(planning);
+    } catch (IllegalArgumentException e) {
+        // ✅ Afficher l'erreur de chevauchement
+        model.addAttribute("chevauchementError", e.getMessage());
+        model.addAttribute("isEdit", false);
+        model.addAttribute("submitUrl", "/plannings");
+        model.addAttribute("activites", planningService.findActivitesSansPlanning());
+        model.addAttribute("employes", employeService.findAll());
+        model.addAttribute("activePage", "planning");
+        return "plannings/form";
+    }
+
+    return "redirect:/plannings";
+}
 
     /* DÉTAIL */
     @GetMapping("/{id:\\d+}")
@@ -138,8 +149,14 @@ public class PlanningController {
 
         Planning planning = planningService.findById(id).orElseThrow();
 
+        // ✅ Activités disponibles + celles déjà dans ce planning
+        List<Activite> disponibles = planningService.findActivitesSansPlanning();
+        planning.getActivites().forEach(a -> {
+            if (!disponibles.contains(a)) disponibles.add(a);
+        });
+
         model.addAttribute("planning", planning);
-        model.addAttribute("activites", activiteService.findAll());
+        model.addAttribute("activites", disponibles);
         model.addAttribute("employes", employeService.findAll());
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/plannings/" + id);

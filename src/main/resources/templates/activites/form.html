@@ -38,24 +38,22 @@
             </div>
 
             <!-- DATE -->
-            <div>
-                <label>Date</label>
-                <input type="date" th:field="*{date}" class="form-control">
-                <div class="error" th:errors="*{date}"></div>
-
-                <!-- Erreur métier -->
-                <div class="error"
-                     th:if="${#fields.hasErrors('planifieeAssezTot')}"
-                     th:errors="*{planifieeAssezTot}">
+                <div>
+                    <label>Date</label>
+                    <input type="text" th:field="*{date}"
+                        class="form-control datepicker"
+                        placeholder="JJ/MM/AAAA">
+                    <div class="error" th:errors="*{date}"></div>
                 </div>
-            </div>
 
-            <!-- HEURE DEBUT -->
-            <div>
-                <label>Heure de début</label>
-                <input type="time" th:field="*{heureDebut}" class="form-control">
-                <div class="error" th:errors="*{heureDebut}"></div>
-            </div>
+                <!-- HEURE DEBUT -->
+                <div>
+                    <label>Heure de début</label>
+                    <input type="text" th:field="*{heureDebut}"
+                        class="form-control timepicker"
+                        placeholder="HH:MM">
+                    <div class="error" th:errors="*{heureDebut}"></div>
+                </div>
 
             <!-- DUREE -->
             <div>
@@ -119,6 +117,24 @@
         </div>
 
     </form>
+    
+<script>
+    flatpickr(".datepicker", {
+        locale: "fr",
+        dateFormat: "d/m/Y",       // Affichage DD/MM/YYYY
+        altInput: true,
+        altFormat: "d/m/Y",
+        allowInput: true
+    });
+
+    flatpickr(".timepicker", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",         // Format 24h
+        time_24hr: true,
+        allowInput: true
+    });
+</script>
 
 </section>
 </html>

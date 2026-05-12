@@ -30,12 +30,14 @@
             </button>
         </h2>
 
-        <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
-           th:href="@{/activites/new}"
-           class="btn-circle"
-           title="Ajouter une activité">
-            <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
-        </a>
+        <!-- Bouton visible seulement hors contexte résident -->
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
+            th:if="${resident == null}"
+            th:href="@{/activites/new}"
+            class="btn-circle"
+            title="Ajouter une activité">
+                <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
+            </a>
 
     </div>
 

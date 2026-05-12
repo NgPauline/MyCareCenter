@@ -12,4 +12,6 @@ public interface TypeEquipementRepository extends JpaRepository<TypeEquipement, 
 
     @Query("SELECT t FROM TypeEquipement t WHERE LOWER(t.nom) LIKE %:kw%")
     List<TypeEquipement> search(@Param("kw") String keyword);
+
+    List<TypeEquipement> findAllByOrderByNomAsc();
 }

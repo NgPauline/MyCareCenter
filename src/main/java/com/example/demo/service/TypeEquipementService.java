@@ -21,7 +21,7 @@ public class TypeEquipementService {
     }
 
     public List<TypeEquipement> findAll() {
-        return repo.findAll();
+        return repo.findAllByOrderByNomAsc();
     }
 
     public Optional<TypeEquipement> findById(Integer id) {
