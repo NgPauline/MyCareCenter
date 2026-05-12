@@ -221,15 +221,24 @@ public class ActiviteController {
     }
 
     /* INSCRIPTION */
-    @PostMapping("/{id}/inscrire")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
-    public String inscrire(@PathVariable Integer id,
-                           @RequestParam Integer residentId) {
-        Activite activite = activiteService.findById(id).orElseThrow();
-        Resident resident = residentService.findById(residentId).orElseThrow();
+@PostMapping("/{id}/inscrire")
+@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
+public String inscrire(@PathVariable Integer id,
+                       @RequestParam Integer residentId) {
+    Activite activite = activiteService.findById(id).orElseThrow();
+    Resident resident = residentService.findById(residentId).orElseThrow();
+
+    try {
         activiteService.inscrireResident(activite, resident);
-        return "redirect:/activites/" + id;
+    } catch (IllegalArgumentException e) {
+        if (e.getMessage().contains("complète")) {
+            return "redirect:/activites/" + id + "?error=complet";
+        }
+        return "redirect:/activites/" + id + "?error=inscription";
     }
+
+    return "redirect:/activites/" + id; 
+}
 
     /* DÉSINSCRIPTION */
     @PostMapping("/{id}/desinscrire")
