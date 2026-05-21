@@ -8,7 +8,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Équipement introuvable.</span>
             <span th:case="'delete'">Impossible de supprimer cet équipement.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -17,9 +17,17 @@
 
     <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
+
+        <a th:href="@{/chambres/{id}(id=${idChambre})}" class="btn-circle" title="Retour à la chambre">
+            <img th:src="@{/images/retour.png}" class="icon-26">
+        </a>
+
         <h2 class="m-0">
             Équipements de la chambre <span th:text="${idChambre}"></span>
         </h2>
+
+        <div></div>
+
     </div>
 
     <!-- GRILLE RESPONSIVE -->
@@ -29,10 +37,10 @@
 
             <!-- IMAGE -->
             <div class="equipement-photo" onclick="showImage(this.querySelector('img').src)">
-                <img th:src="${e.photoPath != null} ?
-                        @{|/uploads/equipements/${e.photoPath}|} :
-                        @{/images/default-equipement.png}"
-                alt="Photo équipement">
+                <img th:src="${e.type.photoPath != null}
+                ? @{|/uploads/types/${e.type.photoPath}|}
+                : @{/images/default-equipement.png}"
+            alt="Photo équipement">
             </div>
 
             <!-- NOM DU TYPE -->
@@ -56,8 +64,8 @@
 
                 <!-- Modifier -->
                 <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
-                   th:href="@{|/equipements/${e.idEquipement}/edit|}"
-                   class="btn-circle">
+                th:href="@{/equipements/{id}/edit(id=${e.idEquipement}, idChambre=${idChambre})}"
+                class="btn-circle">
                     <img th:src="@{/images/modifier.png}" class="icon-20">
                 </a>
 

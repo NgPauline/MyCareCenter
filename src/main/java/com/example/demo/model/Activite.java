@@ -19,7 +19,7 @@ public class Activite {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idActivite;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate date;
 
     private int duree; // minutes
@@ -105,14 +105,6 @@ public class Activite {
         if (participants.remove(resident)) {
             resident.getActivites().remove(this);
         }
-    }
-
-    public int obtenirNombreParticipants() {
-        return participants.size();
-    }
-
-    public List<Resident> obtenirListeParticipants() {
-        return participants;
     }
 
     // @AssertTrue(message = "Les activités doivent être planifiées au moins 7 jours à l'avance")

@@ -4,11 +4,11 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout/base :: layout('Activités', '', ~{::section})}">
 
-<section th:fragment="section">
+<section th:fragment="section"
 
     <!-- MESSAGE D’ERREUR GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'passee'">Impossible de supprimer une activité déjà passée.</span>
             <span th:case="'acces'">Accès refusé.</span>
             <span th:case="'inscription'">Impossible d’inscrire ce résident.</span>
@@ -18,11 +18,20 @@
     </div>
 
     <!-- HEADER -->
-    <div class="list-header d-flex justify-content-between align-items-center">
+        <div class="list-header d-flex justify-content-between align-items-center">
 
+        <!-- GAUCHE : retour ou vide -->
+        <div>
+            <a th:if="${resident != null}"
+            th:href="@{/residents/{id}(id=${resident})}"
+            class="btn-circle" title="Retour au résident">
+                <img th:src="@{/images/retour.png}" class="icon-26">
+            </a>
+        </div>
+
+        <!-- CENTRE : titre -->
         <h2 class="m-0 d-flex align-items-center">
             Activités
-
             <button class="btn-circle ml-2"
                     data-search-toggle="searchBarActivites"
                     title="Rechercher une activité">
@@ -30,7 +39,8 @@
             </button>
         </h2>
 
-        <!-- Bouton visible seulement hors contexte résident -->
+        <!-- DROITE : ajouter ou vide -->
+        <div>
             <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
             th:if="${resident == null}"
             th:href="@{/activites/new}"
@@ -38,6 +48,7 @@
             title="Ajouter une activité">
                 <img th:src="@{/images/ajouter.png}" alt="Ajouter" class="icon-26">
             </a>
+        </div>
 
     </div>
 
@@ -103,33 +114,38 @@
                     <td class="text-right">
 
                         <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"
-                           th:href="@{/activites/{id}(id=${a.idActivite})}"
-                           class="btn-circle mr-2"
-                           title="Voir l'activité">
+                        th:href="@{/activites/{id}(id=${a.idActivite}, residentId=${resident})}"
+                        class="btn-circle mr-2"
+                        title="Voir l'activité">
                             <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
                         </a>
 
+                        <!-- Modifier : caché si contexte résident -->
                         <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')"
-                           th:href="@{/activites/{id}/edit(id=${a.idActivite})}"
-                           class="btn-circle mr-2"
-                           title="Modifier cette activité">
+                        th:if="${resident == null}"
+                        th:href="@{/activites/{id}/edit(id=${a.idActivite})}"
+                        class="btn-circle mr-2"
+                        title="Modifier cette activité">
                             <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
                         </a>
 
+                        <!-- Supprimer : caché si contexte résident -->
                         <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
-                              th:action="@{/activites/{id}/delete(id=${a.idActivite})}"
-                              method="post" class="d-inline"
-                              onsubmit="return confirm('Supprimer cette activité ?');">
+                            th:if="${resident == null}"
+                            th:action="@{/activites/{id}/delete(id=${a.idActivite})}"
+                            method="post" class="d-inline"
+                            onsubmit="return confirm('Supprimer cette activité ?');">
                             <button class="btn-circle" title="Supprimer cette activité">
                                 <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-24">
                             </button>
+                        </form>
                         </form>
 
                     </td>
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(activites)}">
-                    <td colspan="6" class="text-center text-muted py-3">
+                    <td colspan="7" class="text-center text-muted py-3">
                         Aucune activité trouvée.
                     </td>
                 </tr>

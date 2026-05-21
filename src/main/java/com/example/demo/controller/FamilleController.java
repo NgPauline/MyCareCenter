@@ -63,13 +63,13 @@ public class FamilleController {
         model.addAttribute("isEdit", false);
         model.addAttribute("residentId", residentId);
         model.addAttribute("submitUrl", "/familles");
-        model.addAttribute("activePage", "familles");
+        model.addAttribute("activePage", residentId != null ? "residents" : "familles");
 
-         if (residentId != null) {
+        if (residentId != null) {
             residentService.findById(residentId)
                 .ifPresent(r -> model.addAttribute("residentPreRempli", r));
         }
-        
+
         return "familles/form";
     }
 
@@ -85,27 +85,21 @@ public class FamilleController {
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/familles");
             model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("activePage", "familles");
+            model.addAttribute("activePage", residentId != null ? "residents" : "familles");
             return "familles/form";
         }
 
-        //  Sauvegarde de la famille
         Famille savedFamille = familleService.save(famille);
 
-        //  Association au résident si fourni
         if (residentId != null) {
             Resident resident = residentService.findById(residentId).orElseThrow();
             resident.ajouterFamille(savedFamille);
             residentService.save(resident);
-
-            //  Redirection vers le résident
             return "redirect:/residents/" + residentId;
         }
 
-        //  Sinon, retour à la liste des familles
         return "redirect:/familles";
     }
-
 
     /* DETAIL */
     @GetMapping("/{id}")
@@ -118,7 +112,7 @@ public class FamilleController {
         model.addAttribute("famille", famille);
         model.addAttribute("residents", famille.getResidents());
         model.addAttribute("residentId", resident);
-        model.addAttribute("activePage", "familles");
+        model.addAttribute("activePage", resident != null ? "residents" : "familles");
 
         return "familles/detail";
     }
@@ -127,7 +121,7 @@ public class FamilleController {
     @GetMapping("/{id}/edit")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String editForm(@PathVariable Integer id,
-                        @RequestParam(required = false) Integer residentId, 
+                        @RequestParam(required = false) Integer residentId,
                         Model model) {
 
         Famille famille = familleService.findById(id).orElseThrow();
@@ -136,8 +130,8 @@ public class FamilleController {
         model.addAttribute("residents", residentService.findAll());
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/familles/" + id);
-        model.addAttribute("activePage", "familles");
-        model.addAttribute("residentId", residentId); 
+        model.addAttribute("activePage", residentId != null ? "residents" : "familles");
+        model.addAttribute("residentId", residentId);
 
         return "familles/form";
     }
@@ -154,7 +148,7 @@ public class FamilleController {
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/familles/" + id);
             model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("activePage", "familles");
+            model.addAttribute("activePage", residentId != null ? "residents" : "familles");
             return "familles/form";
         }
 
@@ -167,12 +161,15 @@ public class FamilleController {
         return "redirect:/familles";
     }
 
-
     /* SUPPRESSION */
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable Integer id,
+                         @RequestParam(required = false) Integer residentId) {
         familleService.delete(id);
+        if (residentId != null) {
+            return "redirect:/residents/" + residentId;
+        }
         return "redirect:/familles";
     }
 }

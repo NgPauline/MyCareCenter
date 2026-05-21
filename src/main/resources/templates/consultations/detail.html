@@ -7,28 +7,32 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
 
 
     <!-- BARRE HAUTE : RETOUR + ACTIONS -->
-            <div class="top-bar d-flex justify-content-end align-items-center mb-2">
-                <div class="detail-actions d-flex gap-3">
+           <div class="top-bar d-flex justify-content-between align-items-center mb-2">
 
-                    <!-- ✅ Uniquement la suppression, réservée au DIRECTEUR -->
-                    <form sec:authorize="hasRole('DIRECTEUR')"
-                        th:action="@{|/consultations/${consultation.idConsultation}/delete|}"
-                        method="post"
-                        onsubmit="return confirm('Supprimer cette consultation ?');">
-                        <button class="btn-circle">
-                            <img src="/images/supprimer.png" class="icon-26">
-                        </button>
-                    </form>
+    <a th:href="${residentId != null} ? @{/consultations(resident=${residentId})} : @{/consultations}"
+       class="btn-circle" title="Retour">
+        <img src="/images/retour.png" class="icon-26">
+    </a>
 
-                </div>
+        <div class="detail-actions d-flex gap-3">
+            
+                <form sec:authorize="hasRole('DIRECTEUR')"
+                    th:action="@{|/consultations/${consultation.idConsultation}/delete|}"
+                    method="post"
+                    onsubmit="return confirm('Supprimer cette consultation ?');">
+                    <button class="btn-circle">
+                        <img src="/images/supprimer.png" class="icon-26">
+                    </button>
+                </form>
             </div>
+        </div>
 
     <!-- TITRE CENTRÉ -->
     <div class="text-center mb-1">
@@ -61,6 +65,16 @@
                         <tr>
                             <th>Date & heure</th>
                             <td th:text="${#temporals.format(consultation.date,'dd/MM/yyyy HH:mm')}"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Durée</th>
+                            <td th:text="${consultation.duree + ' min'}"></td>
+                        </tr>
+
+                        <tr>
+                            <th>Heure de fin</th>
+                            <td th:text="${#temporals.format(consultation.heureFin,'HH:mm')}"></td>
                         </tr>
 
                         <tr>

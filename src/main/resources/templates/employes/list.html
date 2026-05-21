@@ -4,11 +4,11 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout/base :: layout('Employés', '', ~{::section})}">
 
-<section th:fragment="content">
+<section th:fragment="section">
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'planning'">Impossible de supprimer cet employé : il est responsable d’un planning.</span>
             <span th:case="'introuvable'">Employé introuvable.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -63,6 +63,7 @@
                 <tr>
                     <th>Nom</th>
                     <th>Matricule</th>
+                    <th>Rôle</th>
                     <th>Poste</th>
                     <th>Téléphone</th>
                     <th class="text-right">Actions</th>
@@ -74,6 +75,7 @@
                 <tr th:each="e : ${employes}">
                     <td th:text="${e.nom + ' ' + e.prenom}"></td>
                     <td th:text="${e.matricule}"></td>
+                    <td th:text="${e.roleApp}"></td>
                     <td th:text="${e.poste}"></td>
                     <td th:text="${e.telephone}"></td>
 

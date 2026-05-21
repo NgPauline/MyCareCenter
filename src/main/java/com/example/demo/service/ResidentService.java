@@ -74,8 +74,8 @@ public class ResidentService {
 
         // Création automatique des données minimales
         creerDossierMedicalSiAbsent(resident);
-        creerFamilleParDefaut(resident);
-        creerFactureInitiale(resident);
+        //creerFamilleParDefaut(resident);
+        //creerFactureInitiale(resident);
 
         return residentRepository.save(resident);
     }

@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "dossiers_medicaux")
 public class DossierMedical {
@@ -15,6 +17,7 @@ public class DossierMedical {
     private Integer idDossier;
 
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateCreation;
 
     @Column(nullable = false)
@@ -129,13 +132,6 @@ public class DossierMedical {
         }
     }
 
-    // UML : obtenirTraitementsActifs
-    public List<Traitement> obtenirTraitementsActifs() {
-        LocalDate today = LocalDate.now();
-        return traitements.stream()
-                .filter(t -> t.verifierValidite(today))
-                .toList();
-    }
 
     // UML : obtenirHistoriqueConsultations
     public List<Consultation> obtenirHistoriqueConsultations() {

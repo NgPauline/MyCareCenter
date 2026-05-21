@@ -12,15 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 @Controller
 @RequestMapping("/equipements")
@@ -39,11 +33,8 @@ public class EquipementController {
         this.typeEquipementService = typeEquipementService;
     }
 
-    // ---------------------------------------------------------
-    // LISTE GÉNÉRALE + RECHERCHE + PAGINATION
-    // ---------------------------------------------------------
+    /* LISTE GÉNÉRALE */
     @GetMapping
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')")
     public String list(@RequestParam(required = false) String q,
                        @RequestParam(required = false) Integer chambre,
                        @RequestParam(value = "page", defaultValue = "0") int page,
@@ -52,13 +43,12 @@ public class EquipementController {
         if (chambre != null) {
             model.addAttribute("equipements", equipementService.findByChambre(chambre));
             model.addAttribute("idChambre", chambre);
-            model.addAttribute("activePage", "equipements");
+            model.addAttribute("activePage", "chambres");
             return "equipements/list-chambre";
         }
 
         int size = 6;
         Pageable pageable = PageRequest.of(page, size);
-
         var pageResult = (q != null && !q.isEmpty())
                 ? equipementService.search(q, pageable)
                 : equipementService.findAll(pageable);
@@ -67,172 +57,166 @@ public class EquipementController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pageResult.getTotalPages());
         model.addAttribute("q", q);
-        model.addAttribute("activePage", "equipements");
-
+        model.addAttribute("activePage", "types-equipement");
         return "equipements/list";
     }
 
-    // ---------------------------------------------------------
-    // LISTE PAR CHAMBRE
-    // ---------------------------------------------------------
+    /* LISTE PAR CHAMBRE */
     @GetMapping("/chambre/{idChambre}")
-    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')")
     public String listByChambre(@PathVariable Integer idChambre, Model model) {
         model.addAttribute("equipements", equipementService.findByChambre(idChambre));
         model.addAttribute("idChambre", idChambre);
-        model.addAttribute("activePage", "equipements");
+        model.addAttribute("activePage", "chambres");
         return "equipements/list-chambre";
     }
 
-    // ---------------------------------------------------------
-    // FORMULAIRE AJOUT
-    // ---------------------------------------------------------
+    /* FORMULAIRE CRÉATION */
     @GetMapping("/new")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
-    public String createForm(Model model) {
+    public String createForm(@RequestParam(required = false) Integer typeId,
+                            @RequestParam(required = false) Integer idChambre,
+                            Model model) {
 
-        model.addAttribute("equipement", new Equipement());
+        Equipement equipement = new Equipement();
+
+        if (idChambre != null) {
+            chambreService.findById(idChambre).ifPresent(equipement::setChambre);
+        }
+
+        model.addAttribute("equipement", equipement);
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/equipements");
         model.addAttribute("chambres", chambreService.findAll());
         model.addAttribute("types", typeEquipementService.findAll());
-        model.addAttribute("activePage", "equipements");
+        model.addAttribute("idChambre", idChambre);
+        model.addAttribute("activePage", idChambre != null ? "chambres" : "types-equipement");
+
+        if (typeId != null) {
+            typeEquipementService.findById(typeId)
+                .ifPresent(t -> model.addAttribute("typePreRempli", t));
+        }
 
         return "equipements/form";
     }
 
-    // ---------------------------------------------------------
-    // CRÉATION (AFFECTATION D’UN EXEMPLAIRE)
-    // ---------------------------------------------------------
+    /* CRÉATION */
     @PostMapping
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String create(@Valid @ModelAttribute Equipement equipement,
-                         BindingResult bindingResult,
-                         @RequestParam("photoFile") MultipartFile photoFile,
-                         Model model) throws Exception {
+                        BindingResult bindingResult,
+                        @RequestParam Integer typeId,
+                        @RequestParam(required = false) Integer chambreId,
+                        Model model) {
+
+        TypeEquipement type = typeEquipementService.findById(typeId).orElseThrow();
+        equipement.setType(type);
+
+        if (chambreId != null) {
+            equipement.setChambre(chambreService.findById(chambreId).orElse(null));
+        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("chambres", chambreService.findAll());
             model.addAttribute("types", typeEquipementService.findAll());
+            model.addAttribute("typePreRempli", type);
+            model.addAttribute("activePage", chambreId != null ? "chambres" : "types-equipement");
             return "equipements/form";
         }
 
-        // Vérifier stock restant
-        TypeEquipement type = equipement.getType();
-        int total = type.getQuantiteTotale();
-        long utilises = equipementService.countByType(type.getId());
-        long restant = total - utilises;
-
+        long restant = type.getQuantiteTotale() - equipementService.countByType(type.getId());
         if (restant <= 0) {
             model.addAttribute("chambres", chambreService.findAll());
             model.addAttribute("types", typeEquipementService.findAll());
+            model.addAttribute("typePreRempli", type);
             model.addAttribute("errorStock", "Stock insuffisant pour ce type d'équipement.");
+            model.addAttribute("activePage", chambreId != null ? "chambres" : "types-equipement");
             return "equipements/form";
         }
 
-        // Upload photo
-        if (!photoFile.isEmpty()) {
-            String uploadDir = "uploads/equipements/";
-            String fileName = System.currentTimeMillis() + "_" + photoFile.getOriginalFilename();
-
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-
-            Files.copy(photoFile.getInputStream(),
-                    uploadPath.resolve(fileName),
-                    StandardCopyOption.REPLACE_EXISTING);
-
-            equipement.setPhotoPath(fileName);
+        if (chambreId != null && equipementService.existsByChambreAndType(chambreId, typeId)) {
+            model.addAttribute("chambres", chambreService.findAll());
+            model.addAttribute("types", typeEquipementService.findAll());
+            model.addAttribute("typePreRempli", type);
+            model.addAttribute("errorStock",
+                "Un équipement de ce type est déjà affecté à cette chambre.");
+            model.addAttribute("activePage", "chambres");
+            return "equipements/form";
         }
 
         equipementService.save(equipement);
-        return "redirect:/equipements";
+        return "redirect:/types-equipement/" + typeId;
     }
 
-    // ---------------------------------------------------------
-    // FORMULAIRE EDIT
-    // ---------------------------------------------------------
+    /* FORMULAIRE ÉDITION */
     @GetMapping("/{id}/edit")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable Integer id,
+                           @RequestParam(required = false) Integer idChambre,
+                           Model model) {
 
-        Equipement equipement = equipementService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Équipement introuvable"));
-
+        Equipement equipement = equipementService.findById(id).orElseThrow();
         model.addAttribute("equipement", equipement);
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/equipements/" + id);
         model.addAttribute("chambres", chambreService.findAll());
-        model.addAttribute("types", typeEquipementService.findAll());
-        model.addAttribute("activePage", "equipements");
-
+        model.addAttribute("idChambre", idChambre);
+        model.addAttribute("activePage", idChambre != null ? "chambres" : "types-equipement");
         return "equipements/form";
     }
 
-    // ---------------------------------------------------------
-    // UPDATE (NE PAS DÉPLACER / NE PAS CHANGER LE TYPE)
-    // ---------------------------------------------------------
+    /* MISE À JOUR */
     @PostMapping("/{id}")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String update(@PathVariable Integer id,
                          @Valid @ModelAttribute Equipement equipementForm,
                          BindingResult bindingResult,
-                         @RequestParam("photoFile") MultipartFile photoFile,
-                         Model model) throws Exception {
+                         @RequestParam(required = false) Integer chambreId,
+                         @RequestParam(required = false) Integer idChambre,
+                         Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("chambres", chambreService.findAll());
-            model.addAttribute("types", typeEquipementService.findAll());
+            model.addAttribute("activePage", idChambre != null ? "chambres" : "types-equipement");
             return "equipements/form";
         }
 
-        Equipement existing = equipementService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Équipement introuvable"));
+        Equipement existing = equipementService.findById(id).orElseThrow();
 
-        // Interdire changement de type
-        equipementForm.setType(existing.getType());
+        existing.setEtat(equipementForm.getEtat());
+        existing.setChambre(chambreId != null
+                ? chambreService.findById(chambreId).orElse(null)
+                : null);
 
-        // Interdire déplacement
-        equipementForm.setChambre(existing.getChambre());
-
-        // Upload photo
-        if (!photoFile.isEmpty()) {
-            String uploadDir = "uploads/equipements/";
-            String fileName = System.currentTimeMillis() + "_" + photoFile.getOriginalFilename();
-
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-
-            Files.copy(photoFile.getInputStream(),
-                    uploadPath.resolve(fileName),
-                    StandardCopyOption.REPLACE_EXISTING);
-
-            existing.setPhotoPath(fileName);
+        if (chambreId != null) {
+            boolean autreExemplaire = equipementService.existsByChambreAndType(chambreId, existing.getType().getId());
+            boolean memeChambre = existing.getChambre() != null
+                                && existing.getChambre().getIdChambre().equals(chambreId);
+            if (autreExemplaire && !memeChambre) {
+                model.addAttribute("chambres", chambreService.findAll());
+                model.addAttribute("errorStock",
+                    "Un équipement de ce type est déjà affecté à cette chambre.");
+                model.addAttribute("activePage", "chambres");
+                return "equipements/form";
+            }
         }
 
-        // Mise à jour autorisée : état uniquement
-        existing.setEtat(equipementForm.getEtat());
-
         equipementService.update(id, existing);
-
-        return "redirect:/equipements";
+        return "redirect:/types-equipement/" + existing.getType().getId();
     }
 
-    // ---------------------------------------------------------
-    // DELETE (LIBÈRE UN EXEMPLAIRE)
-    // ---------------------------------------------------------
+    /* SUPPRESSION */
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String delete(@PathVariable Integer id) {
+        Equipement equipement = equipementService.findById(id).orElseThrow();
+        Integer typeId = equipement.getType().getId();
         equipementService.delete(id);
-        return "redirect:/equipements";
+        return "redirect:/types-equipement/" + typeId;
     }
 
-    // ---------------------------------------------------------
-    // REDIRECTION
-    // ---------------------------------------------------------
+    /* REDIRECTION */
     @GetMapping("/{id}")
     public String redirectToList() {
-        return "redirect:/equipements";
+        return "redirect:/types-equipement";
     }
 }

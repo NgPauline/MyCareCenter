@@ -22,7 +22,7 @@ public class Resident extends Personne {
     @Column(nullable = false)
     private String niveauAutonomie;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     @NotNull
     private LocalDate dateAdmission;
 
@@ -188,70 +188,9 @@ public class Resident extends Personne {
         }
     }
 
-    public void modifierNiveauAutonomie(String niveau) {
-        this.niveauAutonomie = niveau;
-    }
-
-    public void modifierStatut(String statut) {
-        this.statut = statut;
-    }
-
-    public DossierMedical obtenirDossierMedical() {
-        return dossierMedical;
-    }
-
-    public Chambre obtenirChambre() {
-        return chambre;
-    }
-
-    public void inscrireActivite(Activite activite) {
-        if (!activites.contains(activite)) {
-            activites.add(activite);
-            activite.getParticipants().add(this);
-        }
-    }
-
-    public void desinscrireActivite(Activite activite) {
-        if (activites.remove(activite)) {
-            activite.getParticipants().remove(this);
-        }
-    }
-
-    public List<Activite> obtenirActivites() {
-        return activites;
-    }
-
-    public void ajouterPaiement(Paiement paiement) {
-        Facture facture = paiement.getFacture();
-        if (facture != null && !factures.contains(facture)) {
-            factures.add(facture);
-        }
-    }
-
     public int getAge() {
         if (getDateNaissance() == null) return 0;
         return Period.between(getDateNaissance(), LocalDate.now()).getYears();
     }
 
-    public int calculerDureeSejourEnJours() {
-        if (dateAdmission == null) return 0;
-        return Period.between(dateAdmission, LocalDate.now()).getDays();
-    }
-
-    public double obtenirSoldeRestant() {
-        return factures.stream()
-                .mapToDouble(Facture::getSoldeRestant)
-                .sum();
-    }
-
-    public void ajouterConsultation(Consultation consultation) {
-        if (!consultations.contains(consultation)) {
-            consultations.add(consultation);
-            consultation.setResident(this);
-        }
-    }
-
-    public byte[] genererPDF() {
-        return new byte[0];
-    }
 }

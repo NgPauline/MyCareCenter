@@ -2,11 +2,11 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout('Traitement', 'Formulaire traitement', ~{::section})}">
 
-<section th:fragment="content" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Traitement introuvable.</span>
             <span th:case="'resident'">Résident introuvable.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -47,17 +47,17 @@
 
                 <div>
                     <label>Date début</label>
-                    <input type="text" th:field="*{dateDebut}"
-                        class="form-control datepicker"
-                        placeholder="JJ/MM/AAAA">
+                    <input type="date"
+                    th:field="*{dateDebut}"
+                    class="form-control">
                     <div class="error" th:errors="*{dateDebut}"></div>
                 </div>
 
                 <div>
                     <label>Date fin</label>
-                    <input type="text" th:field="*{dateFin}"
-                        class="form-control datepicker"
-                        placeholder="JJ/MM/AAAA">
+                    <input type="date"
+                    th:field="*{dateFin}"
+                    class="form-control">
 
                     <div th:if="${traitement.dateDebut != null
                                 and traitement.dateFin != null
@@ -67,7 +67,6 @@
                     </div>
 
                     <div class="error" th:errors="*{dateFin}"></div>
-                    <div class="error" th:errors="*{datesValides}"></div>
                 </div>
 
             <!-- RÉSIDENT pré-rempli (venant d'une fiche résident) -->
@@ -96,20 +95,11 @@
 
         <div class="form-actions mt-3">
             <button class="btn-gold">Enregistrer</button>
-            <a th:href="@{/traitements}" class="btn-ghost">Annuler</a>
+            <a th:href="${residentId != null} ? @{/traitements(resident=${residentId})} : @{/traitements}"
+             class="btn-ghost">Annuler</a>
         </div>
 
     </form>
-
-    <script>
-    flatpickr(".datepicker", {
-        locale: "fr",
-        altInput: true,
-        altFormat: "d/m/Y",
-        dateFormat: "Y-m-d",
-        allowInput: true
-    });
-</script>
 
 </section>
 </html>

@@ -286,3 +286,6 @@ body {
         display: none;
     }
 }
+.login-input{
+    font-family:'Garamond', sans-serif;
+}

@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "paiements")
 public class Paiement {
@@ -16,6 +18,7 @@ public class Paiement {
     private Integer idPaiement;
 
     @NotNull
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate datePaiement;
     
     @DecimalMin("0.0")
@@ -94,13 +97,4 @@ public class Paiement {
         return true;
     }
 
-    // UML : annulerPaiement
-    public void annulerPaiement() {
-        this.valide = false;
-    }
-
-    // UML : obtenirFacture
-    public Facture obtenirFacture() {
-        return facture;
-    }
 }

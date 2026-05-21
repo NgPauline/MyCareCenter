@@ -2,11 +2,11 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: layout('Dossier médical', 'Modifier le dossier médical', ~{::section})}">
 
-<section th:fragment="content" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<section th:fragment="section" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Résident introuvable.</span>
             <span th:case="'sansDossier'">Le résident n’a pas de dossier médical.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -15,7 +15,7 @@
 
     <div class="form-header d-flex justify-content-between align-items-center">
         <h2 class="m-0"
-            th:text="'Modifier le dossier médical — ' + resident.nom + ' ' + resident.prenom"></h2>
+             th:text="'Modifier le dossier médical — ' + ${resident.nom} + ' ' + ${resident.prenom}"></h2>
         <div></div>
     </div>
 

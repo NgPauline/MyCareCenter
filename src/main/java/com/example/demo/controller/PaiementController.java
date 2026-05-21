@@ -52,7 +52,6 @@ public class PaiementController {
         return "paiements/list";
     }
 
-
     @GetMapping("/new")
     public String createForm(@RequestParam(required = false) Integer factureId,
                             @RequestParam(required = false) Integer residentId,
@@ -76,8 +75,10 @@ public class PaiementController {
                 );
             });
             model.addAttribute("residentId", residentId);
+            model.addAttribute("activePage", "residents");
         } else {
             model.addAttribute("factures", factureService.findAll());
+            model.addAttribute("activePage", "factures");
         }
 
         model.addAttribute("paiement", paiement);
@@ -90,16 +91,18 @@ public class PaiementController {
 
     @PostMapping
     public String create(@Valid @ModelAttribute Paiement paiement,
-                         BindingResult bindingResult,
-                         @RequestParam Integer factureId,
-                         @RequestParam(required = false) String from,
-                         Model model) {
+                        BindingResult bindingResult,
+                        @RequestParam Integer factureId,
+                        @RequestParam(required = false) String from,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("factures", factureService.findAll());
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/paiements");
             model.addAttribute("from", from);
+            model.addAttribute("activePage", residentId != null ? "residents" : "factures");
             return "paiements/form";
         }
 
@@ -119,50 +122,55 @@ public class PaiementController {
         factureService.save(facture);
 
         if (from != null && !from.isBlank()) return "redirect:" + from;
+        if (residentId != null) return "redirect:/paiements?resident=" + residentId;
         return "redirect:/paiements";
     }
 
     @GetMapping("/{id}")
     public String detail(@PathVariable Integer id,
-                         @RequestParam(required = false) String from,
-                         Model model) {
-
+                        @RequestParam(required = false) String from,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
         Paiement paiement = paiementService.findById(id).orElseThrow();
         model.addAttribute("paiement", paiement);
         model.addAttribute("from", from);
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "factures");
         return "paiements/detail";
     }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Integer id,
-                           @RequestParam(required = false) String from,
-                           Model model) {
-
+                        @RequestParam(required = false) String from,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
         Paiement paiement = paiementService.findById(id).orElseThrow();
-
         model.addAttribute("paiement", paiement);
         model.addAttribute("factures", factureService.findAll());
         model.addAttribute("factureId", paiement.getFacture().getIdFacture());
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/paiements/" + id);
         model.addAttribute("from", from);
-
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "factures");
         return "paiements/form";
     }
 
     @PostMapping("/{id}")
     public String update(@PathVariable Integer id,
-                         @Valid @ModelAttribute Paiement paiement,
-                         BindingResult bindingResult,
-                         @RequestParam Integer factureId,
-                         @RequestParam(required = false) String from,
-                         Model model) {
+                        @Valid @ModelAttribute Paiement paiement,
+                        BindingResult bindingResult,
+                        @RequestParam Integer factureId,
+                        @RequestParam(required = false) String from,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("factures", factureService.findAll());
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/paiements/" + id);
             model.addAttribute("from", from);
+            model.addAttribute("activePage", residentId != null ? "residents" : "factures");
             return "paiements/form";
         }
 
@@ -177,21 +185,22 @@ public class PaiementController {
         paiementService.save(original);
 
         if (from != null && !from.isBlank()) return "redirect:" + from;
+        if (residentId != null) return "redirect:/paiements/" + id + "?residentId=" + residentId;
         return "redirect:/paiements/" + id;
     }
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Integer id,
-                         @RequestParam(required = false) String from) {
-
+                        @RequestParam(required = false) String from,
+                        @RequestParam(required = false) Integer residentId) {
         Paiement paiement = paiementService.findById(id).orElseThrow();
         Facture facture = paiement.getFacture();
-
+        Integer rid = residentId != null ? residentId
+                                        : facture.getResident().getIdPersonne();
         paiementService.delete(id);
         facture.recalculerStatut();
         factureService.save(facture);
-
         if (from != null && !from.isBlank()) return "redirect:" + from;
-        return "redirect:/paiements";
+        return "redirect:/paiements?resident=" + rid;
     }
 }

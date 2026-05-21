@@ -29,11 +29,9 @@ public class DossierMedicalController {
     /* -------------------- DETAIL -------------------- */
     @GetMapping("/{residentId}")
     public String detail(@PathVariable Integer residentId, Model model) {
-
         Resident resident = residentService.findById(residentId)
                 .orElseThrow(() -> new IllegalArgumentException("Résident introuvable"));
 
-        /* Création automatique du dossier si absent */
         if (resident.getDossierMedical() == null) {
             DossierMedical nouveau = dossierService.createForResident(resident);
             resident.setDossierMedical(nouveau);
@@ -42,14 +40,13 @@ public class DossierMedicalController {
 
         model.addAttribute("resident", resident);
         model.addAttribute("dossier", resident.getDossierMedical());
-
+        model.addAttribute("activePage", "residents");
         return "dossiers/detail";
     }
 
     /* -------------------- FORMULAIRE EDITION -------------------- */
     @GetMapping("/{residentId}/edit")
     public String editForm(@PathVariable Integer residentId, Model model) {
-
         Resident resident = residentService.findById(residentId)
                 .orElseThrow(() -> new IllegalArgumentException("Résident introuvable"));
 
@@ -61,7 +58,7 @@ public class DossierMedicalController {
 
         model.addAttribute("resident", resident);
         model.addAttribute("dossier", resident.getDossierMedical());
-
+        model.addAttribute("activePage", "residents");
         return "dossiers/form";
     }
 
@@ -76,7 +73,6 @@ public class DossierMedicalController {
                 .orElseThrow(() -> new IllegalArgumentException("Résident introuvable"));
 
         DossierMedical dossier = resident.getDossierMedical();
-
         if (dossier == null) {
             dossier = dossierService.createForResident(resident);
             resident.setDossierMedical(dossier);
@@ -86,15 +82,12 @@ public class DossierMedicalController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("resident", resident);
             model.addAttribute("dossier", dossierForm);
+            model.addAttribute("activePage", "residents");
             return "dossiers/form";
         }
 
-        /* Règles métier : la date de création ne doit jamais être modifiée */
         dossierForm.setDateCreation(dossier.getDateCreation());
-
-        /* Mise à jour sécurisée */
         dossierService.updateForResident(residentId, dossierForm);
-
         return "redirect:/dossiers/" + residentId;
     }
 }

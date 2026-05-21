@@ -6,7 +6,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'occupee'">Impossible d’attribuer cette chambre : elle est déjà occupée.</span>
             <span th:case="'acces'">Accès refusé.</span>
             <span th:case="*">Une erreur est survenue.</span>

@@ -6,7 +6,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Résident introuvable.</span>
             <span th:case="'chambreId'">Chambre introuvable.</span>
             <span th:case="'familleId'">Famille introuvable.</span>
@@ -14,8 +14,15 @@
     </div>
 
     <div class="form-header d-flex justify-content-between align-items-center">
+
+        <a th:href="@{/residents}" class="btn-circle" title="Retour">
+            <img src="/images/retour.png" class="icon-26">
+        </a>
+
         <h2 class="m-0" th:text="${isEdit} ? 'Modifier le résident' : 'Ajouter un résident'"></h2>
+
         <div></div>
+
     </div>
 
     <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
@@ -43,14 +50,10 @@
 
             <div>
             <label>Date de naissance</label>
-            <input type="text" th:field="*{dateNaissance}"
-                class="form-control datepicker"
-                placeholder="JJ/MM/AAAA">
+            <input type="date"
+                th:field="*{dateNaissance}"
+                class="form-control">
             <div class="error" th:errors="*{dateNaissance}"></div>
-            <div class="text-danger"
-                th:if="${#fields.hasErrors('trancheAgeValide')}"
-                th:errors="*{trancheAgeValide}">
-            </div>
         </div>
 
             <div>
@@ -71,9 +74,9 @@
 
             <div>
                 <label>Date admission</label>
-                <input type="text" th:field="*{dateAdmission}"
-                    class="form-control datepicker"
-                    placeholder="JJ/MM/AAAA">
+                <input type="date"
+                th:field="*{dateAdmission}"
+                class="form-control">
                 <div class="error" th:errors="*{dateAdmission}"></div>
             </div>
 
@@ -89,6 +92,7 @@
             <div>
                 <label>Chambre</label>
                 <select name="chambreId" class="form-control">
+                    <option value="">-- Aucune --</option>
                     <option th:each="c : ${chambres}"
                             th:value="${c.idChambre}"
                             th:text="${c.numero}"
@@ -105,16 +109,6 @@
         </div>
 
     </form>
-
-    <script>
-    flatpickr(".datepicker", {
-        locale: "fr",
-        altInput: true,
-        altFormat: "d/m/Y",
-        dateFormat: "Y-m-d",
-        allowInput: true
-    });
-</script>
 
 </section>
 </html>

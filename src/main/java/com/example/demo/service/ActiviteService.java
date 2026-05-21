@@ -1,12 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Activite;
-import com.example.demo.model.Resident;
-import com.example.demo.model.Consultation;
 import com.example.demo.model.CategorieActivite;
+import com.example.demo.model.Consultation;
 import com.example.demo.model.Employe;
-import com.example.demo.model.Soignant;
-
+import com.example.demo.model.Resident;
 import com.example.demo.repository.ActiviteRepository;
 import com.example.demo.repository.ConsultationRepository;
 
@@ -18,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,58 +44,25 @@ public class ActiviteService {
         return activiteRepository.findById(id);
     }
 
-    // 🔥 Détection des collisions d’horaires
-    private boolean aCollisionActivite(Activite nouvelle, List<Activite> existantes) {
+    public Activite save(Activite activite, Employe createur) {
 
-        LocalDate date = nouvelle.getDate();
-        LocalTime debut = nouvelle.getHeureDebut();
-        LocalTime fin = nouvelle.getHeureFin();
-
-        for (Activite a : existantes) {
-
-            if (nouvelle.getIdActivite() != null &&
-                nouvelle.getIdActivite().equals(a.getIdActivite())) {
-                continue;
-            }
-
-            if (!a.getDate().equals(date)) continue;
-
-            boolean chevauche =
-                    debut.isBefore(a.getHeureFin()) &&
-                    fin.isAfter(a.getHeureDebut());
-
-            if (chevauche) return true;
+        if (activite.getDate() != null && activite.getDate().isBefore(LocalDate.now().plusDays(7))) {
+            throw new IllegalArgumentException("Les activités doivent être planifiées au moins 7 jours à l'avance.");
         }
 
-        return false;
-    }
-
-    public Activite save(Activite activite, Employe createur) {
-        if (activite.getDate() != null && activite.getDate().isBefore(LocalDate.now().plusDays(7))) {
-        throw new IllegalArgumentException("Les activités doivent être planifiées au moins 7 jours à l'avance.");
-    }
-        // 🔒 ÉDUCATEUR → interdit de créer du médical
         if ("EDUCATEUR".equals(createur.getRoleApp()) &&
             activite.getCategorie() == CategorieActivite.MEDICAL) {
             throw new IllegalArgumentException("Un éducateur ne peut pas créer une activité médicale.");
         }
 
-        // 🔒 SOIGNANT → interdit de créer éducatif / sportif
-        if (createur instanceof Soignant &&
+        if ("SOIGNANT".equals(createur.getRoleApp()) &&
             (activite.getCategorie() == CategorieActivite.EDUCATIF
             || activite.getCategorie() == CategorieActivite.SPORTIF)) {
             throw new IllegalArgumentException("Un soignant ne peut pas créer une activité éducative ou sportive.");
         }
 
-        //  Collision horaire 
-        //List<Activite> existantes = activiteRepository.findByDate(activite.getDate());
-       // if (aCollisionActivite(activite, existantes)) {
-           // throw new IllegalArgumentException("Collision détectée : l’horaire chevauche une autre activité.");
-       // }
-
         return activiteRepository.save(activite);
     }
-
 
     public void update(Integer id, Activite updated, Employe createur) {
 
@@ -107,7 +71,7 @@ public class ActiviteService {
             throw new IllegalArgumentException("Un éducateur ne peut pas modifier une activité médicale.");
         }
 
-        if (createur instanceof Soignant &&
+        if ("SOIGNANT".equals(createur.getRoleApp()) &&
             (updated.getCategorie() == CategorieActivite.EDUCATIF
             || updated.getCategorie() == CategorieActivite.SPORTIF)) {
             throw new IllegalArgumentException("Un soignant ne peut pas modifier une activité éducative ou sportive.");
@@ -127,7 +91,6 @@ public class ActiviteService {
         activiteRepository.save(original);
     }
 
-
     public void delete(Integer id) {
         activiteRepository.deleteById(id);
     }
@@ -135,13 +98,15 @@ public class ActiviteService {
     public boolean isActivitePassee(Integer id) {
         Activite act = activiteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Activité introuvable"));
-
         return act.getDate().isBefore(LocalDate.now());
     }
 
     public void inscrireResident(Activite activite, Resident resident) {
 
-        // ✅ Limite participants
+        if (activite.getParticipants().contains(resident)) {
+            throw new IllegalArgumentException("Ce résident est déjà inscrit à cette activité.");
+        }
+
         if (activite.getParticipants().size() >= 3) {
             throw new IllegalArgumentException("Cette activité est complète (3 participants maximum).");
         }
@@ -152,11 +117,14 @@ public class ActiviteService {
         List<Consultation> consults = consultationRepository
                 .findByResidentAndDateBetween(resident, debutAct.minusHours(4), finAct.plusHours(4));
 
-        boolean chevauche = consults.stream().anyMatch(c ->
-                !c.getDate().isBefore(debutAct) && !c.getDate().isAfter(finAct));
+        boolean chevauche = consults.stream().anyMatch(c -> {
+            LocalDateTime debutConsult = c.getDate();
+            LocalDateTime finConsult = c.getHeureFin();
+            return debutConsult.isBefore(finAct) && finConsult.isAfter(debutAct);
+        });
 
         if (chevauche) {
-            throw new IllegalArgumentException("Chevauchement entre activité et consultation");
+            throw new IllegalArgumentException("Chevauchement entre activité et consultation du résident.");
         }
 
         activite.ajouterParticipant(resident);
@@ -184,15 +152,8 @@ public class ActiviteService {
         return activiteRepository.searchByParticipant(idResident, keyword.toLowerCase());
     }
 
-    public List<Activite> search(String keyword) {
-        return activiteRepository.search(keyword.toLowerCase());
-    }
-
     public Page<Activite> search(String keyword, Pageable pageable) {
         return activiteRepository.search(keyword.toLowerCase(), pageable);
     }
-  
-    
+
 }
-
-

@@ -84,13 +84,4 @@ public class Chambre {
         this.occupant = occupant;
     }
 
-    // UML : verifierDisponibilite
-    public boolean verifierDisponibilite() {
-        return occupant == null;
-    }
-
-    // UML : modifierType
-    public void modifierType(String type) {
-        this.type = type;
-    }
 }

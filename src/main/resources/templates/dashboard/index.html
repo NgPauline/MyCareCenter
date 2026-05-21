@@ -2,8 +2,8 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
  
-<body th:replace="~{layout/base :: layout('Dashboard', 'Tableau de bord', ~{::content})}">
-<section th:fragment="content">
+<body th:replace="~{layout/base :: layout('Dashboard', 'Tableau de bord', ~{::section})}">
+<section th:fragment="section">
  
   <!-- ═══════════════════════════════════════════
        KPI BAR  (visible selon rôle)
@@ -74,7 +74,7 @@
  
       <div class="card equip-card">
         <div class="card-header">
-          <h3>Équipements en chambre</h3>
+          <h3>Équipements</h3>
         </div>
         <div class="card-body equip-body">
           <div class="equip-gauge">
@@ -94,7 +94,7 @@
           <div class="equip-info">
             <span class="equip-main" th:text="${nbEquipementsEnChambre} + ' assignés'">0 assignés</span>
             <span class="equip-sub"  th:text="${nbEquipementsTotal - nbEquipementsEnChambre} + ' non assignés'">0 non assignés</span>
-            <a th:href="@{/equipements}" class="btn-small gold" style="margin-top:.5rem">Gérer</a>
+            <a th:href="@{/types-equipement}" class="btn-small gold" style="margin-top:.5rem">Gérer</a>
           </div>
         </div>
       </div>

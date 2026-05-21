@@ -2,15 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Activite;
 import com.example.demo.model.Resident;
-import com.example.demo.model.Soignant;
 import com.example.demo.model.Employe;
 import com.example.demo.service.ActiviteService;
 import com.example.demo.service.ResidentService;
-import com.example.demo.service.SoignantService;
 import com.example.demo.service.EmployeService;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,16 +28,13 @@ public class ActiviteController {
 
     private final ActiviteService activiteService;
     private final ResidentService residentService;
-    private final SoignantService soignantService;
     private final EmployeService employeService;
 
     public ActiviteController(ActiviteService activiteService,
                               ResidentService residentService,
-                              SoignantService soignantService,
                               EmployeService employeService) {
         this.activiteService = activiteService;
         this.residentService = residentService;
-        this.soignantService = soignantService;
         this.employeService = employeService;
     }
 
@@ -143,11 +139,17 @@ public class ActiviteController {
 
     /* DÉTAIL */
     @GetMapping("/{id}")
-    public String detail(@PathVariable Integer id, Model model) {
+    public String detail(@PathVariable Integer id,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
         Activite activite = activiteService.findById(id).orElseThrow();
+        List<Resident> disponibles = residentService.findAll().stream()
+                .filter(r -> !activite.getParticipants().contains(r))
+                .collect(java.util.stream.Collectors.toList());
         model.addAttribute("activite", activite);
-        model.addAttribute("residents", residentService.findAll());
-        model.addAttribute("activePage", "activites");
+        model.addAttribute("residents", disponibles);
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "activites");
         return "activites/detail";
     }
 
@@ -220,26 +222,31 @@ public class ActiviteController {
         return "redirect:/activites";
     }
 
-    /* INSCRIPTION */
-@PostMapping("/{id}/inscrire")
-@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
-public String inscrire(@PathVariable Integer id,
-                       @RequestParam Integer residentId) {
-    Activite activite = activiteService.findById(id).orElseThrow();
-    Resident resident = residentService.findById(residentId).orElseThrow();
 
-    try {
-        activiteService.inscrireResident(activite, resident);
-    } catch (IllegalArgumentException e) {
-        if (e.getMessage().contains("complète")) {
-            return "redirect:/activites/" + id + "?error=complet";
+        /* INSCRIPTION */
+        @PostMapping("/{id}/inscrire")
+        @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
+        public String inscrire(@PathVariable Integer id,
+                            @RequestParam Integer residentId) {
+            Activite activite = activiteService.findById(id).orElseThrow();
+            Resident resident = residentService.findById(residentId).orElseThrow();
+
+            try {
+                activiteService.inscrireResident(activite, resident);
+            } catch (IllegalArgumentException e) {
+                if (e.getMessage().contains("complète")) {
+                    return "redirect:/activites/" + id + "?error=complet";
+                }
+                if (e.getMessage().contains("déjà inscrit")) {
+                    return "redirect:/activites/" + id + "?error=dejainscrit";
+                }
+                return "redirect:/activites/" + id + "?error=inscription";
+            }
+
+            return "redirect:/activites/" + id;  
         }
-        return "redirect:/activites/" + id + "?error=inscription";
-    }
 
-    return "redirect:/activites/" + id; 
-}
-
+                       
     /* DÉSINSCRIPTION */
     @PostMapping("/{id}/desinscrire")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")

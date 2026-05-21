@@ -1,46 +1,57 @@
 <!DOCTYPE html>
 <html lang="fr"
       xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/base :: layout('Type d\'équipement', '', ~{::section})}">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Type_Equipement', 'Formulaire des types d\'équipements', ~{::section})}">
 
 <section th:fragment="section">
 
-    <a href="javascript:history.back()" class="back-arrow">← Retour</a>
+    <div class="form-header d-flex justify-content-between align-items-center">
 
-    <h2 th:text="${isEdit} ? 'Modifier un type' : 'Nouveau type'"></h2>
+        <a th:href="${typePreRempli != null ? '/types-equipement/' + typePreRempli.id : (idChambre != null ? '/chambres/' + idChambre : '/types-equipement')}"
+        class="btn-circle" title="Retour">
+            <img src="/images/retour.png" class="icon-26">
+        </a>
+
+        <h2 class="m-0" th:text="${isEdit} ? 'Modifier un type' : 'Nouveau type'"></h2>
+
+        <div></div>
+
+    </div>
 
     <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${typeEquipement}" method="post"
-          enctype="multipart/form-data" class="mt-4">
+          enctype="multipart/form-data" class="form-card">
 
-        <!-- NOM -->
-        <div class="form-group">
-            <label>Nom</label>
-            <input type="text" th:field="*{nom}" class="form-control" required>
-        </div>
+        <div class="form-grid">
 
-        <!-- QUANTITÉ -->
-        <div class="form-group mt-3">
-            <label>Quantité totale</label>
-            <input type="number" th:field="*{quantiteTotale}" class="form-control" min="1" required>
-        </div>
-
-        <!-- PHOTO -->
-        <div class="form-group mt-3">
-            <label>Photo</label>
-            <input type="file" name="photoFile" class="form-control-file">
-
-            <!-- APERÇU PHOTO EXISTANTE -->
-            <div th:if="${typeEquipement.photoPath != null}" class="mt-2">
-                <img th:src="@{|/uploads/types/${typeEquipement.photoPath}|}"
-                     alt="Photo actuelle"
-                     style="width:120px;height:120px;object-fit:cover;border-radius:8px;">
+            <div>
+                <label>Nom</label>
+                <input type="text" th:field="*{nom}" class="form-control" required>
             </div>
+
+            <div>
+                <label>Quantité totale</label>
+                <input type="number" th:field="*{quantiteTotale}" class="form-control" min="1" required>
+            </div>
+
+            <div>
+                <label>Photo</label>
+                <input type="file" name="photoFile" class="form-control-file">
+                <div th:if="${typeEquipement.photoPath != null}" class="mt-2">
+                    <img th:src="@{|/uploads/types/${typeEquipement.photoPath}|}"
+                         alt="Photo actuelle"
+                         style="width:120px;height:120px;object-fit:cover;border-radius:8px;">
+                </div>
+            </div>
+
         </div>
 
-        <button type="submit" class="btn btn-primary mt-4">
-            Enregistrer
-        </button>
+        <div class="form-actions mt-3">
+            <button type="submit" class="btn-gold">Enregistrer</button>
+            <a th:href="${typePreRempli != null ? '/types-equipement/' + typePreRempli.id : (idChambre != null ? '/chambres/' + idChambre : '/types-equipement')}"
+            class="btn-ghost">Annuler</a>
+        </div>
 
     </form>
 

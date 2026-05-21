@@ -6,7 +6,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Planning introuvable.</span>
             <span th:case="'responsable'">Responsable introuvable.</span>
             <span th:case="'activite'">Activité introuvable.</span>
@@ -18,11 +18,18 @@
     </div>
 
     <div class="form-header d-flex justify-content-between align-items-center">
+
+        <a th:href="@{/plannings}" class="btn-circle" title="Retour">
+            <img src="/images/retour.png" class="icon-26">
+        </a>
+
         <h2 class="m-0" th:text="${isEdit} ? 'Modifier le créneau' : 'Ajouter un créneau'"></h2>
+
         <div></div>
+
     </div>
 
-    <form sec:authorize="hasAnyRole('DIRECTEUR', 'ADMINISTRATIF','EDUCATEUR')"
+    <form sec:authorize="hasAnyRole('DIRECTEUR', 'ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${planning}"
           method="post" class="form-card">
 
@@ -75,22 +82,21 @@
     </form>
 
     <script>
-    flatpickr(".datepicker", {
-        locale: "fr",
-        altInput: true,
-        altFormat: "d/m/Y",
-        dateFormat: "Y-m-d",
-        allowInput: true
-    });
-
-    flatpickr(".timepicker", {
-        locale: "fr",
-        enableTime: true,
-        noCalendar: true,
-        time_24hr: true,
-        dateFormat: "H:i",
-    });
+flatpickr(".datepicker", {
+    locale: "fr",
+    dateFormat: "d/m/Y",
+    allowInput: true,
+    onChange: function(selectedDates, dateStr, instance) {
+        // Convertir JJ/MM/AAAA → AAAA-MM-JJ pour le serveur
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            window.location.href = `/plannings/new?date=${isoDate}`;
+        }
+    }
+});
 </script>
+
 
 </section>
 </html>

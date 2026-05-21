@@ -7,7 +7,7 @@
 <section th:fragment="section">
 
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
@@ -15,6 +15,12 @@
 
     <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
+
+        <div th:if="${residentId != null}" class="mb-2">
+            <a th:href="@{/dossiers/{id}(id=${residentId})}" class="btn-circle" title="Retour au dossier médical">
+                <img th:src="@{/images/retour.png}" class="icon-26">
+            </a>
+        </div>
 
         <h2 class="m-0 d-flex align-items-center">
             Consultations
@@ -73,7 +79,7 @@
             <tbody>
 
                 <tr th:each="c : ${consultations}">
-                    <td th:text="${#temporals.format(c.date,'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(c.date,'dd/MM/yyyy HH:mm')}">
                     <td th:text="${c.resident.nom + ' ' + c.resident.prenom}"></td>
                     <td th:text="${c.soignant.nom + ' ' + c.soignant.prenom}"></td>
                     <td th:text="${c.diagnostic}"></td>
@@ -82,9 +88,9 @@
 
                         <!-- Voir -->
                         <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
-                           th:href="@{|/consultations/${c.idConsultation}|}"
-                           class="btn-circle mr-2"
-                           title="Voir la consultation">
+                        th:href="@{/consultations/{id}(id=${c.idConsultation}, residentId=${residentId})}"
+                        class="btn-circle mr-2"
+                        title="Voir la consultation">
                             <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
                         </a>
 

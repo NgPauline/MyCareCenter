@@ -6,7 +6,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+       <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'payee'">Impossible de modifier cette facture : elle est déjà payée.</span>
             <span th:case="'introuvable'">Facture introuvable.</span>
             <span th:case="'resident'">Résident introuvable.</span>
@@ -14,10 +14,18 @@
         </span>
     </div>
 
-    <div class="form-header d-flex justify-content-between align-items-center">
-        <h2 class="m-0" th:text="${isEdit} ? 'Modifier la facture' : 'Ajouter une facture'"></h2>
-        <div></div>
-    </div>
+        <div class="form-header d-flex justify-content-between align-items-center">
+
+            <a th:href="${residentId != null} ? @{/factures(resident=${residentId})} : @{/factures}"
+            class="btn-circle" title="Retour">
+                <img src="/images/retour.png" class="icon-26">
+            </a>
+
+            <h2 class="m-0" th:text="${isEdit} ? 'Modifier la facture' : 'Ajouter une facture'"></h2>
+
+            <div></div>
+
+        </div>
 
     <!-- FORMULAIRE -->
     <form sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
@@ -48,13 +56,40 @@
                 </div>
 
                 <!-- Sélection libre (accès direct à /factures/new) -->
-                <select th:if="${residentId == null}" name="residentId" class="form-select">
-                    <option th:each="r : ${residents}"
-                            th:value="${r.idPersonne}"
-                            th:selected="${facture.resident != null and facture.resident.idPersonne == r.idPersonne}"
-                            th:text="|${r.nom} ${r.prenom}|">
-                    </option>
-                </select>
+                <!-- Sélection libre (accès direct à /factures/new) -->
+<div th:if="${residentId == null}"
+     data-combobox
+     data-input-id="searchResident"
+     data-hidden-id="residentSelectionne"
+     data-dropdown-id="dropdownResidents"
+     style="position:relative;">
+
+    <input type="text"
+           id="searchResident"
+           class="form-control"
+           placeholder="Rechercher un résident..."
+           autocomplete="off"
+           oninput="filtrer('searchResident', 'dropdownResidents')"
+           onfocus="ouvrirDropdown('dropdownResidents')"
+           onblur="fermerDropdown('dropdownResidents')">
+
+    <input type="hidden" name="residentId" id="residentSelectionne">
+
+    <ul id="dropdownResidents"
+        style="display:none; position:absolute; z-index:999; width:100%;
+               max-height:220px; overflow-y:auto; background:#fff;
+               border:1px solid #ced4da; border-radius:0 0 6px 6px;
+               list-style:none; margin:0; padding:0; box-shadow:0 4px 10px rgba(0,0,0,.1);">
+        <li th:each="r : ${residents}"
+            th:attr="data-id=${r.idPersonne}, data-nom=|${r.nom} ${r.prenom}|"
+            onmousedown="selectionner(this, 'searchResident', 'residentSelectionne', 'dropdownResidents')"
+            style="padding:8px 12px; cursor:pointer;"
+            onmouseover="this.style.background='#f5f5f5'"
+            onmouseout="this.style.background='#fff'"
+            th:text="|${r.nom} ${r.prenom}|">
+        </li>
+    </ul>
+</div>
 
                 <div class="error" th:errors="*{resident}"></div>
             </div>
@@ -79,7 +114,8 @@
 
         <div class="form-actions mt-3">
             <button class="btn-gold">Enregistrer</button>
-            <a th:href="@{/factures}" class="btn-ghost">Annuler</a>
+            <a th:href="${residentId != null} ? @{/factures(resident=${residentId})} : @{/factures}"
+            class="btn-ghost">Annuler</a>
         </div>
 
     </form>

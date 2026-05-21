@@ -1,12 +1,11 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,8 @@ public class Planning {
     private Integer idPlanning;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @Future(message = "La date doit être postérieure à aujourd'hui")
     private LocalDate date;
 
     @NotNull
@@ -107,30 +107,6 @@ public class Planning {
         }
     }
 
-    // UML : supprimerActivite
-    public void supprimerActivite(int idActivite) {
-        activites.removeIf(a -> a.getIdActivite() != null && a.getIdActivite() == idActivite);
-    }
-
-    // UML : obtenirActivitesDuJour
-    public List<Activite> obtenirActivitesDuJour(LocalDate date) {
-        if (this.date != null && this.date.equals(date)) {
-            return activites;
-        }
-        return List.of();
-    }
-
-    // UML : calculerNombreHeures
-    public double calculerNombreHeures() {
-        if (heureDebut == null || heureFin == null) return 0;
-        return Duration.between(heureDebut, heureFin).toMinutes() / 60.0;
-    }
-
-    @AssertTrue(message = "L'heure de début doit être avant l'heure de fin")
-    public boolean isHeureValide() {
-        if (heureDebut == null || heureFin == null) return true;
-        return heureDebut.isBefore(heureFin);
-    }
 
 }
 

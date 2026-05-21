@@ -54,13 +54,13 @@
                 </li>
 
                 <!-- ÉQUIPEMENTS -->
-                <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')">
-                    <a th:href="@{/equipements}" class="nav-link"
-                    th:classappend="${activePage=='equipements'} ? ' active'">
-                        <img th:src="@{/images/icones/equipement.png}" alt="" class="nav-icon-img">
-                        <p>Équipements</p>
-                    </a>
-                </li>
+              <!--  <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF','SOIGNANT','EDUCATEUR')"> -->
+                <!--    <a th:href="@{/equipements}" class="nav-link" --></a>
+                  <!--  th:classappend="${activePage=='equipements'} ? ' active'"> -->
+                 <!--       <img th:src="@{/images/icones/equipement.png}" alt="" class="nav-icon-img"> -->
+                <!--        <p>Équipements</p>  -->
+                <!--    </a>  -->
+            <!--    </li> -->
 
                 <!-- ACTIVITÉS -->
                 <li class="nav-item" sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT','EDUCATEUR')">

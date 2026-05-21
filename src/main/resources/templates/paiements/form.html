@@ -6,7 +6,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'montant'">Le montant dépasse le solde restant de la facture.</span>
             <span th:case="'introuvable'">Paiement introuvable.</span>
             <span th:case="'facture'">Facture introuvable.</span>
@@ -15,8 +15,16 @@
     </div>
 
     <div class="form-header d-flex justify-content-between align-items-center">
+
+        <a th:href="${from != null ? from : (residentId != null ? '/paiements?resident=' + residentId : '/paiements')}"
+        class="btn-circle" title="Retour">
+            <img src="/images/retour.png" class="icon-26">
+        </a>
+
         <h2 class="m-0" th:text="${isEdit} ? 'Modifier le paiement' : 'Ajouter un paiement'"></h2>
+
         <div></div>
+
     </div>
 
     <form sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
@@ -27,6 +35,7 @@
 
         <input type="hidden" th:if="${isEdit}" th:field="*{idPaiement}">
         <input type="hidden" name="from" th:value="${from}">
+        <input type="hidden" name="residentId" th:value="${residentId}">
 
         <div class="form-grid">
 
@@ -86,7 +95,8 @@
 
         <div class="form-actions mt-3">
             <button class="btn-gold">Enregistrer</button>
-            <a th:href="@{/paiements}" class="btn-ghost">Annuler</a>
+            <a th:href="${from != null ? from : (residentId != null ? '/paiements?resident=' + residentId : '/paiements')}"
+             class="btn-ghost">Annuler</a>
         </div>
 
     </form>

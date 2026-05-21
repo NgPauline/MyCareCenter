@@ -8,7 +8,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Paiement introuvable.</span>
             <span th:case="'facture'">Facture introuvable.</span>
             <span th:case="'montant'">Le montant dépasse le solde restant de la facture.</span>
@@ -19,6 +19,12 @@
 
     <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
+
+        <div th:if="${residentId != null}" class="mb-2">
+            <a th:href="@{/residents/{id}(id=${residentId})}" class="btn-circle" title="Retour au résident">
+                <img th:src="@{/images/retour.png}" class="icon-26">
+            </a>
+        </div>
 
         <h2 class="m-0 d-flex align-items-center">
             Paiements
@@ -86,21 +92,22 @@
                     <td class="text-right">
 
                         <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-                           th:href="@{/paiements/{id}(id=${p.idPaiement})}"
-                           class="btn-circle mr-2">
+                        th:href="@{/paiements/{id}(id=${p.idPaiement}, residentId=${residentId})}"
+                        class="btn-circle mr-2">
                             <img th:src="@{/images/voir.png}" class="icon-24">
                         </a>
 
                         <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-                           th:href="@{/paiements/{id}/edit(id=${p.idPaiement})}"
-                           class="btn-circle mr-2">
+                        th:href="@{/paiements/{id}/edit(id=${p.idPaiement}, residentId=${residentId})}"
+                        class="btn-circle mr-2">
                             <img th:src="@{/images/modifier.png}" class="icon-24">
                         </a>
 
                         <form sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-                              th:action="@{/paiements/{id}/delete(id=${p.idPaiement})}"
-                              method="post" class="d-inline"
-                              onsubmit="return confirm('Supprimer ce paiement ?');">
+                            th:action="@{/paiements/{id}/delete(id=${p.idPaiement})}"
+                            method="post" class="d-inline"
+                            onsubmit="return confirm('Supprimer ce paiement ?');">
+                            <input type="hidden" name="residentId" th:value="${residentId}">
                             <button class="btn-circle">
                                 <img th:src="@{/images/supprimer.png}" class="icon-24">
                             </button>

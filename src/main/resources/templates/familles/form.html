@@ -6,7 +6,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Famille introuvable.</span>
             <span th:case="'resident'">Résident introuvable.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -14,15 +14,25 @@
     </div>
 
     <div class="form-header d-flex justify-content-between align-items-center">
+
+        <a th:href="${residentId != null} ? @{/familles(resident=${residentId})} : @{/familles}"
+        class="btn-circle" title="Retour">
+            <img src="/images/retour.png" class="icon-26">
+        </a>
+
         <h2 class="m-0" th:text="${isEdit} ? 'Modifier la famille' : 'Ajouter une famille'"></h2>
+
         <div></div>
+
     </div>
 
     <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${famille}"
           method="post" class="form-card">
 
-          <input type="hidden" name="residentId" th:value="${residentId}">
+          <input type="hidden" name="residentId" 
+            th:if="${residentId != null}" 
+            th:value="${residentId}">
 
         <div class="form-grid">
 
@@ -91,7 +101,8 @@
 
         <div class="form-actions mt-3">
             <button class="btn-gold">Enregistrer</button>
-            <a th:href="@{/familles}" class="btn-ghost">Annuler</a>
+            <a th:href="${residentId != null} ? @{/familles(resident=${residentId})} : @{/familles}"
+            class="btn-ghost">Annuler</a>
         </div>
 
     </form>

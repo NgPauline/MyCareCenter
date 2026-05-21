@@ -27,7 +27,6 @@ public class Employe extends Personne {
     @NotBlank(message = "Adresse obligatoire")
     private String adresse;
 
-
     @NotBlank
     private String password;
 

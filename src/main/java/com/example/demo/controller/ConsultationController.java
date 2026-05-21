@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Consultation;
+import com.example.demo.model.Employe;
 import com.example.demo.model.Resident;
-import com.example.demo.model.Soignant;
 import com.example.demo.service.ConsultationService;
+import com.example.demo.service.EmployeService;
 import com.example.demo.service.ResidentService;
-import com.example.demo.service.SoignantService;
 
 import jakarta.validation.Valid;
 
@@ -26,22 +26,21 @@ public class ConsultationController {
 
     private final ConsultationService consultationService;
     private final ResidentService residentService;
-    private final SoignantService soignantService;
+    private final EmployeService employeService;
 
     public ConsultationController(ConsultationService consultationService,
                                   ResidentService residentService,
-                                  SoignantService soignantService) {
+                                  EmployeService employeService) {
         this.consultationService = consultationService;
         this.residentService = residentService;
-        this.soignantService = soignantService;
+        this.employeService = employeService;
     }
 
     /* ---------------- LISTE ---------------- */
     @GetMapping
     public String list(@RequestParam(required = false) Integer resident,
-                    @RequestParam(required = false) Integer soignant,
-                    @RequestParam(name = "q", required = false) String q,
-                    Model model) {
+                       @RequestParam(name = "q", required = false) String q,
+                       Model model) {
 
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
@@ -56,12 +55,6 @@ public class ConsultationController {
             return "consultations/list";
         }
 
-        if (soignant != null) {
-            Soignant s = soignantService.findById(soignant).orElseThrow();
-            model.addAttribute("consultations", consultationService.findBySoignant(s));
-            return "consultations/list";
-        }
-
         model.addAttribute("consultations", consultationService.findAll());
         return "consultations/list";
     }
@@ -72,25 +65,23 @@ public class ConsultationController {
 
         model.addAttribute("consultation", new Consultation());
         model.addAttribute("residents", residentService.findAll());
-        model.addAttribute("soignants", soignantService.findAll());
+        model.addAttribute("soignants", employeService.findByRole("SOIGNANT"));
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/consultations");
         model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "consultations");
 
-        // Résident pré-rempli
         if (residentId != null) {
             residentService.findById(residentId)
-                .ifPresent(r -> model.addAttribute("residentPreRempli", r)); 
+                .ifPresent(r -> model.addAttribute("residentPreRempli", r));
         }
 
-            // Passer le soignant connecté si rôle SOIGNANT
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            soignantService.findByMatricule(auth.getName())
-                .ifPresent(s -> model.addAttribute("soignantConnecte", s));
-        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        employeService.findByMatricule(auth.getName())
+            .ifPresent(s -> model.addAttribute("soignantConnecte", s));
+
         return "consultations/form";
     }
-
 
     /* ---------------- CREATION ---------------- */
     @PostMapping
@@ -102,24 +93,25 @@ public class ConsultationController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("soignants", soignantService.findAll());
+            model.addAttribute("soignants", employeService.findByRole("SOIGNANT"));
+            model.addAttribute("activePage", residentId != null ? "residents" : "consultations");
             return "consultations/form";
         }
 
         Resident resident = residentService.findById(residentId).orElseThrow();
-        Soignant soignant = soignantService.findById(soignantId).orElseThrow();
+        Employe soignant = employeService.findById(soignantId).orElseThrow();
 
-        /* Règle métier : consultation pas dans le futur */
         if (consultation.getDate().isAfter(LocalDateTime.now())) {
             bindingResult.rejectValue("date", "error.date", "La consultation ne peut pas être dans le futur");
             model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("soignants", soignantService.findAll());
+            model.addAttribute("soignants", employeService.findByRole("SOIGNANT"));
+            model.addAttribute("activePage", residentId != null ? "residents" : "consultations");
             return "consultations/form";
         }
 
-        /* Règle métier : dossier médical obligatoire */
         if (resident.getDossierMedical() == null) {
             bindingResult.rejectValue("resident", "error.resident", "Le résident n'a pas de dossier médical");
+            model.addAttribute("activePage", residentId != null ? "residents" : "consultations");
             return "consultations/form";
         }
 
@@ -128,33 +120,38 @@ public class ConsultationController {
         consultation.setDossierMedical(resident.getDossierMedical());
 
         consultationService.save(consultation);
-        return "redirect:/consultations";
+        return "redirect:/consultations?resident=" + residentId;
     }
 
     /* ---------------- DETAIL ---------------- */
     @GetMapping("/{idConsultation}")
-    public String detail(@PathVariable Integer idConsultation, Model model) {
-
+    public String detail(@PathVariable Integer idConsultation,
+                         @RequestParam(required = false) Integer residentId,
+                         Model model) {
         Consultation consultation = consultationService.findById(idConsultation).orElseThrow();
-
         model.addAttribute("consultation", consultation);
-
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "consultations");
         return "consultations/detail";
     }
 
     /* ---------------- SUPPRESSION ---------------- */
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasRole('DIRECTEUR')")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable Integer id,
+                         @RequestParam(required = false) Integer residentId) {
 
         Consultation consultation = consultationService.findById(id).orElseThrow();
 
-        /* Règle métier : consultation passée non supprimable */
         if (consultation.getDate().isBefore(LocalDateTime.now())) {
             return "redirect:/consultations/" + id + "?error=nonSupprimable";
         }
 
         consultationService.delete(id);
+
+        if (residentId != null) {
+            return "redirect:/consultations?resident=" + residentId;
+        }
         return "redirect:/consultations";
     }
 }

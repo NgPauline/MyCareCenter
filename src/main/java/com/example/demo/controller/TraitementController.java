@@ -41,10 +41,12 @@ public class TraitementController {
             model.addAttribute("traitements", traitements);
             model.addAttribute("residentId", resident);
             model.addAttribute("q", q);
+            model.addAttribute("activePage", "residents");
             return "traitements/list";
         }
 
         model.addAttribute("traitements", traitementService.findAll());
+        model.addAttribute("activePage", "traitements");
         return "traitements/list";
     }
 
@@ -56,10 +58,11 @@ public class TraitementController {
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/traitements");
         model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "traitements");
 
         if (residentId != null) {
-        residentService.findById(residentId)
-            .ifPresent(r -> model.addAttribute("residentPreRempli", r)); 
+            residentService.findById(residentId)
+                .ifPresent(r -> model.addAttribute("residentPreRempli", r));
         }
 
         return "traitements/form";
@@ -68,14 +71,15 @@ public class TraitementController {
     /* ---------------- CREATION ---------------- */
     @PostMapping
     public String create(@Valid @ModelAttribute Traitement traitement,
-                         BindingResult bindingResult,
-                         @RequestParam Integer residentId,
-                         Model model) {
+                        BindingResult bindingResult,
+                        @RequestParam Integer residentId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("residents", residentService.findAll());
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/traitements");
+            model.addAttribute("activePage", residentId != null ? "residents" : "traitements");
             return "traitements/form";
         }
 
@@ -89,43 +93,54 @@ public class TraitementController {
             model.addAttribute("residents", residentService.findAll());
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/traitements");
+            model.addAttribute("activePage", residentId != null ? "residents" : "traitements");
             return "traitements/form";
         }
 
-        return "redirect:/traitements";
+        return "redirect:/traitements?resident=" + residentId;
     }
 
     /* ---------------- DETAIL ---------------- */
     @GetMapping("/{id}")
-    public String detail(@PathVariable Integer id, Model model) {
+    public String detail(@PathVariable Integer id,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
         Traitement traitement = traitementService.findById(id).orElseThrow();
         model.addAttribute("traitement", traitement);
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "traitements");
         return "traitements/detail";
     }
 
     /* ---------------- FORMULAIRE EDITION ---------------- */
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable Integer id,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
         Traitement traitement = traitementService.findById(id).orElseThrow();
         model.addAttribute("traitement", traitement);
         model.addAttribute("residents", residentService.findAll());
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/traitements/" + id);
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "traitements");
         return "traitements/form";
     }
 
     /* ---------------- EDITION ---------------- */
     @PostMapping("/{id}")
     public String update(@PathVariable Integer id,
-                         @Valid @ModelAttribute Traitement traitement,
-                         BindingResult bindingResult,
-                         @RequestParam Integer residentId,
-                         Model model) {
+                        @Valid @ModelAttribute Traitement traitement,
+                        BindingResult bindingResult,
+                        @RequestParam Integer residentId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("residents", residentService.findAll());
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/traitements/" + id);
+            model.addAttribute("residentId", residentId);
+            model.addAttribute("activePage", residentId != null ? "residents" : "traitements");
             return "traitements/form";
         }
 
@@ -139,16 +154,20 @@ public class TraitementController {
             model.addAttribute("residents", residentService.findAll());
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/traitements/" + id);
+            model.addAttribute("residentId", residentId);
+            model.addAttribute("activePage", residentId != null ? "residents" : "traitements");
             return "traitements/form";
         }
 
-        return "redirect:/traitements/" + id;
+        return "redirect:/traitements/" + id + "?residentId=" + residentId;
     }
 
     /* ---------------- SUPPRESSION ---------------- */
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Integer id) {
+        Traitement traitement = traitementService.findById(id).orElseThrow();
+        Integer residentId = traitement.getDossierMedical().getResident().getIdPersonne();
         traitementService.delete(id);
-        return "redirect:/traitements";
+        return "redirect:/traitements?resident=" + residentId;
     }
 }

@@ -8,7 +8,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Planning introuvable.</span>
             <span th:case="'responsable'">Responsable introuvable.</span>
             <span th:case="'activite'">Activité introuvable.</span>
@@ -19,9 +19,11 @@
     <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
 
-        <a th:href="@{/plannings}" class="btn-circle">
-            <img src="/images/retour.png" class="icon-26">
+
+        <a th:href="@{/plannings}" class="btn-circle" title="Retour">
+                <img src="/images/retour.png" class="icon-26">
         </a>
+
 
         <h2 class="m-0">Vue calendrier</h2>
 

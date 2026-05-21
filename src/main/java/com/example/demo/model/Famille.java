@@ -137,21 +137,4 @@ public class Famille {
         this.residents = residents;
     }
 
-    // UML : ajouterMembre
-    public void ajouterMembre(String nom, String prenom, String lien) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.lienParente = lien;
-    }
-
-    // UML : modifierContact
-    public void modifierContact(String telephone, String email) {
-        this.telephone = telephone;
-        this.email = email;
-    }
-
-    // UML : obtenirResidents
-    public List<Resident> obtenirResidents() {
-        return residents;
-    }
 }

@@ -5,6 +5,8 @@ import com.example.demo.model.Resident;
 import com.example.demo.service.FactureService;
 import com.example.demo.service.ResidentService;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -42,8 +44,6 @@ public class FactureController {
 
         if (resident != null) {
             Resident r = residentService.findById(resident).orElseThrow();
-
-            // ✅ Recherche filtrée par résident
             var factures = (q != null && !q.isBlank())
                     ? factureService.searchByResident(r, q)
                     : factureService.findByResident(r);
@@ -73,21 +73,22 @@ public class FactureController {
     @GetMapping("/new")
     public String createForm(@RequestParam(required = false) Integer residentId, Model model) {
 
-    Facture facture = new Facture();
+        Facture facture = new Facture();
+        facture.setDateEmission(LocalDate.now());
 
-    if (residentId != null) {
-        residentService.findById(residentId).ifPresent(r -> {
-            facture.setResident(r);
-            model.addAttribute("residentPreRempli", r); // ← ajouter
-        });
-    }
+        if (residentId != null) {
+            residentService.findById(residentId).ifPresent(r -> {
+                facture.setResident(r);
+                model.addAttribute("residentPreRempli", r);
+            });
+        }
 
-        model.addAttribute("facture", new Facture());
+        model.addAttribute("facture", facture);
         model.addAttribute("residents", residentService.findAll());
         model.addAttribute("residentId", residentId);
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/factures");
-        model.addAttribute("activePage", "factures");
+        model.addAttribute("activePage", residentId != null ? "residents" : "factures");
 
         return "factures/form";
     }
@@ -95,15 +96,15 @@ public class FactureController {
     /* CREATION */
     @PostMapping
     public String create(@Valid @ModelAttribute Facture facture,
-                         BindingResult bindingResult,
-                         @RequestParam Integer residentId,
-                         Model model) {
+                        BindingResult bindingResult,
+                        @RequestParam Integer residentId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/factures");
             model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("activePage", "factures");
+            model.addAttribute("activePage", residentId != null ? "residents" : "factures");
             return "factures/form";
         }
 
@@ -112,50 +113,52 @@ public class FactureController {
         facture.setResident(resident);
         factureService.save(facture);
 
-        return "redirect:/factures";
+        return "redirect:/factures?resident=" + residentId;
     }
 
     /* DETAIL */
     @GetMapping("/{id}")
-    public String detail(@PathVariable Integer id, Model model) {
+    public String detail(@PathVariable Integer id,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
         Facture facture = factureService.findById(id).orElseThrow();
         model.addAttribute("facture", facture);
         model.addAttribute("paiements", facture.getPaiements());
-        model.addAttribute("activePage", "factures");
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "factures");
         return "factures/detail";
     }
 
     /* FORMULAIRE EDITION */
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
-
+    public String editForm(@PathVariable Integer id,
+                        @RequestParam(required = false) Integer residentId,
+                        Model model) {
         Facture facture = factureService.findById(id).orElseThrow();
-
         if (facture.getSoldeRestant() <= 0)
             return "redirect:/factures/" + id + "?error=payee";
-
         model.addAttribute("facture", facture);
         model.addAttribute("residents", residentService.findAll());
+        model.addAttribute("residentId", residentId);
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/factures/" + id);
-        model.addAttribute("activePage", "factures");
-
+        model.addAttribute("activePage", residentId != null ? "residents" : "factures");
         return "factures/form";
     }
 
     /* EDITION */
     @PostMapping("/{id}")
     public String update(@PathVariable Integer id,
-                         @Valid @ModelAttribute Facture facture,
-                         BindingResult bindingResult,
-                         @RequestParam Integer residentId,
-                         Model model) {
+                        @Valid @ModelAttribute Facture facture,
+                        BindingResult bindingResult,
+                        @RequestParam Integer residentId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/factures/" + id);
             model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("activePage", "factures");
+            model.addAttribute("activePage", residentId != null ? "residents" : "factures");
             return "factures/form";
         }
 
@@ -167,18 +170,18 @@ public class FactureController {
         facture.setResident(original.getResident());
         factureService.update(id, facture);
 
-        return "redirect:/factures/" + id;
+        return "redirect:/factures/" + id + "?residentId=" + residentId;
     }
 
     /* SUPPRESSION */
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Integer id) {
-
         if (factureService.hasPaiements(id))
             return "redirect:/factures/" + id + "?error=paiements";
-
+        Facture facture = factureService.findById(id).orElseThrow();
+        Integer residentId = facture.getResident().getIdPersonne();
         factureService.delete(id);
-        return "redirect:/factures";
+        return "redirect:/factures?resident=" + residentId;
     }
 
     /* PDF */

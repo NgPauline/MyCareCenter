@@ -8,7 +8,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'paiements'">Impossible de supprimer cette facture : des paiements sont associés.</span>
             <span th:case="'payee'">Impossible de modifier cette facture : elle est déjà payée.</span>
             <span th:case="'introuvable'">Facture introuvable.</span>
@@ -18,6 +18,12 @@
 
     <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
+
+        <div th:if="${residentId != null}" class="mb-2">
+            <a th:href="@{/residents/{id}(id=${residentId})}" class="btn-circle" title="Retour au résident">
+                <img th:src="@{/images/retour.png}" class="icon-26">
+            </a>
+        </div>
 
         <h2 class="m-0 d-flex align-items-center">
             Factures
@@ -95,23 +101,15 @@
                     <td class="text-right">
 
                         <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-                           th:href="@{/factures/{id}(id=${f.idFacture})}"
-                           class="btn-circle mr-2"
-                           title="Voir la facture">
+                        th:href="@{/factures/{id}(id=${f.idFacture}, residentId=${residentId})}"
+                        class="btn-circle mr-2" title="Voir la facture">
                             <img th:src="@{/images/voir.png}" alt="Voir" class="icon-24">
                         </a>
 
-                        <a th:href="@{/factures/{id}/pdf(id=${f.idFacture})}"
-                           class="btn-circle mr-2"
-                           title="Télécharger PDF">
-                            <img th:src="@{/images/pdf.png}" alt="PDF" class="icon-24">
-                        </a>
-
                         <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-                           th:if="${f.statut != 'PAYEE'}"
-                           th:href="@{/factures/{id}/edit(id=${f.idFacture})}"
-                           class="btn-circle mr-2"
-                           title="Modifier">
+                        th:if="${f.statut != 'PAYEE' and residentId == null}"
+                        th:href="@{/factures/{id}/edit(id=${f.idFacture}, residentId=${residentId})}"
+                        class="btn-circle mr-2" title="Modifier">
                             <img th:src="@{/images/modifier.png}" alt="Modifier" class="icon-24">
                         </a>
 

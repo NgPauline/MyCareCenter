@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout('Détail équipement', 'Détail du type', ~{::section})}">
+
+<section th:fragment="section">
+
+    <!-- BARRE HAUTE -->
+    <div class="top-bar d-flex justify-content-between align-items-center mb-2">
+
+        <a th:href="@{/types-equipement}" class="btn-circle" title="Retour au catalogue">
+            <img src="/images/retour.png" class="icon-26">
+        </a>
+
+        <div class="detail-actions d-flex gap-3">
+            <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+               th:href="@{/types-equipement/{id}/edit(id=${type.id})}"
+               class="btn-circle" title="Modifier ce type">
+                <img src="/images/modifier.png" class="icon-26">
+            </a>
+        </div>
+    </div>
+
+    <!-- CONTENU EN DEUX COLONNES -->
+    <div class="row mt-3">
+
+        <!-- COLONNE GAUCHE : photo + infos stock -->
+        <div class="col-12 col-md-5">
+            <div class="card detail-card p-3 text-center">
+
+                <!-- PHOTO CLIQUABLE -->
+                <div class="equipement-photo mx-auto mb-3"
+                     style="cursor:pointer; max-width:260px;"
+                     onclick="showImage(this.querySelector('img').src)">
+                    <img th:src="${type.photoPath != null}
+                            ? @{|/uploads/types/${type.photoPath}|}
+                            : @{/images/default-equipement.png}"
+                         style="width:100%; border-radius:10px; object-fit:cover;">
+                </div>
+
+                <h2 th:text="${type.nom}" class="mb-3"></h2>
+
+                <!-- STOCK -->
+                <div class="type-stock-line d-flex justify-content-around mt-2">
+                    <div>
+                        <div class="kpi-value" th:text="${type.quantiteTotale}">0</div>
+                        <div class="kpi-label">Total</div>
+                    </div>
+                    <div>
+                        <div class="kpi-value" th:text="${utilises}">0</div>
+                        <div class="kpi-label">Utilisés</div>
+                    </div>
+                    <div>
+                        <div class="kpi-value" th:text="${restants}">0</div>
+                        <div class="kpi-label">Restants</div>
+                    </div>
+                </div>
+
+                <!-- Ajouter un exemplaire -->
+                <div sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')" class="mt-4">
+                    <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                    th:href="@{/equipements/new(typeId=${type.id})}"
+                    class="btn-gold">
+                        Affecter à une chambre
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- COLONNE DROITE : liste des exemplaires -->
+        <div class="col-12 col-md-7">
+            <div class="card detail-card p-3">
+
+                <h4 class="mb-3">Exemplaires</h4>
+
+                <div class="table-responsive">
+                    <table class="detail-table">
+                        <thead>
+                            <tr>
+                                <th>Chambre</th>
+                                <th>État</th>
+                                <th sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+                                    class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="e : ${exemplaires}">
+
+                            <td>
+                                <span th:if="${e.chambre != null}"
+                                      th:text="|Chambre ${e.chambre.numero}|"></span>
+                                <span th:if="${e.chambre == null}" class="text-muted">
+                                    Stock
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${e.etat == 'BON'    ? ' badge-success' :
+                                                       e.etat == 'MOYEN'   ? ' badge-warning' :
+                                                                             ' badge-danger'}"
+                                      th:text="${e.etat}">
+                                </span>
+                            </td>
+
+                            <td class="text-right"
+                                sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')">
+
+                                <a th:href="@{/equipements/{id}/edit(id=${e.idEquipement})}"
+                                   class="btn-circle mr-2" title="Modifier">
+                                    <img src="/images/modifier.png" class="icon-20">
+                                </a>
+
+                                <form th:action="@{/equipements/{id}/delete(id=${e.idEquipement})}"
+                                      method="post" class="d-inline"
+                                      onsubmit="return confirm('Supprimer cet exemplaire ?');">
+                                    <button class="btn-circle" title="Supprimer">
+                                        <img src="/images/supprimer.png" class="icon-20">
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(exemplaires)}">
+                            <td colspan="3" class="text-center text-muted py-3">
+                                Aucun exemplaire enregistré.
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</section>
+</html>

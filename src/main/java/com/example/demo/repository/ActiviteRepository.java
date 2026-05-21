@@ -15,8 +15,6 @@ import java.util.List;
 
 public interface ActiviteRepository extends JpaRepository<Activite, Integer> {
 
-    List<Activite> findByDate(LocalDate date);
-
     List<Activite> findByParticipantsContaining(Resident resident);
 
     List<Activite> findByParticipants_IdPersonne(Integer idPersonne);
@@ -63,5 +61,7 @@ public interface ActiviteRepository extends JpaRepository<Activite, Integer> {
         """)
     List<Activite> searchByParticipant(@Param("idResident") Integer idResident,
                                     @Param("kw") String keyword);
+
+                                   
     
     }

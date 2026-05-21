@@ -2,7 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Consultation;
 import com.example.demo.model.Resident;
-import com.example.demo.model.Soignant;
+import com.example.demo.model.Employe;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +14,7 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Inte
 
     List<Consultation> findByResident(Resident resident);
 
-    List<Consultation> findBySoignant(Soignant soignant);
+    List<Consultation> findBySoignant(Employe soignant);
 
     List<Consultation> findByDateBetween(LocalDateTime debut, LocalDateTime fin);
 

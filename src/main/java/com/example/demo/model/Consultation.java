@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "consultations")
 public class Consultation {
@@ -13,7 +15,10 @@ public class Consultation {
     private Integer idConsultation;
 
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime date;
+
+    private int duree;
 
     @Column(nullable = false)
     private String diagnostic;
@@ -24,23 +29,25 @@ public class Consultation {
     private Resident resident;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private Soignant soignant;
+    private Employe soignant;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private DossierMedical dossierMedical;
 
+
     public Consultation() {
     }
 
-    public Consultation(LocalDateTime date, String diagnostic, String observations,
-                        Resident resident, Soignant soignant, DossierMedical dossierMedical) {
-        this.date = date;
-        this.diagnostic = diagnostic;
-        this.observations = observations;
-        this.resident = resident;
-        this.soignant = soignant;
-        this.dossierMedical = dossierMedical;
-    }
+    public Consultation(LocalDateTime date, int duree, String diagnostic, String observations,
+                    Resident resident, Employe soignant, DossierMedical dossierMedical) {
+    this.date = date;
+    this.duree = duree;
+    this.diagnostic = diagnostic;
+    this.observations = observations;
+    this.resident = resident;
+    this.soignant = soignant;
+    this.dossierMedical = dossierMedical;
+}
 
     public Integer getIdConsultation() {
         return idConsultation;
@@ -74,6 +81,10 @@ public class Consultation {
         this.observations = observations;
     }
 
+    public int getDuree() { return duree; }
+    public void setDuree(int duree) { this.duree = duree; 
+    }
+
     public Resident getResident() {
         return resident;
     }
@@ -82,11 +93,11 @@ public class Consultation {
         this.resident = resident;
     }
 
-    public Soignant getSoignant() {
+    public Employe getSoignant() {
         return soignant;
     }
 
-    public void setSoignant(Soignant soignant) {
+    public void setSoignant(Employe soignant) {
         this.soignant = soignant;
     }
 
@@ -98,13 +109,9 @@ public class Consultation {
         this.dossierMedical = dossierMedical;
     }
 
-    // UML : ajouterObservation
-    public void ajouterObservation(String observation) {
-        if (this.observations == null || this.observations.isBlank()) {
-            this.observations = observation;
-        } else {
-            this.observations += "\n" + observation;
-        }
+    @Transient
+    public LocalDateTime getHeureFin() {
+        return date != null ? date.plusMinutes(duree) : null;
     }
 
 }

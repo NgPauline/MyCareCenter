@@ -1,11 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Consultation;
-import com.example.demo.model.Resident;
-import com.example.demo.model.Soignant;
 import com.example.demo.model.Activite;
-import com.example.demo.repository.ConsultationRepository;
+import com.example.demo.model.Consultation;
+import com.example.demo.model.Employe;
+import com.example.demo.model.Resident;
 import com.example.demo.repository.ActiviteRepository;
+import com.example.demo.repository.ConsultationRepository;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -27,8 +27,6 @@ public class ConsultationService {
         this.activiteRepository = activiteRepository;
     }
 
-    /* ------------------- FIND ------------------- */
-
     public List<Consultation> findAll() {
         return consultationRepository.findAll();
     }
@@ -41,73 +39,60 @@ public class ConsultationService {
         return consultationRepository.findByResident(resident);
     }
 
-    public List<Consultation> findBySoignant(Soignant soignant) {
+    public List<Consultation> findBySoignant(Employe soignant) {
         return consultationRepository.findBySoignant(soignant);
     }
-
-    /* ------------------- SAVE ------------------- */
 
     public Consultation save(Consultation consultation) {
 
         Resident resident = consultation.getResident();
-        Soignant soignant = consultation.getSoignant();
-        LocalDateTime date = consultation.getDate();
+        Employe soignant = consultation.getSoignant();
+        LocalDateTime debut = consultation.getDate();
+        LocalDateTime fin = consultation.getHeureFin();
 
-        /* Règle métier : consultation pas dans le futur */
-        if (date.isAfter(LocalDateTime.now())) {
+        if (debut.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("La consultation ne peut pas être dans le futur.");
         }
 
-        /* Règle métier : dossier médical obligatoire */
         if (resident.getDossierMedical() == null) {
             throw new IllegalArgumentException("Le résident n'a pas de dossier médical.");
         }
 
-        /* Vérifier chevauchement avec activités du résident */
+        /* Chevauchement avec activités du résident */
         List<Activite> activitesResident = activiteRepository.findByParticipantsContaining(resident);
-
         boolean chevaucheResident = activitesResident.stream().anyMatch(a -> {
             LocalDateTime debutAct = LocalDateTime.of(a.getDate(), a.getHeureDebut());
             LocalDateTime finAct = debutAct.plusMinutes(a.getDuree());
-            return !date.isBefore(debutAct) && !date.isAfter(finAct);
+            return debut.isBefore(finAct) && fin.isAfter(debutAct);
         });
-
         if (chevaucheResident) {
-            throw new IllegalArgumentException("Chevauchement entre consultation et activité du résident.");
+            throw new IllegalArgumentException("Chevauchement entre la consultation et une activité du résident.");
         }
 
-        /* Vérifier chevauchement avec activités du soignant */
+        /* Chevauchement avec activités du soignant */
         List<Activite> activitesSoignant = activiteRepository.findByResponsable(soignant);
-
         boolean chevaucheSoignant = activitesSoignant.stream().anyMatch(a -> {
             LocalDateTime debutAct = LocalDateTime.of(a.getDate(), a.getHeureDebut());
             LocalDateTime finAct = debutAct.plusMinutes(a.getDuree());
-            return !date.isBefore(debutAct) && !date.isAfter(finAct);
+            return debut.isBefore(finAct) && fin.isAfter(debutAct);
         });
-
         if (chevaucheSoignant) {
-            throw new IllegalArgumentException("Le soignant n'est pas disponible à cette date.");
+            throw new IllegalArgumentException("Le soignant n'est pas disponible sur ce créneau.");
         }
 
         return consultationRepository.save(consultation);
     }
 
-    /* ------------------- DELETE ------------------- */
-
     public void delete(Integer id) {
-
         Consultation consultation = consultationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Consultation introuvable"));
-
-        /* Règle métier : consultation passée non supprimable */
         if (consultation.getDate().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Une consultation passée ne peut pas être supprimée.");
         }
-
         consultationRepository.deleteById(id);
     }
 
-        public List<Consultation> searchByResident(Resident resident, String keyword) {
+    public List<Consultation> searchByResident(Resident resident, String keyword) {
         return consultationRepository.searchByResident(resident, keyword.toLowerCase());
     }
 }

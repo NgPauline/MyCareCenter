@@ -4,11 +4,11 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout/base :: layout('Dossiers médicaux', '', ~{::section})}">
 
-<section th:fragment="content">
+<section th:fragment="section">
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Résident introuvable.</span>
             <span th:case="'sansDossier'">Le résident n’a pas de dossier médical.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -71,7 +71,7 @@
                     <td th:text="${d.resident.nom + ' ' + d.resident.prenom}"></td>
                     <td th:text="${d.groupeSanguin != null ? d.groupeSanguin : '—'}"></td>
                     <td th:text="${d.allergies != null ? d.allergies : '—'}"></td>
-                    <td th:text="${#dates.format(d.dateCreation,'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(d.dateCreation,'dd/MM/yyyy')}"></td>
 
                     <td class="text-right">
 

@@ -53,6 +53,9 @@ public interface EquipementRepository extends JpaRepository<Equipement, Integer>
     long countByType_Id(Integer typeId);
 
     List<Equipement> findAllByOrderByType_NomAsc();
+
     Page<Equipement> findAllByOrderByType_NomAsc(Pageable pageable);
+    
+    List<Equipement> findByType(TypeEquipement type);
 
 }

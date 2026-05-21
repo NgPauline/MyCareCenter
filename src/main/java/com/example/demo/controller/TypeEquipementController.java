@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.TypeEquipement;
+import com.example.demo.service.EquipementService;
 import com.example.demo.service.TypeEquipementService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,9 +25,12 @@ import java.util.Map;
 public class TypeEquipementController {
 
     private final TypeEquipementService typeService;
+    private final EquipementService equipementService;
 
-    public TypeEquipementController(TypeEquipementService typeService) {
+    public TypeEquipementController(TypeEquipementService typeService,
+                                    EquipementService equipementService) {
         this.typeService = typeService;
+        this.equipementService = equipementService;
     }
 
     // ---------------------------------------------------------
@@ -61,10 +65,12 @@ public class TypeEquipementController {
     // FORMULAIRE AJOUT
     // ---------------------------------------------------------
     @GetMapping("/new")
-    public String createForm(Model model) {
+    public String createForm(@RequestParam(required = false) Integer chambreId, Model model) {
         model.addAttribute("typeEquipement", new TypeEquipement());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/types-equipement");
+        model.addAttribute("chambreId", chambreId);
+        model.addAttribute("activePage", chambreId != null ? "chambres" : "types-equipement");
         return "types/form";
     }
 
@@ -75,13 +81,15 @@ public class TypeEquipementController {
     public String create(@Valid @ModelAttribute TypeEquipement typeEquipement,
                          BindingResult bindingResult,
                          @RequestParam("photoFile") MultipartFile photoFile,
+                         @RequestParam(required = false) Integer chambreId,
                          Model model) throws Exception {
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("chambreId", chambreId);
+            model.addAttribute("activePage", chambreId != null ? "chambres" : "types-equipement");
             return "types/form";
         }
 
-        // Upload photo
         if (!photoFile.isEmpty()) {
             String uploadDir = "uploads/types/";
             String fileName = System.currentTimeMillis() + "_" + photoFile.getOriginalFilename();
@@ -97,6 +105,8 @@ public class TypeEquipementController {
         }
 
         typeService.save(typeEquipement);
+
+        if (chambreId != null) return "redirect:/chambres/" + chambreId;
         return "redirect:/types-equipement";
     }
 
@@ -104,7 +114,9 @@ public class TypeEquipementController {
     // FORMULAIRE EDIT
     // ---------------------------------------------------------
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Integer id, Model model) {
+    public String editForm(@PathVariable Integer id,
+                           @RequestParam(required = false) Integer chambreId,
+                           Model model) {
 
         TypeEquipement type = typeService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Type introuvable"));
@@ -112,6 +124,8 @@ public class TypeEquipementController {
         model.addAttribute("typeEquipement", type);
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/types-equipement/" + id);
+        model.addAttribute("chambreId", chambreId);
+        model.addAttribute("activePage", chambreId != null ? "chambres" : "types-equipement");
 
         return "types/form";
     }
@@ -124,16 +138,18 @@ public class TypeEquipementController {
                          @Valid @ModelAttribute TypeEquipement typeForm,
                          BindingResult bindingResult,
                          @RequestParam("photoFile") MultipartFile photoFile,
+                         @RequestParam(required = false) Integer chambreId,
                          Model model) throws Exception {
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("chambreId", chambreId);
+            model.addAttribute("activePage", chambreId != null ? "chambres" : "types-equipement");
             return "types/form";
         }
 
         TypeEquipement existing = typeService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Type introuvable"));
 
-        // Upload photo si nouvelle image
         if (!photoFile.isEmpty()) {
             String uploadDir = "uploads/types/";
             String fileName = System.currentTimeMillis() + "_" + photoFile.getOriginalFilename();
@@ -148,22 +164,43 @@ public class TypeEquipementController {
             existing.setPhotoPath(fileName);
         }
 
-        // Mise à jour des champs
         existing.setNom(typeForm.getNom());
         existing.setQuantiteTotale(typeForm.getQuantiteTotale());
 
         typeService.save(existing);
 
+        if (chambreId != null) return "redirect:/chambres/" + chambreId;
         return "redirect:/types-equipement";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Integer id,
+                         @RequestParam(required = false) Integer chambreId,
+                         Model model) {
+
+        TypeEquipement type = typeService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Type introuvable"));
+
+        model.addAttribute("type", type);
+        model.addAttribute("exemplaires", equipementService.findByType(type));
+        model.addAttribute("utilises", typeService.countUtilises(id));
+        model.addAttribute("restants", typeService.countRestants(type));
+        model.addAttribute("chambreId", chambreId);
+        model.addAttribute("activePage", chambreId != null ? "chambres" : "types-equipement");
+
+        return "types/detail";
     }
 
     // ---------------------------------------------------------
     // DELETE
     // ---------------------------------------------------------
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable Integer id,
+                         @RequestParam(required = false) Integer chambreId) {
         typeService.findById(id).orElseThrow(() -> new RuntimeException("Type introuvable"));
         typeService.delete(id);
+        if (chambreId != null) return "redirect:/chambres/" + chambreId;
         return "redirect:/types-equipement";
     }
 }
+

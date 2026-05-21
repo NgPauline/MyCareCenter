@@ -27,11 +27,11 @@ public class Traitement {
     private String frequence;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateDebut;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateFin;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -106,37 +106,16 @@ public class Traitement {
 
     /* ---------------- MÉTHODES UML ---------------- */
 
-    public boolean verifierValidite(LocalDate dateActuelle) {
-        boolean apresDebut = (dateDebut == null) || !dateActuelle.isBefore(dateDebut);
-        boolean avantFin = (dateFin == null) || !dateActuelle.isAfter(dateFin);
-        return apresDebut && avantFin;
-    }
-
-    public boolean isActif() {
-        return verifierValidite(LocalDate.now());
-    }
-
-    public boolean getActif() {
-        return isActif();
-    }
-
-    public void modifierDosage(String dosage) {
-        this.dosage = dosage;
-    }
-
-    public void modifierFrequence(String frequence) {
-        this.frequence = frequence;
-    }
-
-    public int calculerDuree() {
-        if (dateDebut == null || dateFin == null) return 0;
-        return (int) ChronoUnit.DAYS.between(dateDebut, dateFin);
-    }
-
     @AssertTrue(message = "La date de fin doit être postérieure ou égale à la date de début")
     public boolean isDatesValides() {
         if (dateDebut == null || dateFin == null) return true;
         return !dateFin.isBefore(dateDebut);
     }
+
+    public boolean isActif() {
+    if (dateDebut == null || dateFin == null) return false;
+    LocalDate today = LocalDate.now();
+    return !today.isBefore(dateDebut) && !today.isAfter(dateFin);
+}
 
 }

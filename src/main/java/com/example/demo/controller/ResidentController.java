@@ -76,7 +76,7 @@ public class ResidentController {
         model.addAttribute("familles", familleService.findAll());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/residents");
-        model.addAttribute("activePage", "residents"); // 👈
+        model.addAttribute("activePage", "residents"); 
 
         return "residents/form";
     }
@@ -96,7 +96,7 @@ public class ResidentController {
             model.addAttribute("familles", familleService.findAll());
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/residents");
-            model.addAttribute("activePage", "residents"); // 👈
+            model.addAttribute("activePage", "residents"); 
 
             return "residents/form";
         }

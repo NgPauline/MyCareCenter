@@ -26,7 +26,7 @@ public class Facture {
     private Integer idFacture;
  
     @NotNull(message = "La date est obligatoire")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateEmission;
 
     @DecimalMin("0.0")

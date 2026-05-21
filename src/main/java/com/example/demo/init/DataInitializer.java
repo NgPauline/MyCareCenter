@@ -19,8 +19,6 @@ public class DataInitializer implements CommandLineRunner {
 
     private final EmployeRepository employeRepository;
     private final EmployeService employeService; 
-    private final SoignantRepository soignantRepository;
-    private final AdministratifRepository administratifRepository;
     private final ResidentRepository residentRepository;
     private final ChambreRepository chambreRepository;
     private final FamilleRepository familleRepository;
@@ -41,8 +39,6 @@ public class DataInitializer implements CommandLineRunner {
 public DataInitializer(
                 EmployeRepository employeRepository,
                 EmployeService employeService,
-                SoignantRepository soignantRepository,
-                AdministratifRepository administratifRepository,
                 ResidentRepository residentRepository,
                 ResidentService residentService,
                 ChambreRepository chambreRepository,
@@ -61,8 +57,6 @@ public DataInitializer(
         ) {
         this.employeRepository = employeRepository;
         this.employeService = employeService;
-        this.soignantRepository = soignantRepository;
-        this.administratifRepository = administratifRepository;
         this.residentRepository = residentRepository;
         this.residentService = residentService;
         this.chambreRepository = chambreRepository;
@@ -83,7 +77,11 @@ public DataInitializer(
 
 
     @Override
-    public void run(String... args) {
+        public void run(String... args) {
+
+        if (employeRepository.count() > 0) {
+                return;
+        }
 
         // ------------------------------------------------------------
         // 1. CHAMBRES
@@ -172,34 +170,31 @@ public DataInitializer(
         );
         employeService.save(directeur);
 
-        // 2. ADMINISTRATIFS (3)
-        Administratif admin1 = new Administratif(
+       // 2. ADMINISTRATIFS (3)
+        Employe admin1 = new Employe(
                 "Lemaire", "Sophie", LocalDate.now().minusYears(35),
                 "+32488002200", "Rue du Bureau 3, 1000 Bruxelles",
                 null, "Secrétaire", 2300.0,
                 passwordEncoder.encode("secret123"),
-                "ADMINISTRATIF",
-                "Secrétaire"
+                "ADMINISTRATIF"
         );
         employeService.save(admin1);
 
-        Administratif admin2 = new Administratif(
+        Employe admin2 = new Employe(
                 "Martin", "Luc", LocalDate.now().minusYears(40),
                 "+32488003300", "Rue Finance 4, 1000 Bruxelles",
                 null, "Gestionnaire administratif", 2600.0,
                 passwordEncoder.encode("admin2"),
-                "ADMINISTRATIF",
-                "Gestion"
+                "ADMINISTRATIF"
         );
         employeService.save(admin2);
 
-        Administratif admin3 = new Administratif(
+        Employe admin3 = new Employe(
                 "Bernard", "Julie", LocalDate.now().minusYears(30),
                 "+32488004400", "Rue École 1, 1000 Bruxelles",
                 null, "Assistante administrative", 2200.0,
                 passwordEncoder.encode("admin3"),
-                "ADMINISTRATIF",
-                "Administration"
+                "ADMINISTRATIF"
         );
         employeService.save(admin3);
 
@@ -241,28 +236,25 @@ public DataInitializer(
         );
         employeService.save(educ3);
 
-        // 5. SOIGNANTS
+       // 5. SOIGNANTS
 
-        Soignant soi1 = new Soignant(
+        Employe soi1 = new Employe(
                 "Leroy", "Paul", LocalDate.now().minusYears(34),
                 "+32499002200", "Rue Santé 2, 1000 Bruxelles",
                 null, "Infirmier", 2550.0,
                 passwordEncoder.encode("soi001"),
-                "SOIGNANT",
-                "Diplôme Infirmier", "Urgences"
+                "SOIGNANT"
         );
         employeService.save(soi1);
 
-        Soignant soi2 = new Soignant(
+        Employe soi2 = new Employe(
                 "Morel", "Sarah", LocalDate.now().minusYears(29),
                 "+32499003300", "Rue Santé 3, 1000 Bruxelles",
                 null, "Aide-soignante", 2400.0,
                 passwordEncoder.encode("soi002"),
-                "SOIGNANT",
-                "Certificat AS", "Gériatrie"
+                "SOIGNANT"
         );
         employeService.save(soi2);
-
 
 
         // ------------------------------------------------------------
@@ -480,42 +472,42 @@ public DataInitializer(
         // ------------------------------------------------------------
         Traitement t1 = new Traitement("Doliprane", "500mg", "2x/jour",
                 LocalDate.now().minusDays(10), LocalDate.now().plusDays(20));
-        dm1.ajouterTraitement(t1);
+        t1.setDossierMedical(dm1);
         traitementRepository.save(t1);
 
         Traitement t2 = new Traitement("Ibuprofène", "200mg", "1x/jour",
                 LocalDate.now().minusDays(12), LocalDate.now().plusDays(18));
-        dm2.ajouterTraitement(t2);
+        t2.setDossierMedical(dm2);
         traitementRepository.save(t2);
 
         Traitement t3 = new Traitement("Metformine", "850mg", "2x/jour",
                 LocalDate.now().minusDays(8), LocalDate.now().plusDays(25));
-        dm3.ajouterTraitement(t3);
+        t3.setDossierMedical(dm3);
         traitementRepository.save(t3);
 
         Traitement t4 = new Traitement("Lévothyrox", "75µg", "1x/jour",
                 LocalDate.now().minusDays(15), LocalDate.now().plusDays(30));
-        dm4.ajouterTraitement(t4);
+        t4.setDossierMedical(dm4);
         traitementRepository.save(t4);
 
         Traitement t5 = new Traitement("Amlodipine", "10mg", "1x/jour",
                 LocalDate.now().minusDays(20), LocalDate.now().plusDays(15));
-        dm5.ajouterTraitement(t5);
+        t5.setDossierMedical(dm5);
         traitementRepository.save(t5);
 
         Traitement t6 = new Traitement("Donepezil", "5mg", "1x/jour",
                 LocalDate.now().minusDays(25), LocalDate.now().plusDays(10));
-        dm6.ajouterTraitement(t6);
+        t6.setDossierMedical(dm6);
         traitementRepository.save(t6);
 
         Traitement t7 = new Traitement("Furosémide", "40mg", "1x/jour",
                 LocalDate.now().minusDays(5), LocalDate.now().plusDays(22));
-        dm7.ajouterTraitement(t7);
+        t7.setDossierMedical(dm7);
         traitementRepository.save(t7);
 
         Traitement t8 = new Traitement("Ventoline", "2 bouffées", "Selon besoin",
                 LocalDate.now().minusDays(3), LocalDate.now().plusDays(40));
-        dm8.ajouterTraitement(t8);
+        t8.setDossierMedical(dm8);
         traitementRepository.save(t8);
 
 
@@ -656,49 +648,28 @@ public DataInitializer(
         activiteRepository.save(act6);
 
 
-
-        // ------------------------------------------------------------
-        // 11. CONSULTATIONS
-        // ------------------------------------------------------------
-
-        Consultation c1 = new Consultation(LocalDateTime.now().plusDays(1), "Fatigue", "RAS", res1, soi1, dm1);
-        res1.getConsultations().add(c1);
-        dm1.getConsultations().add(c1);
+        Consultation c1 = new Consultation(LocalDateTime.now().minusDays(1), 30, "Fatigue", "RAS", res1, soi1, dm1);
         consultationRepository.save(c1);
 
-        Consultation c2 = new Consultation(LocalDateTime.now().plusDays(2), "Douleurs articulaires", "Surveillance", res2, soi2, dm2);
-        res2.getConsultations().add(c2);
-        dm2.getConsultations().add(c2);
+        Consultation c2 = new Consultation(LocalDateTime.now().minusDays(2), 45, "Douleurs articulaires", "Surveillance", res2, soi2, dm2);
         consultationRepository.save(c2);
 
-        Consultation c3 = new Consultation(LocalDateTime.now().plusDays(3), "Tension élevée", "Traitement ajusté", res3, soi2, dm3);
-        res3.getConsultations().add(c3);
-        dm3.getConsultations().add(c3);
+        Consultation c3 = new Consultation(LocalDateTime.now().minusDays(3), 30, "Tension élevée", "Traitement ajusté", res3, soi2, dm3);
         consultationRepository.save(c3);
 
-        Consultation c4 = new Consultation(LocalDateTime.now().plusDays(4), "Essoufflement", "Contrôle nécessaire", res4, soi1, dm4);
-        res4.getConsultations().add(c4);
-        dm4.getConsultations().add(c4);
+        Consultation c4 = new Consultation(LocalDateTime.now().minusDays(4), 60, "Essoufflement", "Contrôle nécessaire", res4, soi1, dm4);
         consultationRepository.save(c4);
 
-        Consultation c5 = new Consultation(LocalDateTime.now().plusDays(5), "Tremblements", "RAS", res5, soi2, dm5);
-        res5.getConsultations().add(c5);
-        dm5.getConsultations().add(c5);
+        Consultation c5 = new Consultation(LocalDateTime.now().minusDays(5), 30, "Tremblements", "RAS", res5, soi2, dm5);
         consultationRepository.save(c5);
 
-        Consultation c6 = new Consultation(LocalDateTime.now().plusDays(6), "Perte de mémoire", "Suivi Alzheimer", res6, soi1, dm6);
-        res6.getConsultations().add(c6);
-        dm6.getConsultations().add(c6);
+        Consultation c6 = new Consultation(LocalDateTime.now().minusDays(6), 45, "Perte de mémoire", "Suivi Alzheimer", res6, soi1, dm6);
         consultationRepository.save(c6);
 
-        Consultation c7 = new Consultation(LocalDateTime.now().plusDays(7), "Douleurs lombaires", "Physiothérapie", res7, soi1, dm7);
-        res7.getConsultations().add(c7);
-        dm7.getConsultations().add(c7);
+        Consultation c7 = new Consultation(LocalDateTime.now().minusDays(7), 30, "Douleurs lombaires", "Physiothérapie", res7, soi1, dm7);
         consultationRepository.save(c7);
 
-        Consultation c8 = new Consultation(LocalDateTime.now().plusDays(8), "Crises d’asthme", "Traitement renforcé", res8, soi2, dm8);
-        res8.getConsultations().add(c8);
-        dm8.getConsultations().add(c8);
+        Consultation c8 = new Consultation(LocalDateTime.now().minusDays(8), 45, "Crises d'asthme", "Traitement renforcé", res8, soi2, dm8);
         consultationRepository.save(c8);
 
         // ------------------------------------------------------------

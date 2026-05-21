@@ -124,7 +124,7 @@ public class ChambreController {
         resident.setChambre(chambre);
 
         residentService.save(resident);
-        chambreService.save(chambre);
+        //chambreService.save(chambre);
 
         return "redirect:/chambres/" + id;
     }
@@ -144,7 +144,7 @@ public class ChambreController {
         chambre.setOccupant(null);
 
         residentService.save(occupant);
-        chambreService.save(chambre);
+        //chambreService.save(chambre);
 
         return "redirect:/chambres/" + id;
     }

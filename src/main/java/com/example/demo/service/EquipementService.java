@@ -121,5 +121,10 @@ public class EquipementService {
 
         return equipementRepository.findByChambreAndType(chambre, type).isPresent();
     }
+
+
+    public List<Equipement> findByType(TypeEquipement type) {
+        return equipementRepository.findByType(type);
+    }
 }
 

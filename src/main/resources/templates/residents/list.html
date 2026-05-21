@@ -8,7 +8,7 @@
 
     <!-- MESSAGE GLOBAL -->
 <div th:if="${param.error}" class="alert alert-danger mb-3">
-    <span th:switch="${param.error}">
+    <span th:switch="${param.error != null ? param.error[0] : ''}">
         <span th:case="'introuvable'">Résident introuvable.</span>
         <span th:case="'chambre'">Impossible de supprimer ce résident : il occupe une chambre.</span>
         <span th:case="'impaye'">Impossible de supprimer ce résident : des factures impayées existent.</span>

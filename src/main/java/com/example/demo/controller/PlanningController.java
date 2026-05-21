@@ -7,6 +7,7 @@ import com.example.demo.service.PlanningService;
 import com.example.demo.service.ActiviteService;
 import com.example.demo.service.EmployeService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -76,12 +77,17 @@ public class PlanningController {
 
         Planning planning = new Planning();
 
+        List<Activite> activites;
         if (date != null) {
-            planning.setDate(java.time.LocalDate.parse(date));
+            LocalDate localDate = LocalDate.parse(date);
+            planning.setDate(localDate);
+            activites = planningService.findActivitesByDate(localDate);
+        } else {
+            activites = activiteService.findAll();
         }
 
         model.addAttribute("planning", planning);
-        model.addAttribute("activites", planningService.findActivitesSansPlanning());
+        model.addAttribute("activites", activites);
         model.addAttribute("employes", employeService.findAll());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/plannings");
@@ -90,48 +96,56 @@ public class PlanningController {
         return "plannings/form";
     }
 
-@PostMapping
-@PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
-public String create(@Valid @ModelAttribute Planning planning,
-                    BindingResult bindingResult,
-                    @RequestParam(required = false) List<Integer> activiteIds,
-                    @RequestParam Integer employeId,
-                    Model model) {
 
-    Employe responsable = employeService.findById(employeId).orElseThrow();
-    planning.setResponsable(responsable);
+    @PostMapping
+    @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
+    public String create(@Valid @ModelAttribute Planning planning,
+                        BindingResult bindingResult,
+                        @RequestParam(required = false) List<Integer> activiteIds,
+                        @RequestParam Integer employeId,
+                        Model model) {
 
-    if (bindingResult.hasErrors()) {
-        model.addAttribute("isEdit", false);
-        model.addAttribute("submitUrl", "/plannings");
-        model.addAttribute("activites", planningService.findActivitesSansPlanning());
-        model.addAttribute("employes", employeService.findAll());
-        model.addAttribute("activePage", "planning");
-        return "plannings/form";
-    }
+        Employe responsable = employeService.findById(employeId).orElseThrow();
+        planning.setResponsable(responsable);
 
-    if (activiteIds != null) {
-        for (Integer activiteId : activiteIds) {
-            Activite activite = activiteService.findById(activiteId).orElseThrow();
-            planning.ajouterActivite(activite);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("isEdit", false);
+            model.addAttribute("submitUrl", "/plannings");
+            // ✅ Remplacer findActivitesSansPlanning() par findActivitesByDate()
+            List<Activite> activites = planning.getDate() != null
+                ? planningService.findActivitesByDate(planning.getDate())
+                : activiteService.findAll();
+            model.addAttribute("activites", activites);
+            model.addAttribute("employes", employeService.findAll());
+            model.addAttribute("activePage", "planning");
+            return "plannings/form";
         }
-    }
 
-    try {
-        planningService.save(planning);
-    } catch (IllegalArgumentException e) {
-        // ✅ Afficher l'erreur de chevauchement
-        model.addAttribute("chevauchementError", e.getMessage());
-        model.addAttribute("isEdit", false);
-        model.addAttribute("submitUrl", "/plannings");
-        model.addAttribute("activites", planningService.findActivitesSansPlanning());
-        model.addAttribute("employes", employeService.findAll());
-        model.addAttribute("activePage", "planning");
-        return "plannings/form";
-    }
+        if (activiteIds != null) {
+            for (Integer activiteId : activiteIds) {
+                Activite activite = activiteService.findById(activiteId).orElseThrow();
+                planning.ajouterActivite(activite);
+            }
+        }
 
-    return "redirect:/plannings";
-}
+        try {
+            planningService.save(planning);
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("chevauchementError", e.getMessage());
+            model.addAttribute("isEdit", false);
+            model.addAttribute("submitUrl", "/plannings");
+            // ✅ Idem ici
+            List<Activite> activites = planning.getDate() != null
+                ? planningService.findActivitesByDate(planning.getDate())
+                : activiteService.findAll();
+            model.addAttribute("activites", activites);
+            model.addAttribute("employes", employeService.findAll());
+            model.addAttribute("activePage", "planning");
+            return "plannings/form";
+        }
+
+        return "redirect:/plannings";
+    }
 
     /* DÉTAIL */
     @GetMapping("/{id:\\d+}")
@@ -149,14 +163,19 @@ public String create(@Valid @ModelAttribute Planning planning,
 
         Planning planning = planningService.findById(id).orElseThrow();
 
-        // ✅ Activités disponibles + celles déjà dans ce planning
-        List<Activite> disponibles = planningService.findActivitesSansPlanning();
-        planning.getActivites().forEach(a -> {
-            if (!disponibles.contains(a)) disponibles.add(a);
-        });
+        List<Activite> activites;
+        if (planning.getDate() != null) {
+            activites = planningService.findActivitesByDate(planning.getDate());
+            // S'assurer que les activités déjà liées apparaissent même si date a changé
+            planning.getActivites().forEach(a -> {
+                if (!activites.contains(a)) activites.add(a);
+            });
+        } else {
+            activites = activiteService.findAll();
+        }
 
         model.addAttribute("planning", planning);
-        model.addAttribute("activites", disponibles);
+        model.addAttribute("activites", activites);
         model.addAttribute("employes", employeService.findAll());
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/plannings/" + id);

@@ -6,7 +6,7 @@
  
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'nonModifiable'">Cette consultation est passée : modification impossible.</span>
             <span th:case="'nonSupprimable'">Cette consultation est passée : suppression impossible.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -29,10 +29,15 @@
             <!-- DATE -->
                 <div>
                     <label>Date et heure</label>
-                    <input type="text" th:field="*{date}"
-                        class="form-control datetimepicker"
-                        placeholder="JJ/MM/AAAA HH:MM">
+                    <input type="datetime-local" th:field="*{date}" class="form-control" />
                     <div class="error" th:errors="*{date}"></div>
+                </div>
+
+                <!-- DURÉE -->
+                <div>
+                    <label>Durée (minutes)</label>
+                    <input type="number" th:field="*{duree}" class="form-control" min="1">
+                    <div class="error" th:errors="*{duree}"></div>
                 </div>
                             <!-- RÉSIDENT pré-rempli (venant d'une fiche résident) -->
             <div th:if="${residentId != null}">
@@ -59,7 +64,6 @@
                             th:text="${r.nom + ' ' + r.prenom}">
                     </option>
                 </select>
-                <div class="error" th:errors="*{resident}"></div>
             </div>
  
             <!-- SOIGNANT : dropdown pour DIRECTEUR -->
@@ -72,7 +76,6 @@
                             th:text="${s.nom + ' ' + s.prenom}">
                     </option>
                 </select>
-                <div class="error" th:errors="*{soignant}"></div>
             </div>
  
             <!-- SOIGNANT : champ pré-rempli pour SOIGNANT connecté -->
@@ -89,7 +92,6 @@
                        th:value="${soignantConnecte != null
                            ? soignantConnecte.idPersonne
                            : (consultation.soignant != null ? consultation.soignant.idPersonne : '')}">
-                <div class="error" th:errors="*{soignant}"></div>
             </div>
  
             <!-- DIAGNOSTIC -->
@@ -109,22 +111,11 @@
  
         <div class="form-actions mt-3">
             <button class="btn-gold">Enregistrer</button>
-            <a th:href="@{/consultations}" class="btn-ghost">Annuler</a>
+            <a th:href="${residentId != null} ? @{/consultations(resident=${residentId})} : @{/consultations}"
+             class="btn-ghost">Annuler</a>
         </div>
  
     </form>
- 
-    <script>
-    flatpickr(".datetimepicker", {
-        locale: "fr",
-        enableTime: true,
-        time_24hr: true,
-        altInput: true,
-        altFormat: "d/m/Y H:i",   // ✅ Affiché à l'utilisateur
-        dateFormat: "Y-m-d\\TH:i", // ✅ Envoyé au serveur (format LocalDateTime)
-        allowInput: true
-    });
-</script>
 
 </section>
 </html>

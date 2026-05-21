@@ -11,18 +11,24 @@
 
     <!-- HEADER -->
     <div class="form-header d-flex justify-content-between align-items-center">
+
+        <a th:href="@{/chambres}" class="btn-circle" title="Retour">
+            <img src="/images/retour.png" class="icon-26">
+        </a>
+
         <h2 class="m-0" th:text="${isEdit} ? 'Modifier la chambre' : 'Ajouter une chambre'"></h2>
+
         <div></div>
+
     </div>
 
     <!-- FORMULAIRE -->
-    <<form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
+    <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
           th:action="@{${submitUrl}}" th:object="${chambre}"
           method="post" class="form-card">
 
           <input type="hidden" th:if="${isEdit}" th:field="*{idChambre}">
           <input type="hidden" th:if="${isEdit}" th:field="*{numero}">
-
 
         <div class="form-grid">
 

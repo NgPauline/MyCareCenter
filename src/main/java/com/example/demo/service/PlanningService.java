@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -147,17 +148,9 @@ public class PlanningService {
 
     }
 
-    public List<Activite> findActivitesSansPlanning() {
-        List<Activite> toutes = activiteRepository.findAll();
-
-        List<Integer> dejaAssigneesIds = planningRepository.findAll()
-            .stream()
-            .flatMap(p -> p.getActivites().stream())
-            .map(Activite::getIdActivite)
-            .collect(Collectors.toList());
-
-        return toutes.stream()
-            .filter(a -> !dejaAssigneesIds.contains(a.getIdActivite()))
-            .collect(Collectors.toList());
-    }
+    public List<Activite> findActivitesByDate(LocalDate date) {
+    return activiteRepository.findAll().stream()
+        .filter(a -> date.equals(a.getDate()))
+        .collect(Collectors.toList());
+}
 }

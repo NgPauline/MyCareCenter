@@ -8,7 +8,7 @@
 
     <!-- MESSAGE GLOBAL -->
     <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error}">
+        <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Famille introuvable.</span>
             <span th:case="'resident'">Résident introuvable.</span>
             <span th:case="*">Une erreur est survenue.</span>
@@ -16,10 +16,15 @@
     </div>
 
     <!-- BARRE HAUTE -->
-    <div class="top-bar d-flex justify-content-end align-items-center mb-2">
+    <div class="top-bar d-flex justify-content-between align-items-center mb-2">
+
+            <a th:href="${residentId != null} ? @{/familles(resident=${residentId})} : @{/familles}"
+       class="btn-circle" title="Retour">
+        <img src="/images/retour.png" class="icon-26">
+             </a>
 
         <!-- ACTIONS -->
-        <div class="detail-actions d-flex gap-3">
+         <div class="detail-actions d-flex gap-3">
 
             <!-- Modifier -->
             <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
