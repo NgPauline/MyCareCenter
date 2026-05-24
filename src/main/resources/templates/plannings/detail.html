@@ -96,18 +96,15 @@
 
                         <!-- ACTIVITÉS -->
                         <tr>
-                            <th>Activités</th>
+                            <th>Activités du jour</th>
                             <td>
-
-                                <span th:if="${#lists.isEmpty(planning.activites)}" class="text-muted">Aucune</span>
-
-                                <div th:each="a : ${planning.activites}" class="mb-2">
-                                    <span th:text="${a.nom}"></span>
-
+                                <span th:if="${#lists.isEmpty(activitesDuJour)}" class="text-muted">Aucune</span>
+                                <div th:each="a : ${activitesDuJour}" class="mb-1">
+                                    <span th:text="|${a.nom} — ${a.heureDebut} (${a.duree} min)|"></span>
                                 </div>
-
                             </td>
                         </tr>
+
 
                         </tbody>
                     </table>

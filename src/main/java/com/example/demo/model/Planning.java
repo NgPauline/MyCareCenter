@@ -35,13 +35,6 @@ public class Planning {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Employe responsable;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "planning_activite",
-            joinColumns = @JoinColumn(name = "planning_id"),
-            inverseJoinColumns = @JoinColumn(name = "activite_id"))
-    private List<Activite> activites = new ArrayList<>();
-
     public Planning() {
     }
 
@@ -90,21 +83,6 @@ public class Planning {
 
     public void setHeureFin(LocalTime heureFin) {
         this.heureFin = heureFin;
-    }
-
-    public List<Activite> getActivites() {
-        return activites;
-    }
-
-    public void setActivites(List<Activite> activites) {
-        this.activites = activites;
-    }
-
-    // UML : ajouterActivite
-    public void ajouterActivite(Activite activite) {
-        if (!activites.contains(activite)) {
-            activites.add(activite);
-        }
     }
 
 

@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "types_equipement")
@@ -14,11 +15,13 @@ public class TypeEquipement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotNull
     private String nom;
 
     private String photoPath;
 
     // Quantité totale disponible dans le stock
+    @NotNull
     private int quantiteTotale;
 
     // --- Constructeurs ---

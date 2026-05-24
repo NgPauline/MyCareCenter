@@ -113,17 +113,19 @@
 
                         <tr><th>Statut</th><td th:text="${resident.statut}"></td></tr>
 
-                        <tr>
+                       <tr>
                             <th>Chambre</th>
                             <td>
-                                <a th:if="${resident.chambre != null}"
-                                   th:href="@{/chambres/{id}(id=${resident.chambre.idChambre})}"
-                                   class="btn-small gold">
+                                <span th:if="${resident.chambre != null}">
                                     Chambre <span th:text="${resident.chambre.numero}"></span>
-                                </a>
-                                <span th:if="${resident.chambre == null}" class="text-muted">Aucune</span>
+                                </span>
+
+                                <span th:if="${resident.chambre == null}" class="text-muted">
+                                    Aucune
+                                </span>
                             </td>
                         </tr>
+
 
                         <tr>
                             <th>Familles</th>

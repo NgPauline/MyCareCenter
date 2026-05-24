@@ -26,11 +26,9 @@ public class PlanningService {
 
     private final PlanningRepository planningRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ActiviteRepository activiteRepository;
 
-    public PlanningService(PlanningRepository planningRepository, ActiviteRepository activiteRepository) {
+    public PlanningService(PlanningRepository planningRepository) {
         this.planningRepository = planningRepository;
-        this.activiteRepository = activiteRepository;
     }
 
     // ---------------------------------------------------------
@@ -98,14 +96,8 @@ public class PlanningService {
         original.setHeureDebut(updated.getHeureDebut());
         original.setHeureFin(updated.getHeureFin());
         original.setResponsable(updated.getResponsable());
-        original.setActivites(updated.getActivites());
 
         planningRepository.save(original);
-    }
-
-    public void ajouterActivite(Planning planning, Activite activite) {
-        planning.ajouterActivite(activite);
-        planningRepository.save(planning);
     }
 
     public void delete(Integer id) {
@@ -121,16 +113,16 @@ public class PlanningService {
             List<Planning> plannings = planningRepository.findAll();
 
             List<PlanningCalendarDTO> events = plannings.stream()
-                    .map(p -> new PlanningCalendarDTO(
-                            p.getIdPlanning(),
-                            p.getResponsable().getNom() + " " + p.getResponsable().getPrenom(),
-                            p.getDate().toString() + "T" + p.getHeureDebut().toString(),
-                            p.getDate().toString() + "T" + p.getHeureFin().toString(),
-                            p.getResponsable().getIdPersonne(),
-                            p.getActivites().isEmpty() ? null : p.getActivites().get(0).getNom(),
-                            getColorForSoignant(p.getResponsable().getIdPersonne())
-                    ))
-                    .toList();
+            .map(p -> new PlanningCalendarDTO(
+                    p.getIdPlanning(),
+                    p.getResponsable().getNom() + " " + p.getResponsable().getPrenom(),
+                    p.getDate().toString() + "T" + p.getHeureDebut().toString(),
+                    p.getDate().toString() + "T" + p.getHeureFin().toString(),
+                    p.getResponsable().getIdPersonne(),
+                    null,
+                    getColorForSoignant(p.getResponsable().getIdPersonne())
+            ))
+            .toList();
 
             return objectMapper.writeValueAsString(events);
 
@@ -148,9 +140,4 @@ public class PlanningService {
 
     }
 
-    public List<Activite> findActivitesByDate(LocalDate date) {
-    return activiteRepository.findAll().stream()
-        .filter(a -> date.equals(a.getDate()))
-        .collect(Collectors.toList());
-}
 }

@@ -25,7 +25,6 @@ public class Facture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idFacture;
  
-    @NotNull(message = "La date est obligatoire")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDate dateEmission;
 

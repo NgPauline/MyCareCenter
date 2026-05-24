@@ -3,14 +3,25 @@ function initPlanningCalendar(elementId, events) {
     const calendarEl = document.getElementById(elementId);
 
     if (!Array.isArray(events)) {
-        try { events = JSON.parse(events); }
-        catch (e) { events = []; }
+        try {
+            events = JSON.parse(events);
+        } catch (e) {
+            events = [];
+        }
     }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
+
         initialView: 'dayGridMonth',
         locale: 'fr',
-        height: "auto",
+
+        height: 'auto',
+        contentHeight: 'auto',
+
+        fixedWeekCount: false,
+        expandRows: false,
+
+        dayMaxEvents: 3,
 
         headerToolbar: {
             left: 'prev,next today',
@@ -27,16 +38,21 @@ function initPlanningCalendar(elementId, events) {
             className: "soignant-" + e.soignantId
         })),
 
-        // 👉 Clic sur un événement
+        // clic sur un événement
         eventClick: function(info) {
+
             if (!info.event || !info.event.id) return;
+
             window.location.href = "/plannings/" + info.event.id;
         },
 
-        // 👉 Clic sur une case du calendrier
+        // clic sur une date
         dateClick: function(info) {
+
             if (!info.dateStr) return;
-            window.location.href = "/plannings/new?date=" + info.dateStr;
+
+            window.location.href =
+                "/plannings/new?date=" + info.dateStr;
         }
     });
 
@@ -78,3 +94,5 @@ function generateLegend(events) {
         legendDiv.appendChild(item);
     });
 }
+
+

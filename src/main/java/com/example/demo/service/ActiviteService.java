@@ -7,9 +7,12 @@ import com.example.demo.model.Employe;
 import com.example.demo.model.Resident;
 import com.example.demo.repository.ActiviteRepository;
 import com.example.demo.repository.ConsultationRepository;
+import com.example.demo.repository.PlanningRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -25,11 +28,15 @@ public class ActiviteService {
 
     private final ActiviteRepository activiteRepository;
     private final ConsultationRepository consultationRepository;
+    private final PlanningRepository planningRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ActiviteService(ActiviteRepository activiteRepository,
-                           ConsultationRepository consultationRepository) {
+                           ConsultationRepository consultationRepository,
+                           PlanningRepository planningRepository) {
         this.activiteRepository = activiteRepository;
         this.consultationRepository = consultationRepository;
+        this.planningRepository = planningRepository;
     }
 
     public List<Activite> findAll() {
@@ -61,6 +68,17 @@ public class ActiviteService {
             throw new IllegalArgumentException("Un soignant ne peut pas créer une activité éducative ou sportive.");
         }
 
+        boolean employeDisponible = planningRepository
+            .findByDate(activite.getDate())
+            .stream()
+            .anyMatch(p -> p.getResponsable().getIdPersonne()
+                            .equals(activite.getResponsable().getIdPersonne()));
+
+        if (!employeDisponible) {
+            throw new IllegalArgumentException(
+                "Cet employé n'a pas de créneau de travail prévu ce jour-là.");
+        }
+
         return activiteRepository.save(activite);
     }
 
@@ -75,6 +93,17 @@ public class ActiviteService {
             (updated.getCategorie() == CategorieActivite.EDUCATIF
             || updated.getCategorie() == CategorieActivite.SPORTIF)) {
             throw new IllegalArgumentException("Un soignant ne peut pas modifier une activité éducative ou sportive.");
+        }
+
+        boolean employeDisponible = planningRepository
+            .findByDate(updated.getDate())
+            .stream()
+            .anyMatch(p -> p.getResponsable().getIdPersonne()
+                            .equals(updated.getResponsable().getIdPersonne()));
+
+        if (!employeDisponible) {
+            throw new IllegalArgumentException(
+                "Cet employé n'a pas de créneau de travail prévu ce jour-là.");
         }
 
         Activite original = activiteRepository.findById(id)
@@ -115,7 +144,7 @@ public class ActiviteService {
         LocalDateTime finAct = debutAct.plusMinutes(activite.getDuree());
 
         List<Consultation> consults = consultationRepository
-                .findByResidentAndDateBetween(resident, debutAct.minusHours(4), finAct.plusHours(4));
+        .findByResidentAndDateBetween(resident, debutAct.minusMinutes(25), finAct.plusMinutes(25));
 
         boolean chevauche = consults.stream().anyMatch(c -> {
             LocalDateTime debutConsult = c.getDate();
@@ -155,5 +184,4 @@ public class ActiviteService {
     public Page<Activite> search(String keyword, Pageable pageable) {
         return activiteRepository.search(keyword.toLowerCase(), pageable);
     }
-
 }

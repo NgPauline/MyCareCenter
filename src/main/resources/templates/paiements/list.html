@@ -17,29 +17,35 @@
     </div>
 
 
-    <!-- HEADER -->
-    <div class="list-header d-flex justify-content-between align-items-center">
+   <div class="list-header d-flex justify-content-between align-items-center">
 
-        <div th:if="${residentId != null}" class="mb-2">
-            <a th:href="@{/residents/{id}(id=${residentId})}" class="btn-circle" title="Retour au résident">
-                <img th:src="@{/images/retour.png}" class="icon-26">
-            </a>
+        <!-- GAUCHE : retour + titre + loupe -->
+        <div class="d-flex align-items-center">
+
+            <div th:if="${residentId != null}" class="mr-2">
+                <a th:href="@{/residents/{id}(id=${residentId})}" 
+                class="btn-circle" 
+                title="Retour au résident">
+                    <img th:src="@{/images/retour.png}" class="icon-26">
+                </a>
+            </div>
+
+            <h2 class="m-0 d-flex align-items-center">
+                Paiements
+                <button class="btn-circle ml-2"
+                        data-search-toggle="searchBarPaiements"
+                        title="Rechercher un paiement">
+                    <img th:src="@{/images/rechercher.png}" class="icon-22">
+                </button>
+            </h2>
+
         </div>
 
-        <h2 class="m-0 d-flex align-items-center">
-            Paiements
-
-            <button class="btn-circle ml-2"
-                    data-search-toggle="searchBarPaiements"
-                    title="Rechercher un paiement">
-                <img th:src="@{/images/rechercher.png}" class="icon-22">
-            </button>
-        </h2>
-
+        <!-- DROITE : ajouter -->
         <a sec:authorize="hasAnyRole('DIRECTEUR','FINANCE')"
-           th:href="${residentId != null} ? @{/paiements/new(residentId=${residentId})} : @{/paiements/new}"
-           class="btn-circle"
-           title="Ajouter un paiement">
+        th:href="${residentId != null} ? @{/paiements/new(residentId=${residentId})} : @{/paiements/new}"
+        class="btn-circle"
+        title="Ajouter un paiement">
             <img th:src="@{/images/ajouter.png}" class="icon-26">
         </a>
 

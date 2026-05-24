@@ -55,7 +55,7 @@ public class ChambreService {
         Chambre original = chambreRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Chambre introuvable"));
 
-        original.setNumero(updated.getNumero());
+    // original.setNumero(updated.getNumero());
         original.setType(updated.getType());
         original.setEtage(updated.getEtage());
 

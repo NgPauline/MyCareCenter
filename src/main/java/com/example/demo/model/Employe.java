@@ -24,7 +24,7 @@ public class Employe extends Personne {
         regexp = "^[A-Za-zÀ-ÿ'\\- ]+ \\d+[A-Za-z]? ?, ?\\d{4} [A-Za-zÀ-ÿ'\\- ]+$",
         message = "Adresse invalide (ex: Rue Exemple 12, 1000 Bruxelles)"
     )
-    @NotBlank(message = "Adresse obligatoire")
+    @NotBlank
     private String adresse;
 
     @NotBlank
@@ -34,7 +34,7 @@ public class Employe extends Personne {
         regexp = "^(DIR|EMP|SOI|EDU|FIN)\\d{3}$",
         message = "Matricule invalide (ex: DIR001, EMP002, SOI003)"
     )
-    @Column(unique = true, nullable = false)
+    @Column
     private String matricule;
 
 

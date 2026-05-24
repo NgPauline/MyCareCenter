@@ -136,3 +136,94 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration commune pour adoucir et réduire la taille
+    const swalConfig = {
+        title: 'Confirmation',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Supprimer',
+        cancelButtonText: 'Annuler',
+        // --- Ajustements "soft & small" ---
+        width: '380px',                 // taille réduite (défaut 500px)
+        padding: '1.2rem',              // moins d'espace interne
+        backdrop: 'rgba(0,0,0,0.2)',    // fond plus léger
+        confirmButtonColor: '#f8d7da',  // rouge très doux
+        cancelButtonColor: '#e2e3e5',   // gris clair doux
+        confirmButtonTextColor: '#ce767f', // texte rouge foncé lisible
+        cancelButtonTextColor: '#383d41',   // texte gris foncé
+        customClass: {
+            popup: 'soft-swal-popup',
+            title: 'soft-swal-title',
+            confirmButton: 'soft-confirm-btn',
+            cancelButton: 'soft-cancel-btn'
+        }
+    };
+
+    // Pour les formulaires
+    document.querySelectorAll('form[onsubmit*="confirm"]').forEach(form => {
+        const original = form.getAttribute('onsubmit');
+        const msgMatch = original.match(/confirm\(['"](.+?)['"]\)/);
+        const message = msgMatch ? msgMatch[1] : 'Cette action est irréversible.';
+        
+        form.removeAttribute('onsubmit');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const result = await Swal.fire({
+                ...swalConfig,
+                text: message
+            });
+            if (result.isConfirmed) form.submit();
+        });
+    });
+
+    // Pour les liens
+    document.querySelectorAll('a[onclick*="confirm"]').forEach(link => {
+        const original = link.getAttribute('onclick');
+        const msgMatch = original.match(/confirm\(['"](.+?)['"]\)/);
+        const message = msgMatch ? msgMatch[1] : 'Cette action est irréversible.';
+        
+        link.removeAttribute('onclick');
+        link.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const result = await Swal.fire({
+                ...swalConfig,
+                text: message
+            });
+            if (result.isConfirmed) window.location.href = link.href;
+        });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Dates
+    flatpickr(".datepicker", {
+        locale: "fr",
+        dateFormat: "d/m/Y",
+        allowInput: true,
+        disableMobile: true
+    });
+
+    // Heures
+    flatpickr(".timepicker", {
+        locale: "fr",
+        enableTime: true,
+        noCalendar: true,
+        time_24hr: true,
+        dateFormat: "H:i",
+        disableMobile: true
+    });
+
+    // Date + heure (consultations)
+    flatpickr(".datetimepicker", {
+        locale: "fr",
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: "d/m/Y H:i",
+        disableMobile: true
+    });
+
+});

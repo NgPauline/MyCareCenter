@@ -16,9 +16,13 @@
         <span th:text="${dateError}"></span>
     </div>
 
-    <div class="form-header d-flex justify-content-between align-items-center">
-        <h2 class="m-0" th:text="${isEdit} ? 'Modifier le traitement' : 'Ajouter un traitement'"></h2>
-        <div></div>
+    <div class="form-header d-flex justify-content-between align-items-center"> 
+            <a th:href="${residentId != null} ? @{/traitements(resident=${residentId})} : @{/consultations}" class="btn-circle" title="Retour"> <img src="/images/retour.png" class="icon-26"> </a>
+
+    <h2 class="m-0" th:text="${isEdit} ? 'Modifier le traitement' : 'Ajouter un traitement'"></h2>
+
+    <div></div>
+
     </div>
 
     <form sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
@@ -47,17 +51,13 @@
 
                 <div>
                     <label>Date début</label>
-                    <input type="date"
-                    th:field="*{dateDebut}"
-                    class="form-control">
+                    <input type="text" th:field="*{dateDebut}" class="form-control datepicker" placeholder="JJ/MM/AAAA" autocomplete="off">
                     <div class="error" th:errors="*{dateDebut}"></div>
                 </div>
 
                 <div>
                     <label>Date fin</label>
-                    <input type="date"
-                    th:field="*{dateFin}"
-                    class="form-control">
+                    <input type="text" th:field="*{dateFin}" class="form-control datepicker" placeholder="JJ/MM/AAAA" autocomplete="off">
 
                     <div th:if="${traitement.dateDebut != null
                                 and traitement.dateFin != null

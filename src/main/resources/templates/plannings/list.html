@@ -74,7 +74,6 @@
                     <th>Date</th>
                     <th>Heure</th>
                     <th>Employé</th>
-                    <th>Activité(s)</th>
                     <th class="text-right">Actions</th>
                 </tr>
             </thead>
@@ -87,15 +86,6 @@
                     <td th:text="${p.heureDebut + ' - ' + p.heureFin}"></td>
 
                     <td th:text="${p.responsable != null ? p.responsable.nom + ' ' + p.responsable.prenom : '—'}"></td>
-
-                    <td>
-                        <span th:if="${#lists.isEmpty(p.activites)}" class="text-muted">Aucune</span>
-
-                        <span th:each="a, iter : ${p.activites}">
-                            <span th:text="${a.nom}"></span>
-                            <span th:if="${!iter.last}">, </span>
-                        </span>
-                    </td>
 
                     <td class="text-right">
 
@@ -129,7 +119,7 @@
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(plannings)}">
-                    <td colspan="5" class="text-center text-muted py-3">
+                    <td colspan="4" class="text-center text-muted py-3">
                         Aucun créneau trouvé.
                     </td>
                 </tr>

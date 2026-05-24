@@ -15,20 +15,27 @@
         </span>
     </div>
 
-    <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
 
-        <a th:href="@{/chambres/{id}(id=${idChambre})}" class="btn-circle" title="Retour à la chambre">
+    <!-- GAUCHE : retour + titre -->
+    <div class="d-flex align-items-center">
+
+        <a th:href="@{/chambres/{id}(id=${idChambre})}" 
+           class="btn-circle" 
+           title="Retour à la chambre">
             <img th:src="@{/images/retour.png}" class="icon-26">
         </a>
 
-        <h2 class="m-0">
+        <h2 class="m-0 ml-2">
             Équipements de la chambre <span th:text="${idChambre}"></span>
         </h2>
 
-        <div></div>
-
     </div>
+
+    <!-- DROITE : vide (pour équilibrer le flex) -->
+    <div></div>
+
+</div>
 
     <!-- GRILLE RESPONSIVE -->
     <div class="equipements-grid mt-4">

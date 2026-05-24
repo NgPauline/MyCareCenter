@@ -30,9 +30,6 @@ public class DossierMedical {
     @OneToMany(mappedBy = "dossierMedical", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Traitement> traitements = new ArrayList<>();
 
-    @OneToMany(mappedBy = "dossierMedical", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Consultation> consultations = new ArrayList<>();
-
     @OneToOne(mappedBy = "dossierMedical", optional = true)
     private Resident resident;
 
@@ -95,14 +92,6 @@ public class DossierMedical {
         this.traitements = traitements;
     }
 
-    public List<Consultation> getConsultations() {
-        return consultations;
-    }
-
-    public void setConsultations(List<Consultation> consultations) {
-        this.consultations = consultations;
-    }
-
     public Resident getResident() {
          return resident;
     }
@@ -122,20 +111,6 @@ public class DossierMedical {
     // UML : supprimerTraitement
     public void supprimerTraitement(int idTraitement) {
         traitements.removeIf(t -> t.getIdTraitement() != null && t.getIdTraitement() == idTraitement);
-    }
-
-    // UML : ajouterConsultation
-    public void ajouterConsultation(Consultation consultation) {
-        if (!consultations.contains(consultation)) {
-            consultations.add(consultation);
-            consultation.setDossierMedical(this);
-        }
-    }
-
-
-    // UML : obtenirHistoriqueConsultations
-    public List<Consultation> obtenirHistoriqueConsultations() {
-        return consultations;
     }
 
     // UML : modifierAllergies

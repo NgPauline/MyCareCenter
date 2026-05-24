@@ -72,6 +72,24 @@
 
             </div>
 
+            <!-- ACTIVITÉS DE LA JOURNÉE -->
+            <div th:if="${not #lists.isEmpty(activites)}">
+                <label>Activités du jour</label>
+                <div class="d-flex flex-column" style="gap:8px;">
+                    <div th:each="a : ${activites}" class="d-flex align-items-center" style="gap:8px;">
+                        <input type="checkbox"
+                            name="activiteIds"
+                            th:value="${a.idActivite}"
+                            th:checked="${planning.activites != null and planning.activites.contains(a)}">
+                        <span th:text="|${a.nom} — ${a.heureDebut} (${a.duree} min) — ${a.lieu}|"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(activites)}" class="text-muted">
+                Aucune activité prévue ce jour.
+            </div>
+
         </div>
 
         <div class="form-actions mt-3">
@@ -85,15 +103,15 @@
 flatpickr(".datepicker", {
     locale: "fr",
     dateFormat: "d/m/Y",
-    allowInput: true,
-    onChange: function(selectedDates, dateStr, instance) {
-        // Convertir JJ/MM/AAAA → AAAA-MM-JJ pour le serveur
-        const parts = dateStr.split('/');
-        if (parts.length === 3) {
-            const isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            window.location.href = `/plannings/new?date=${isoDate}`;
-        }
-    }
+    allowInput: true
+});
+
+flatpickr(".timepicker", {
+    locale: "fr",
+    enableTime: true,
+    noCalendar: true,
+    time_24hr: true,
+    dateFormat: "H:i"
 });
 </script>
 

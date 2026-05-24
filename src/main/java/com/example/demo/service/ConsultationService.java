@@ -50,9 +50,11 @@ public class ConsultationService {
         LocalDateTime debut = consultation.getDate();
         LocalDateTime fin = consultation.getHeureFin();
 
-        if (debut.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("La consultation ne peut pas être dans le futur.");
+        if (debut.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("La consultation doit être planifiée dans le futur.");
         }
+
+        
 
         if (resident.getDossierMedical() == null) {
             throw new IllegalArgumentException("Le résident n'a pas de dossier médical.");

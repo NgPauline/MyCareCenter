@@ -18,20 +18,21 @@
 
     <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
-        <div th:if="${residentId != null}" class="mb-2">
-    <a th:href="@{/residents/{id}(id=${residentId})}" class="btn-circle" title="Retour au résident">
-        <img th:src="@{/images/retour.png}" class="icon-26">
-    </a>
-</div>
 
-        <h2 class="m-0 d-flex align-items-center">
-            Familles
-            <button class="btn-circle ml-2"
-                    data-search-toggle="searchBarFamilles"
-                    title="Rechercher une famille">
-                <img th:src="@{/images/rechercher.png}" class="icon-22">
-            </button>
-        </h2>
+        <div class="d-flex align-items-center">
+            <div th:if="${residentId != null}" class="mr-2">
+                <a th:href="@{/residents/{id}(id=${residentId})}" class="btn-circle">
+                    <img th:src="@{/images/retour.png}" class="icon-26">
+                </a>
+            </div>
+
+            <h2 class="m-0 d-flex align-items-center">
+                Familles
+                <button class="btn-circle ml-2" data-search-toggle="searchBarFamilles">
+                    <img th:src="@{/images/rechercher.png}" class="icon-22">
+                </button>
+            </h2>
+        </div>
 
         <a sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
            th:href="${residentId != null} ? @{/familles/new(residentId=${residentId})} : @{/familles/new}"

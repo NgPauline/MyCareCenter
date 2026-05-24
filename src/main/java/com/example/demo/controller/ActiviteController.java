@@ -104,8 +104,12 @@ public class ActiviteController {
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF','EDUCATEUR')")
     public String create(@Valid @ModelAttribute Activite activite,
                         BindingResult bindingResult,
-                        @RequestParam Integer responsableId,
+                        @RequestParam(required = false) Integer responsableId,
                         Model model) {
+
+        if (responsableId == null) {
+            bindingResult.rejectValue("responsable", "error.responsable", "Le responsable est obligatoire.");
+        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("employes", employeService.findByRole("EDUCATEUR"));
@@ -136,6 +140,7 @@ public class ActiviteController {
 
         return "redirect:/activites";
     }
+
 
     /* DÉTAIL */
     @GetMapping("/{id}")

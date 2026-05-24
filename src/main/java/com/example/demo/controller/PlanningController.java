@@ -46,13 +46,9 @@ public class PlanningController {
         int size = 4;
         Pageable pageable = PageRequest.of(page, size);
 
-        org.springframework.data.domain.Page<Planning> pageResult;
-
-        if (q != null && !q.isBlank()) {
-            pageResult = planningService.search(q, pageable);
-        } else {
-            pageResult = planningService.findAll(pageable);
-        }
+        org.springframework.data.domain.Page<Planning> pageResult = (q != null && !q.isBlank())
+                ? planningService.search(q, pageable)
+                : planningService.findAll(pageable);
 
         model.addAttribute("plannings", pageResult.getContent());
         model.addAttribute("currentPage", page);
@@ -70,38 +66,23 @@ public class PlanningController {
         return "plannings/calendar";
     }
 
-    /* CRÉATION */
+    /* FORMULAIRE CRÉATION */
     @GetMapping("/new")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
-    public String createForm(@RequestParam(required = false) String date, Model model) {
-
-        Planning planning = new Planning();
-
-        List<Activite> activites;
-        if (date != null) {
-            LocalDate localDate = LocalDate.parse(date);
-            planning.setDate(localDate);
-            activites = planningService.findActivitesByDate(localDate);
-        } else {
-            activites = activiteService.findAll();
-        }
-
-        model.addAttribute("planning", planning);
-        model.addAttribute("activites", activites);
+    public String createForm(Model model) {
+        model.addAttribute("planning", new Planning());
         model.addAttribute("employes", employeService.findAll());
         model.addAttribute("isEdit", false);
         model.addAttribute("submitUrl", "/plannings");
         model.addAttribute("activePage", "planning");
-
         return "plannings/form";
     }
 
-
+    /* CRÉATION */
     @PostMapping
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String create(@Valid @ModelAttribute Planning planning,
                         BindingResult bindingResult,
-                        @RequestParam(required = false) List<Integer> activiteIds,
                         @RequestParam Integer employeId,
                         Model model) {
 
@@ -111,21 +92,9 @@ public class PlanningController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/plannings");
-            // ✅ Remplacer findActivitesSansPlanning() par findActivitesByDate()
-            List<Activite> activites = planning.getDate() != null
-                ? planningService.findActivitesByDate(planning.getDate())
-                : activiteService.findAll();
-            model.addAttribute("activites", activites);
             model.addAttribute("employes", employeService.findAll());
             model.addAttribute("activePage", "planning");
             return "plannings/form";
-        }
-
-        if (activiteIds != null) {
-            for (Integer activiteId : activiteIds) {
-                Activite activite = activiteService.findById(activiteId).orElseThrow();
-                planning.ajouterActivite(activite);
-            }
         }
 
         try {
@@ -134,11 +103,6 @@ public class PlanningController {
             model.addAttribute("chevauchementError", e.getMessage());
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/plannings");
-            // ✅ Idem ici
-            List<Activite> activites = planning.getDate() != null
-                ? planningService.findActivitesByDate(planning.getDate())
-                : activiteService.findAll();
-            model.addAttribute("activites", activites);
             model.addAttribute("employes", employeService.findAll());
             model.addAttribute("activePage", "planning");
             return "plannings/form";
@@ -151,67 +115,49 @@ public class PlanningController {
     @GetMapping("/{id:\\d+}")
     public String detail(@PathVariable Integer id, Model model) {
         Planning planning = planningService.findById(id).orElseThrow();
+
+        List<Activite> activitesDuJour = activiteService.findAll().stream()
+            .filter(a -> planning.getDate().equals(a.getDate())
+                      && planning.getResponsable().equals(a.getResponsable()))
+            .collect(java.util.stream.Collectors.toList());
+
         model.addAttribute("planning", planning);
+        model.addAttribute("activitesDuJour", activitesDuJour);
         model.addAttribute("activePage", "planning");
         return "plannings/detail";
     }
 
-    /* MODIFICATION */
+    /* FORMULAIRE MODIFICATION */
     @GetMapping("/{id}/edit")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String editForm(@PathVariable Integer id, Model model) {
-
         Planning planning = planningService.findById(id).orElseThrow();
-
-        List<Activite> activites;
-        if (planning.getDate() != null) {
-            activites = planningService.findActivitesByDate(planning.getDate());
-            // S'assurer que les activités déjà liées apparaissent même si date a changé
-            planning.getActivites().forEach(a -> {
-                if (!activites.contains(a)) activites.add(a);
-            });
-        } else {
-            activites = activiteService.findAll();
-        }
-
         model.addAttribute("planning", planning);
-        model.addAttribute("activites", activites);
         model.addAttribute("employes", employeService.findAll());
         model.addAttribute("isEdit", true);
         model.addAttribute("submitUrl", "/plannings/" + id);
         model.addAttribute("activePage", "planning");
-
         return "plannings/form";
     }
 
+    /* MODIFICATION */
     @PostMapping("/{id}")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String update(@PathVariable Integer id,
                         @Valid @ModelAttribute Planning planning,
                         BindingResult bindingResult,
-                        @RequestParam(required = false) List<Integer> activiteIds,
                         @RequestParam Integer employeId,
                         Model model) {
 
-        // ← déplacé AVANT le check des erreurs
         Employe responsable = employeService.findById(employeId).orElseThrow();
         planning.setResponsable(responsable);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/plannings/" + id);
-            model.addAttribute("activites", activiteService.findAll());
             model.addAttribute("employes", employeService.findAll());
             model.addAttribute("activePage", "planning");
             return "plannings/form";
-        }
-
-        planning.getActivites().clear();
-        if (activiteIds != null) {
-            for (Integer activiteId : activiteIds) {
-                Activite activite = activiteService.findById(activiteId).orElseThrow();
-                planning.ajouterActivite(activite);
-            }
         }
 
         planningService.update(id, planning);

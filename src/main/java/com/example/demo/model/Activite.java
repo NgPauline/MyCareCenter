@@ -1,7 +1,10 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.example.demo.model.Activite;
@@ -20,12 +23,17 @@ public class Activite {
     private Integer idActivite;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @NotNull
     private LocalDate date;
 
+    @NotNull
+    @Positive
     private int duree; // minutes
 
+     @NotBlank
     private String lieu;
 
+     @NotBlank
     private String nom;
 
     @Enumerated(EnumType.STRING)
@@ -33,6 +41,7 @@ public class Activite {
     private CategorieActivite categorie;
 
     @DateTimeFormat(pattern = "HH:mm")
+    @NotNull
     private LocalTime heureDebut;
 
     @ManyToMany(fetch = FetchType.LAZY)

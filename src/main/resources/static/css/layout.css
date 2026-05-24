@@ -289,3 +289,48 @@ body {
 .login-input{
     font-family:'Garamond', sans-serif;
 }
+
+/* Douceur et élégance pour SweetAlert2 */
+.soft-swal-popup {
+    border-radius: 20px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+    font-family: inherit !important;
+}
+
+.soft-swal-title {
+    font-size: 1.3rem !important;
+    font-weight: 500 !important;
+    color: #2c3e50 !important;
+}
+
+/* Boutons arrondis et doux */
+.soft-confirm-btn,
+.soft-cancel-btn {
+    border-radius: 30px !important;
+    padding: 0.4rem 1.2rem !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.soft-confirm-btn {
+    background-color: #dd9ba0 !important;
+    color: #721c24 !important;
+}
+.soft-confirm-btn:hover {
+    background-color: #c0727a !important;
+    color: #491217 !important;
+}
+
+.soft-cancel-btn {
+    background-color: #b7b9be !important;
+    color: #383d41 !important;
+}
+.soft-cancel-btn:hover {
+    background-color: #848687 !important;
+}
+
+.detail-card {
+    overflow: visible !important;
+}

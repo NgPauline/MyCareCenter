@@ -73,12 +73,12 @@ public class ChambreController {
             return "chambres/form";
         }
 
-        if (chambreService.existsByNumero(chambre.getNumero())) {
-            bindingResult.rejectValue("numero", "error.numero", "Numéro déjà utilisé");
-            model.addAttribute("isEdit", false);          
-            model.addAttribute("submitUrl", "/chambres");
-            return "chambres/form";
-        }
+      //  if (chambreService.existsByNumero(chambre.getNumero())) {
+        //    bindingResult.rejectValue("numero", "error.numero", "Numéro déjà utilisé");
+         //   model.addAttribute("isEdit", false);          
+           // model.addAttribute("submitUrl", "/chambres");
+           // return "chambres/form";
+        //}
 
         chambreService.save(chambre);
         return "redirect:/chambres";
@@ -178,14 +178,7 @@ public class ChambreController {
     @PostMapping("/{id}")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String update(@PathVariable Integer id,
-                        @Valid @ModelAttribute Chambre chambre,
-                        BindingResult bindingResult, Model model) {
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("isEdit", true);                    
-            model.addAttribute("submitUrl", "/chambres/" + id);
-            return "chambres/form";
-        }
+                        @ModelAttribute Chambre chambre, Model model) {
 
         chambreService.update(id, chambre);
         return "redirect:/chambres/" + id;

@@ -56,9 +56,7 @@
                 <!-- HEURE DEBUT -->
                 <div>
                     <label>Heure de début</label>
-                    <input type="time"
-                    th:field="*{heureDebut}"
-                    class="form-control">
+                    <input type="text" th:field="*{heureDebut}" class="form-control timepicker" placeholder="HH:MM" autocomplete="off">
                     <div class="error" th:errors="*{heureDebut}"></div>
                 </div>
 
@@ -113,6 +111,7 @@
                             th:text="|${e.nom} ${e.prenom}|">
                     </option>
                 </select>
+                <div class="error" th:errors="*{responsable}"></div>
             </div>
 
         </div>
@@ -124,14 +123,5 @@
         </div>
 
     </form>
-
- <script>
-   flatpickr(".datepicker", {
-    locale: "fr",
-    dateFormat: "d/m/Y",
-    allowInput: true
-});
-
-</script>
 </section>
 </html>

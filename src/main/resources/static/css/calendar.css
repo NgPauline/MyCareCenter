@@ -75,13 +75,67 @@
     display: inline-block;
 }
 
-/* Empêcher la coupure des noms */
-.fc-daygrid-event .fc-event-title {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
+/* ============================
+   CALENDRIER COMPACT
+   ============================ */
+
+#calendar {
+    font-size: 0.85rem;
 }
 
+/* Réduit la hauteur des cases */
+.fc .fc-daygrid-day-frame {
+    min-height: 90px;
+    height: 90px;
+}
+
+/* Évite les énormes cellules */
+.fc .fc-daygrid-body-natural .fc-daygrid-day-events {
+    margin-bottom: 0;
+}
+
+/* Événements plus compacts */
 .fc-daygrid-event {
-    white-space: normal;
+    padding: 2px 4px !important;
+    margin: 1px 0;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+/* Nom sur UNE seule ligne */
+.fc-daygrid-event .fc-event-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+/* Réduit l’espace intérieur */
+.fc-daygrid-day-top {
+    padding: 2px 4px;
+}
+
+/* Numéro du jour */
+.fc-daygrid-day-number {
+    font-size: 0.85rem;
+    padding: 4px;
+}
+
+/* Toolbar responsive */
+.fc-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Boutons plus petits */
+.fc .fc-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+/* Scroll horizontal si écran trop petit */
+.card {
+    overflow-x: auto;
 }

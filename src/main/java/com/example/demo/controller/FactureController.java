@@ -97,13 +97,18 @@ public class FactureController {
     @PostMapping
     public String create(@Valid @ModelAttribute Facture facture,
                         BindingResult bindingResult,
-                        @RequestParam Integer residentId,
+                        @RequestParam(required = false) Integer residentId,
                         Model model) {
+
+        if (residentId == null) {
+            bindingResult.rejectValue("resident", "error.resident", "Le résident est obligatoire.");
+        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("isEdit", false);
             model.addAttribute("submitUrl", "/factures");
             model.addAttribute("residents", residentService.findAll());
+            model.addAttribute("residentId", residentId);
             model.addAttribute("activePage", residentId != null ? "residents" : "factures");
             return "factures/form";
         }
@@ -115,6 +120,7 @@ public class FactureController {
 
         return "redirect:/factures?resident=" + residentId;
     }
+
 
     /* DETAIL */
     @GetMapping("/{id}")
@@ -151,13 +157,14 @@ public class FactureController {
     public String update(@PathVariable Integer id,
                         @Valid @ModelAttribute Facture facture,
                         BindingResult bindingResult,
-                        @RequestParam Integer residentId,
+                        @RequestParam(required = false) Integer residentId,
                         Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("isEdit", true);
             model.addAttribute("submitUrl", "/factures/" + id);
             model.addAttribute("residents", residentService.findAll());
+            model.addAttribute("residentId", residentId);
             model.addAttribute("activePage", residentId != null ? "residents" : "factures");
             return "factures/form";
         }
@@ -170,8 +177,9 @@ public class FactureController {
         facture.setResident(original.getResident());
         factureService.update(id, facture);
 
-        return "redirect:/factures/" + id + "?residentId=" + residentId;
+        return "redirect:/factures/" + id + (residentId != null ? "?residentId=" + residentId : "");
     }
+
 
     /* SUPPRESSION */
     @PostMapping("/{id}/delete")

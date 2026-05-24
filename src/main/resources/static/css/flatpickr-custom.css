@@ -1,0 +1,198 @@
+/* ============================
+   FLATPICKR — Thème Gold/Noir
+   ============================ */
+
+.flatpickr-calendar {
+    background: #1a1a1a;
+    border: 1px solid #C9A227;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    font-family: 'Garamond', serif;
+    overflow: hidden;
+}
+
+/* Mois et navigation */
+.flatpickr-months {
+    background: #C9A227;
+    border-radius: 12px 12px 0 0;
+    padding: 8px 0;
+}
+
+.flatpickr-months .flatpickr-month {
+    background: transparent;
+    color: #111;
+    fill: #111;
+    height: 40px;
+}
+
+.flatpickr-current-month {
+    color: #111 !important;
+    font-size: 1rem;
+    font-weight: 700;
+    padding-top: 6px;
+}
+
+.flatpickr-current-month .numInputWrapper input {
+    color: #111;
+    font-weight: 700;
+}
+
+.flatpickr-current-month select.cur-year {
+    color: #111;
+    font-weight: 700;
+}
+
+/* Flèches navigation */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    fill: #111 !important;
+    color: #111 !important;
+    padding: 8px 10px;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    background: rgba(0,0,0,0.15) !important;
+    border-radius: 50%;
+}
+
+/* Jours de la semaine */
+.flatpickr-weekdays {
+    background: #2a2a2a;
+    padding: 6px 0;
+}
+
+span.flatpickr-weekday {
+    background: transparent;
+    color: #C9A227;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+/* Corps du calendrier */
+.flatpickr-days {
+    border: none;
+    background: #1a1a1a;
+}
+
+.dayContainer {
+    padding: 6px;
+    gap: 2px;
+}
+
+/* Jours */
+.flatpickr-day {
+    color: #eeeeee;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    height: 36px;
+    line-height: 36px;
+    transition: 0.2s ease;
+    border: none;
+    max-width: 36px;
+}
+
+.flatpickr-day:hover {
+    background: rgba(201, 162, 39, 0.25);
+    color: #C9A227;
+    border: 1px solid #C9A227;
+}
+
+/* Jour sélectionné */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: #C9A227;
+    border-color: #C9A227;
+    color: #111;
+    font-weight: 700;
+    border-radius: 8px;
+}
+
+/* Aujourd'hui */
+.flatpickr-day.today {
+    border: 1px solid #C9A227;
+    color: #C9A227;
+    font-weight: 700;
+}
+
+.flatpickr-day.today:hover {
+    background: rgba(201, 162, 39, 0.2);
+}
+
+/* Jours hors mois */
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #555;
+}
+
+/* Sélection de plage */
+.flatpickr-day.inRange {
+    background: rgba(201, 162, 39, 0.15);
+    box-shadow: none;
+    border: none;
+}
+
+/* Timepicker */
+.flatpickr-time {
+    background: #2a2a2a;
+    border-top: 1px solid #333;
+    height: 48px;
+}
+
+.flatpickr-time input {
+    color: #C9A227;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: transparent;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+    background: rgba(201, 162, 39, 0.1);
+}
+
+.flatpickr-time .flatpickr-time-separator {
+    color: #C9A227;
+    font-weight: 700;
+}
+
+.flatpickr-time .arrowUp,
+.flatpickr-time .arrowDown {
+    border-color: #C9A227;
+}
+
+.flatpickr-time .arrowUp:after {
+    border-bottom-color: #C9A227;
+}
+
+.flatpickr-time .arrowDown:after {
+    border-top-color: #C9A227;
+}
+
+
+.form-control.datepicker,
+.form-control.timepicker,
+.form-control.datetimepicker {
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23444444' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5z'/%3E%3C/svg%3E") no-repeat right 10px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+
+/* Liste déroulante des mois — fond blanc */
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: #ffffff !important;
+    color: #111 !important;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.flatpickr-monthDropdown-month {
+    background: #ffffff !important;
+    color: #111 !important;
+}
+
+.flatpickr-monthDropdown-month:hover {
+    background: #f5f5f5 !important;
+}

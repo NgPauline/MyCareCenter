@@ -47,10 +47,7 @@
 
             <!-- Date de naissance -->
                 <div>
-                    <label>Date de naissance</label>
-                    <input type="date"
-                    th:field="*{dateNaissance}"
-                    class="form-control">
+                    <input type="text" th:field="*{dateNaissance}" class="form-control datepicker" placeholder="JJ/MM/AAAA" autocomplete="off">
                     <div class="error" th:errors="*{dateNaissance}"></div>
 
                 </div>

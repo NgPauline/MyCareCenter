@@ -3,6 +3,8 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,9 +17,11 @@ public class Consultation {
     private Integer idConsultation;
 
     @Column(nullable = false)
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime date;
 
+    @NotNull
+    @Positive
     private int duree;
 
     @Column(nullable = false)
@@ -31,22 +35,17 @@ public class Consultation {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Employe soignant;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private DossierMedical dossierMedical;
-
-
     public Consultation() {
     }
 
     public Consultation(LocalDateTime date, int duree, String diagnostic, String observations,
-                    Resident resident, Employe soignant, DossierMedical dossierMedical) {
+                    Resident resident, Employe soignant) {
     this.date = date;
     this.duree = duree;
     this.diagnostic = diagnostic;
     this.observations = observations;
     this.resident = resident;
     this.soignant = soignant;
-    this.dossierMedical = dossierMedical;
 }
 
     public Integer getIdConsultation() {
@@ -99,14 +98,6 @@ public class Consultation {
 
     public void setSoignant(Employe soignant) {
         this.soignant = soignant;
-    }
-
-    public DossierMedical getDossierMedical() {
-        return dossierMedical;
-    }
-
-    public void setDossierMedical(DossierMedical dossierMedical) {
-        this.dossierMedical = dossierMedical;
     }
 
     @Transient

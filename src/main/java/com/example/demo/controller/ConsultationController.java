@@ -117,7 +117,6 @@ public class ConsultationController {
 
         consultation.setResident(resident);
         consultation.setSoignant(soignant);
-        consultation.setDossierMedical(resident.getDossierMedical());
 
         consultationService.save(consultation);
         return "redirect:/consultations?resident=" + residentId;

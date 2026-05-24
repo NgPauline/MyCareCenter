@@ -50,9 +50,7 @@
 
             <div>
             <label>Date de naissance</label>
-            <input type="date"
-                th:field="*{dateNaissance}"
-                class="form-control">
+            <input type="text" th:field="*{dateNaissance}" class="form-control datepicker" placeholder="JJ/MM/AAAA" autocomplete="off">
             <div class="error" th:errors="*{dateNaissance}"></div>
         </div>
 
@@ -74,9 +72,7 @@
 
             <div>
                 <label>Date admission</label>
-                <input type="date"
-                th:field="*{dateAdmission}"
-                class="form-control">
+                <input type="text" th:field="*{dateAdmission}" class="form-control datepicker" placeholder="JJ/MM/AAAA" autocomplete="off">
                 <div class="error" th:errors="*{dateAdmission}"></div>
             </div>
 

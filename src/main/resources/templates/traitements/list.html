@@ -19,31 +19,38 @@
     <!-- HEADER -->
     <div class="list-header d-flex justify-content-between align-items-center">
 
-        <div th:if="${residentId != null}" class="mb-2">
-            <a th:href="@{/dossiers/{id}(id=${residentId})}" class="btn-circle" title="Retour au dossier médical">
-                <img th:src="@{/images/retour.png}" class="icon-26">
-            </a>
+        <!-- GAUCHE : retour + titre + loupe -->
+        <div class="d-flex align-items-center">
+
+            <div th:if="${residentId != null}" class="mr-2">
+                <a th:href="@{/dossiers/{id}(id=${residentId})}" 
+                class="btn-circle" 
+                title="Retour au dossier médical">
+                    <img th:src="@{/images/retour.png}" class="icon-26">
+                </a>
+            </div>
+
+            <h2 class="m-0 d-flex align-items-center">
+                Traitements
+                <button class="btn-circle ml-2"
+                        data-search-toggle="searchBarTraitements"
+                        title="Rechercher un traitement">
+                    <img th:src="@{/images/rechercher.png}" class="icon-22">
+                </button>
+            </h2>
+
         </div>
 
-        <h2 class="m-0 d-flex align-items-center">
-            Traitements
-
-            <button class="btn-circle ml-2"
-                    data-search-toggle="searchBarTraitements"
-                    title="Rechercher un traitement">
-                <img th:src="@{/images/rechercher.png}" class="icon-22">
-            </button>
-        </h2>
-
-        <!-- Ajouter -->
+        <!-- DROITE : ajouter -->
         <a sec:authorize="hasAnyRole('DIRECTEUR','SOIGNANT')"
         th:href="${residentId != null} ? @{/traitements/new(residentId=${residentId})} : @{/traitements/new}"
-           class="btn-circle"
-           title="Ajouter un traitement">
+        class="btn-circle"
+        title="Ajouter un traitement">
             <img th:src="@{/images/ajouter.png}" class="icon-26">
         </a>
 
     </div>
+
 
     <!-- BARRE DE RECHERCHE -->
     <form id="searchBarTraitements" class="mt-3" method="get" style="display:none;">
