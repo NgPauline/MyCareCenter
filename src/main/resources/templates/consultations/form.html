@@ -9,6 +9,7 @@
         <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'nonModifiable'">Cette consultation est passée : modification impossible.</span>
             <span th:case="'nonSupprimable'">Cette consultation est passée : suppression impossible.</span>
+             <span th:case="'chevauchement'">Ce créneau chevauche une activité du résident ou du soignant.</span>
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>

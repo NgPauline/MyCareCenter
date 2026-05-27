@@ -86,10 +86,10 @@ public class ConsultationController {
     /* ---------------- CREATION ---------------- */
     @PostMapping
     public String create(@Valid @ModelAttribute Consultation consultation,
-                         BindingResult bindingResult,
-                         @RequestParam Integer residentId,
-                         @RequestParam Integer soignantId,
-                         Model model) {
+                        BindingResult bindingResult,
+                        @RequestParam Integer residentId,
+                        @RequestParam Integer soignantId,
+                        Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("residents", residentService.findAll());
@@ -98,29 +98,31 @@ public class ConsultationController {
             return "consultations/form";
         }
 
+        // Charger les objets
         Resident resident = residentService.findById(residentId).orElseThrow();
         Employe soignant = employeService.findById(soignantId).orElseThrow();
 
-        if (consultation.getDate().isAfter(LocalDateTime.now())) {
-            bindingResult.rejectValue("date", "error.date", "La consultation ne peut pas être dans le futur");
-            model.addAttribute("residents", residentService.findAll());
-            model.addAttribute("soignants", employeService.findByRole("SOIGNANT"));
-            model.addAttribute("activePage", residentId != null ? "residents" : "consultations");
-            return "consultations/form";
-        }
-
+        // Vérifier dossier médical
         if (resident.getDossierMedical() == null) {
             bindingResult.rejectValue("resident", "error.resident", "Le résident n'a pas de dossier médical");
             model.addAttribute("activePage", residentId != null ? "residents" : "consultations");
             return "consultations/form";
         }
 
+        // Associer à la consultation
         consultation.setResident(resident);
         consultation.setSoignant(soignant);
 
-        consultationService.save(consultation);
+        // Appeler le service
+        try {
+            consultationService.save(consultation);
+        } catch (IllegalArgumentException e) {
+            return "redirect:/consultations/new?error=chevauchement";
+        }
+
         return "redirect:/consultations?resident=" + residentId;
     }
+
 
     /* ---------------- DETAIL ---------------- */
     @GetMapping("/{idConsultation}")

@@ -165,11 +165,18 @@ public class FamilleController {
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasAnyRole('DIRECTEUR','ADMINISTRATIF')")
     public String delete(@PathVariable Integer id,
-                         @RequestParam(required = false) Integer residentId) {
-        familleService.delete(id);
+                        @RequestParam(required = false) Integer residentId) {
+
+        try {
+            familleService.delete(id);
+        } catch (IllegalStateException e) {
+            return "redirect:/familles/" + id + "?error=nonSupprimable";
+        }
+
         if (residentId != null) {
             return "redirect:/residents/" + residentId;
         }
         return "redirect:/familles";
     }
+
 }

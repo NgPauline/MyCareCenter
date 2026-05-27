@@ -6,6 +6,8 @@ import com.example.demo.repository.FamilleRepository;
 import com.example.demo.repository.ResidentRepository;
 
 import jakarta.transaction.Transactional;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,8 +70,16 @@ public class FamilleService {
     }
 
     public void delete(Integer id) {
-        familleRepository.deleteById(id);
+        try {
+            familleRepository.deleteById(id);
+            familleRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalStateException("nonSupprimable");
+        }
     }
+
+
+    
     public List<Famille> findByResidentId(Integer idResident) {
     return familleRepository.findByResidents_IdPersonne(idResident);
 }
