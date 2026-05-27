@@ -15,7 +15,11 @@ public interface PlanningRepository extends JpaRepository<Planning, Integer> {
 
     List<Planning> findByDate(LocalDate date);
 
-    boolean existsByResponsable_IdPersonne(Integer id);
+    boolean existsByResponsable_IdPersonneAndDateGreaterThanEqual(
+        Integer idPersonne,
+        LocalDate date
+);
+
 
     @Query("""
         SELECT p FROM Planning p

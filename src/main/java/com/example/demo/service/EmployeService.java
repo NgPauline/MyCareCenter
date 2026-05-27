@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,8 +45,12 @@ public class EmployeService {
     }
 
     public boolean hasPlanningResponsable(Integer id) {
-        return planningRepository.existsByResponsable_IdPersonne(id);
-    }
+    return planningRepository.existsByResponsable_IdPersonneAndDateGreaterThanEqual(
+            id,
+            LocalDate.now()
+    );
+}
+
 
     public long count() {
         return employeRepository.count();

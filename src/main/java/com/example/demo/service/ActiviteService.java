@@ -57,16 +57,16 @@ public class ActiviteService {
             throw new IllegalArgumentException("Les activités doivent être planifiées au moins 7 jours à l'avance.");
         }
 
-        if ("EDUCATEUR".equals(createur.getRoleApp()) &&
-            activite.getCategorie() == CategorieActivite.MEDICAL) {
-            throw new IllegalArgumentException("Un éducateur ne peut pas créer une activité médicale.");
-        }
+       // if ("EDUCATEUR".equals(createur.getRoleApp()) &&
+       //     activite.getCategorie() == CategorieActivite.MEDICAL) {
+       //     throw new IllegalArgumentException("Un éducateur ne peut pas créer une activité médicale.");
+       // }
 
-        if ("SOIGNANT".equals(createur.getRoleApp()) &&
-            (activite.getCategorie() == CategorieActivite.EDUCATIF
-            || activite.getCategorie() == CategorieActivite.SPORTIF)) {
-            throw new IllegalArgumentException("Un soignant ne peut pas créer une activité éducative ou sportive.");
-        }
+       // if ("SOIGNANT".equals(createur.getRoleApp()) &&
+      //      (activite.getCategorie() == CategorieActivite.EDUCATIF
+         //   || activite.getCategorie() == CategorieActivite.SPORTIF)) {
+       //     throw new IllegalArgumentException("Un soignant ne peut pas créer une activité éducative ou sportive.");
+       // }
 
         boolean employeDisponible = planningRepository
             .findByDate(activite.getDate())
@@ -84,16 +84,16 @@ public class ActiviteService {
 
     public void update(Integer id, Activite updated, Employe createur) {
 
-        if ("EDUCATEUR".equals(createur.getRoleApp()) &&
-            updated.getCategorie() == CategorieActivite.MEDICAL) {
-            throw new IllegalArgumentException("Un éducateur ne peut pas modifier une activité médicale.");
-        }
+    //    if ("EDUCATEUR".equals(createur.getRoleApp()) &&
+       //     updated.getCategorie() == CategorieActivite.MEDICAL) {
+     //       throw new IllegalArgumentException("Un éducateur ne peut pas modifier une activité médicale.");
+     //   }
 
-        if ("SOIGNANT".equals(createur.getRoleApp()) &&
-            (updated.getCategorie() == CategorieActivite.EDUCATIF
-            || updated.getCategorie() == CategorieActivite.SPORTIF)) {
-            throw new IllegalArgumentException("Un soignant ne peut pas modifier une activité éducative ou sportive.");
-        }
+     //   if ("SOIGNANT".equals(createur.getRoleApp()) &&
+     //       (updated.getCategorie() == CategorieActivite.EDUCATIF
+     //       || updated.getCategorie() == CategorieActivite.SPORTIF)) {
+     //       throw new IllegalArgumentException("Un soignant ne peut pas modifier une activité éducative ou sportive.");
+      //  }
 
         boolean employeDisponible = planningRepository
             .findByDate(updated.getDate())

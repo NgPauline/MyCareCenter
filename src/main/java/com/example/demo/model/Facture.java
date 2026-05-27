@@ -127,10 +127,12 @@ public class Facture {
         return montant - paye;
     }
 
-    // UML : modifierStatut
+    // ModifierStatut
     public void modifierStatut(String statut) {
         this.statut = statut;
     }
+
+    // recalculerStatut
     public void recalculerStatut() {
     double solde = getSoldeRestant();
 
