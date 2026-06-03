@@ -239,14 +239,17 @@ public class ActiviteController {
             try {
                 activiteService.inscrireResident(activite, resident);
             } catch (IllegalArgumentException e) {
-                if (e.getMessage().contains("complète")) {
-                    return "redirect:/activites/" + id + "?error=complet";
-                }
-                if (e.getMessage().contains("déjà inscrit")) {
-                    return "redirect:/activites/" + id + "?error=dejainscrit";
-                }
-                return "redirect:/activites/" + id + "?error=inscription";
+            if (e.getMessage().contains("complète")) {
+                return "redirect:/activites/" + id + "?error=complet";
             }
+            if (e.getMessage().contains("déjà inscrit à une activité")) {
+                return "redirect:/activites/" + id + "?error=chevauchementActivite";
+            }
+            if (e.getMessage().contains("déjà inscrit")) {
+                return "redirect:/activites/" + id + "?error=dejainscrit";
+            }
+            return "redirect:/activites/" + id + "?error=inscription";
+        }
 
             return "redirect:/activites/" + id;  
         }

@@ -143,16 +143,27 @@ public class ActiviteService {
         LocalDateTime debutAct = LocalDateTime.of(activite.getDate(), activite.getHeureDebut());
         LocalDateTime finAct = debutAct.plusMinutes(activite.getDuree());
 
-        List<Consultation> consults = consultationRepository
-        .findByResidentAndDateBetween(resident, debutAct.minusMinutes(25), finAct.plusMinutes(25));
-
-        boolean chevauche = consults.stream().anyMatch(c -> {
-            LocalDateTime debutConsult = c.getDate();
-            LocalDateTime finConsult = c.getHeureFin();
-            return debutConsult.isBefore(finAct) && finConsult.isAfter(debutAct);
+        // Chevauchement avec les autres activités du résident
+        List<Activite> autresActivites = activiteRepository.findByParticipantsContaining(resident);
+        boolean chevaucheActivite = autresActivites.stream().anyMatch(a -> {
+            LocalDateTime debutA = LocalDateTime.of(a.getDate(), a.getHeureDebut());
+            LocalDateTime finA = debutA.plusMinutes(a.getDuree());
+            return debutAct.isBefore(finA) && finAct.isAfter(debutA);
         });
 
-        if (chevauche) {
+        if (chevaucheActivite) {
+            throw new IllegalArgumentException("Ce résident est déjà inscrit à une activité sur ce créneau.");
+        }
+
+        // Chevauchement avec les consultations du résident (déjà existant)
+        List<Consultation> consults = consultationRepository
+            .findByResidentAndDateBetween(resident, debutAct.minusMinutes(25), finAct.plusMinutes(25));
+
+        boolean chevaucheConsultation = consults.stream().anyMatch(c ->
+            c.getDate().isBefore(finAct) && c.getHeureFin().isAfter(debutAct)
+        );
+
+        if (chevaucheConsultation) {
             throw new IllegalArgumentException("Chevauchement entre activité et consultation du résident.");
         }
 

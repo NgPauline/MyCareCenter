@@ -9,6 +9,7 @@ import com.example.demo.service.ResidentService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -140,19 +141,17 @@ public class ConsultationController {
     @PostMapping("/{id}/delete")
     @PreAuthorize("hasRole('DIRECTEUR')")
     public String delete(@PathVariable Integer id,
-                         @RequestParam(required = false) Integer residentId) {
+                        @RequestParam(required = false) Integer residentId,
+                        RedirectAttributes redirectAttributes) {
 
-        Consultation consultation = consultationService.findById(id).orElseThrow();
-
-        if (consultation.getDate().isBefore(LocalDateTime.now())) {
-            return "redirect:/consultations/" + id + "?error=nonSupprimable";
+        try {
+            consultationService.delete(id);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/consultations/" + id + (residentId != null ? "?residentId=" + residentId : "");
         }
 
-        consultationService.delete(id);
-
-        if (residentId != null) {
-            return "redirect:/consultations?resident=" + residentId;
-        }
+        if (residentId != null) return "redirect:/consultations?resident=" + residentId;
         return "redirect:/consultations";
     }
 }

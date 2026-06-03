@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -196,9 +197,20 @@ public class TypeEquipementController {
     // ---------------------------------------------------------
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Integer id,
-                         @RequestParam(required = false) Integer chambreId) {
-        typeService.findById(id).orElseThrow(() -> new RuntimeException("Type introuvable"));
-        typeService.delete(id);
+                        @RequestParam(required = false) Integer chambreId,
+                        RedirectAttributes redirectAttributes) {
+
+        typeService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Type introuvable"));
+
+        try {
+            typeService.delete(id);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            if (chambreId != null) return "redirect:/chambres/" + chambreId;
+            return "redirect:/types-equipement";
+        }
+
         if (chambreId != null) return "redirect:/chambres/" + chambreId;
         return "redirect:/types-equipement";
     }

@@ -6,6 +6,8 @@
 
 <section th:fragment="section">
 
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    
     <!-- BARRE HAUTE -->
     <div class="top-bar d-flex justify-content-between align-items-center mb-2">
 

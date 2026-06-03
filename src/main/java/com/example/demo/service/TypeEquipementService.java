@@ -33,6 +33,12 @@ public class TypeEquipementService {
     }
 
     public void delete(Integer id) {
+        long count = equipementRepository.countByType_Id(id);
+        if (count > 0) {
+            throw new IllegalStateException(
+                "Impossible de supprimer ce type : " + count + " exemplaire(s) y sont encore rattaché(s)."
+            );
+        }
         repo.deleteById(id);
     }
 

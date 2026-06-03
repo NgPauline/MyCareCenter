@@ -83,7 +83,7 @@
                 <tr th:each="p : ${plannings}">
                     <td th:text="${#temporals.format(p.date, 'dd/MM/yyyy')}"></td>
 
-                    <td th:text="${p.heureDebut + ' - ' + p.heureFin}"></td>
+                    <td th:text="${p.heureDebut + ' → ' + p.heureFin}"></td>
 
                     <td th:text="${p.responsable != null ? p.responsable.nom + ' ' + p.responsable.prenom : '—'}"></td>
 

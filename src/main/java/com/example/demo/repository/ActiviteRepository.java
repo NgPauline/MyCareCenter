@@ -2,7 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Activite;
 import com.example.demo.model.Resident;
-  import com.example.demo.model.Employe;
+import com.example.demo.model.Employe;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

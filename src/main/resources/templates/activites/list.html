@@ -98,7 +98,12 @@
 
                     <td th:text="${a.date != null ? #temporals.format(a.date, 'dd/MM/yyyy') : '—'}"></td>
 
-                    <td th:text="${a.heureDebut != null ? a.heureDebut + ' → ' + a.heureFin : '—'}"></td>
+                    <td th:if="${a.heureDebut != null}">
+                        <span th:text="${#temporals.format(a.heureDebut, 'HH:mm')}"></span>
+                        →
+                        <span th:text="${#temporals.format(a.heureFin, 'HH:mm')}"></span>
+                    </td>
+                    <td th:unless="${a.heureDebut != null}">—</td>
 
                     <td th:text="${a.lieu}"></td>
 

@@ -6,11 +6,7 @@
 
 <section th:fragment="section">
 
-    <div th:if="${param.error}" class="alert alert-danger mb-3">
-        <span th:switch="${param.error != null ? param.error[0] : ''}">
-            <span th:case="*">Une erreur est survenue.</span>
-        </span>
-    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger mb-3" th:text="${errorMessage}"></div>
 
 
     <!-- HEADER -->
@@ -102,9 +98,10 @@
 
                         <!-- Supprimer -->
                         <form sec:authorize="hasAnyRole('DIRECTEUR')"
-                              th:action="@{|/consultations/${c.idConsultation}/delete|}"
-                              method="post" class="d-inline"
-                              onsubmit="return confirm('Supprimer cette consultation ?');">
+                            th:action="@{|/consultations/${c.idConsultation}/delete|}"
+                            method="post" class="d-inline"
+                            onsubmit="return confirm('Supprimer cette consultation ?');">
+                            <input type="hidden" name="residentId" th:value="${residentId}"/>  <!-- ← ICI -->
                             <button class="btn-circle" title="Supprimer cette consultation">
                                 <img th:src="@{/images/supprimer.png}" alt="Supprimer" class="icon-24">
                             </button>

@@ -15,6 +15,7 @@
             <span th:case="'complet'">Cette activité est complète (3 participants maximum).</span>
             <span th:case="'desinscription'">Impossible de désinscrire ce résident.</span>
             <span th:case="'dejainscrit'">Ce résident est déjà inscrit à cette activité.</span>
+            <span th:case="'chevauchementActivite'">Ce résident est déjà inscrit à une activité sur ce créneau.</span>
             <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
@@ -79,13 +80,12 @@
                         </tr>
 
                         <tr>
-                            <th>Heure de début</th>
-                            <td th:text="${activite.heureDebut}"></td>
-                        </tr>
-
-                        <tr>
-                            <th>Heure de fin</th>
-                            <td th:text="${activite.heureFin}"></td>
+                                <th>Heure de début</th>
+                                <td th:text="${#temporals.format(activite.heureDebut, 'HH:mm')}"></td>
+                            </tr>
+                            <tr>
+                                <th>Heure de fin</th>
+                                <td th:text="${#temporals.format(activite.heureFin, 'HH:mm')}"></td>
                         </tr>
 
                         <tr><th>Lieu</th><td th:text="${activite.lieu}"></td></tr>

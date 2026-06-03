@@ -11,8 +11,8 @@
         <span th:switch="${param.error != null ? param.error[0] : ''}">
             <span th:case="'introuvable'">Famille introuvable.</span>
             <span th:case="'resident'">Résident introuvable.</span>
-            <span th:case="*">Une erreur est survenue.</span>
             <span th:case="'nonSupprimable'"> Impossible de supprimer cette famille : elle est encore liée à un ou plusieurs résidents. </span>
+            <span th:case="*">Une erreur est survenue.</span>
         </span>
     </div>
 
@@ -95,7 +95,7 @@
                     <td class="text-right">
 
                         <!-- Voir -->
-                        <a th:href="@{/familles/{id}(id=${f.idFamille}, resident=${residentId})}"
+                        <a th:href="@{/familles/{id}(id=${f.idFamille}, residentId=${residentId})}"
                         class="btn-circle mr-2" title="Voir">
                             <img th:src="@{/images/voir.png}" class="icon-24">
                         </a>
@@ -110,9 +110,10 @@
 
                         <!-- Supprimer -->
                         <form sec:authorize="hasAnyRole('DIRECTEUR','ADMINISTRATIF')"
-                              th:action="@{/familles/{id}/delete(id=${f.idFamille})}"
-                              method="post" class="d-inline"
-                              onsubmit="return confirm('Supprimer cette famille ?');">
+                            th:action="@{/familles/{id}/delete(id=${f.idFamille})}"
+                            method="post" class="d-inline"
+                            onsubmit="return confirm('Supprimer cette famille ?');">
+                            <input type="hidden" name="residentId" th:value="${residentId}"/>
                             <button class="btn-circle" title="Supprimer">
                                 <img th:src="@{/images/supprimer.png}" class="icon-24">
                             </button>

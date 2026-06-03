@@ -104,15 +104,15 @@ public class FamilleController {
     /* DETAIL */
     @GetMapping("/{id}")
     public String detail(@PathVariable Integer id,
-                         @RequestParam(required = false) Integer resident,
-                         Model model) {
+                        @RequestParam(required = false) Integer residentId, 
+                        Model model) {
 
         Famille famille = familleService.findById(id).orElseThrow();
 
         model.addAttribute("famille", famille);
         model.addAttribute("residents", famille.getResidents());
-        model.addAttribute("residentId", resident);
-        model.addAttribute("activePage", resident != null ? "residents" : "familles");
+        model.addAttribute("residentId", residentId);
+        model.addAttribute("activePage", residentId != null ? "residents" : "familles"); 
 
         return "familles/detail";
     }
@@ -169,8 +169,11 @@ public class FamilleController {
 
         try {
             familleService.delete(id);
+        // APRÈS
         } catch (IllegalStateException e) {
-            return "redirect:/familles/" + id + "?error=nonSupprimable";
+            String redirect = "redirect:/familles/" + id + "?error=nonSupprimable";
+            if (residentId != null) redirect += "&residentId=" + residentId;
+            return redirect;
         }
 
         if (residentId != null) {
